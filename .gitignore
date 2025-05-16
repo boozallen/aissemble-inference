@@ -1,0 +1,27 @@
+
+# Log file
+*.log
+
+# Package Files #
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+
+# Package lock json
+package-lock.json
+
+# node modules
+node_modules/
+
+docs/site
+dist/
+target/
+.idea/
+*.iml
+venv/
+__pycache__/
+.python-version
