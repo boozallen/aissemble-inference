@@ -1,0 +1,26 @@
+[project]
+name = "aissemble-open-inference-protocol-fastapi"
+version = "1.0.0.dev"
+description = ""
+authors = [
+    {name = "Clay Woods",email = "Woods_Clay@ne.bah.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11.4"
+dynamic = ["version", "dependencies"]
+
+[tool.poetry]
+packages = [{include = "aissemble_open_inference_protocol_fastapi", from = "src"}]
+
+[tool.poetry.dependencies]
+fastapi = {extras = ["standard"], version = "^0.115.12"}
+pydantic = "^2.11.4"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pylint = "^3.3.7"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"

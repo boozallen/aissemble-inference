@@ -1,6 +1,6 @@
-# aiSSEMBLE Open Inference API
+# aiSSEMBLE Open Inference Protocol
 
 > [!NOTE]  
 > This project is a work in progress
 
-A collection of aiSSEMBLE's Open Inference API compatible Python implementations. 
+A collection of aiSSEMBLE's Open Inference Protocol compatible Python implementations. 
