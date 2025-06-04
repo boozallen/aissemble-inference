@@ -23,15 +23,25 @@ fastapi dev main.py
 
 View the routes by going to http://127.0.0.1:8000/docs.
 
-## Implementing Inference Handler
-The endpoints will call a [default handler](src/aissemble_open_inference_protocol_fastapi/handlers/default_handler.py) that will return 501 not implemented. To make a handler, create your class and extend the abstract base class [dataplane.py](src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py). Then just pass your class into our AissembleOIPFastAPI constructor.
+## Implementing a Handler
+The endpoints will call a [default handler](src/aissemble_open_inference_protocol_fastapi/handlers/default_handler.py) that will return 501 not implemented. To make a handler, create your class and extend the abstract base class [dataplane.py](src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py). Then pass your class into the AissembleOIPFastAPI constructor.
 
 ### Example of Usage with A Handler
 Create your custom handler class with:
 ```python
 from typing import Optional
-from aissemble_open_inference_protocol_fastapi.handlers.dataplane import DataplaneHandler
-from aissemble_open_inference_protocol_fastapi.types.dataplane import InferenceRequest, InferenceResponse
+
+from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+    DataplaneHandler,
+)
+from aissemble_open_inference_protocol_fastapi.types.dataplane import (
+    InferenceRequest,
+    InferenceResponse,
+    ModelMetadataResponse,
+    MetadataTensor,
+    ModelReadyResponse,
+)
+
 
 class MyHandler(DataplaneHandler):
     def __init__(self):
@@ -43,7 +53,33 @@ class MyHandler(DataplaneHandler):
             model_name: str,
             model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        return InferenceResponse(model_name=model_name, model_version=model_version, outputs=[])
+        return InferenceResponse(
+            model_name=model_name, model_version=model_version, id="id", outputs=[]
+        )
+
+    def model_metadata(
+            self,
+            model_name: str,
+            model_version: Optional[str] = None,
+    ) -> ModelMetadataResponse:
+        # Return a stub ModelMetadataResponse
+        return ModelMetadataResponse(
+            name=model_name,
+            versions=[model_version] if model_version else None,
+            platform="python",
+            inputs=[MetadataTensor(name="input", datatype="FP32", shape=[1])],
+            outputs=[
+                MetadataTensor(name="output", datatype="FP32", shape=[1])
+            ],
+        )
+
+    def model_ready(
+            self,
+            model_name: str,
+            model_version: Optional[str] = None,
+    ) -> ModelReadyResponse:
+        # Testing: always ready
+        return ModelReadyResponse(name=model_name, ready=True)
 ```
 
 Use aissemble-open-inference-protocol-fastapi to create a FastAPI app and pass it `MyHandler`

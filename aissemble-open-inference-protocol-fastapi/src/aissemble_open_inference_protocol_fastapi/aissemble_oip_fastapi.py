@@ -17,7 +17,6 @@ from aissemble_open_inference_protocol_fastapi.rest import endpoints
 
 
 class AissembleOIPFastAPI:
-
     def __init__(self, handler=None):
         self.app = FastAPI()
         self.app.include_router(endpoints.router)
