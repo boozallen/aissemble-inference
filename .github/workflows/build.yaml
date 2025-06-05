@@ -42,5 +42,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build Build aissemble-open-inference-protocol
+      - name: Build aissemble-open-inference-protocol
         run: mvn -B clean install -Dhabushu.usePyenv=false
