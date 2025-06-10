@@ -13,11 +13,12 @@ from typing import Optional
 from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
+    ModelMetadataResponse,
+    ModelReadyResponse,
 )
 
 
 class DataplaneHandler(ABC):
-
     @abstractmethod
     def infer(
         self,
@@ -25,4 +26,20 @@ class DataplaneHandler(ABC):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> InferenceResponse:
+        pass
+
+    @abstractmethod
+    def model_metadata(
+        self,
+        model_name: str,
+        model_version: Optional[str] = None,
+    ) -> ModelMetadataResponse:
+        pass
+
+    @abstractmethod
+    def model_ready(
+        self,
+        model_name: str,
+        model_version: Optional[str] = None,
+    ) -> ModelReadyResponse:
         pass

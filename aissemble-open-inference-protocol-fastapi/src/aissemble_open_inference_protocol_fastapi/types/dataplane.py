@@ -82,3 +82,26 @@ class InferenceRequest(BaseModel):
     parameters: Optional[Parameters] = None
     inputs: List[RequestInput]
     outputs: Optional[List[RequestOutput]] = None
+
+
+class MetadataTensor(BaseModel):
+    name: str
+    datatype: Datatype
+    shape: List[int]
+
+
+class ModelMetadataResponse(BaseModel):
+    name: str
+    versions: Optional[List[str]] = None
+    platform: str
+    inputs: List[MetadataTensor]
+    outputs: List[MetadataTensor]
+
+
+class ModelMetadataErrorResponse(BaseModel):
+    error: str
+
+
+class ModelReadyResponse(BaseModel):
+    name: str
+    ready: bool
