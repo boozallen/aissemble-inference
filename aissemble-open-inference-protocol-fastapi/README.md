@@ -90,3 +90,12 @@ app = AissembleOIPFastAPI(MyHandler).app
 ```
 
 Now when starting the FastAPI server, the inference request will route to `MyHandler.infer()`
+
+## Features
+
+### Content Type Decoding (Work In Progress)
+The `content_type` feature lets you declare, at either request time or in model metadata, how each OIP-compliant input should be converted into a Python object.
+
+**Declaring Content Types:**
+- **Input Level**: Include a `content_type` field under each `inputs[].parameters` in the request JSON. This will apply the content type to the particular input only.
+- **Model Metadata Level**: This will apply the content type to the entire set of inputs.
