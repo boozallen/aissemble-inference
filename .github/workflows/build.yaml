@@ -6,8 +6,6 @@ name: Build aissemble-open-inference-protocol
 on:
   push:
     branches: [ "dev" ]
-  pull_request_review:
-    types: [submitted]
   workflow_dispatch:
     inputs:
       branch:
@@ -42,5 +40,29 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      # Generate the settings.xml for ghcr.io and dev-pypi server profiles
+      - name: Create settings.xml
+        id: create-settings-xml
+        run: |
+          cat > $HOME/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>ghcr.io</id>
+                <username>\${env.GITHUB_ACTOR}</username>
+                <password>\${env.GITHUB_TOKEN}</password>
+              </server>
+              <server>
+                <id>dev-pypi</id>
+                <username>${{ secrets.TEST_PYPI_USERNAME }}</username>
+                <password>${{ secrets.TEST_PYPI_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      # Run build and deploy test artifacts
       - name: Build aissemble-open-inference-protocol
-        run: mvn -B clean install -Dhabushu.usePyenv=false
+        run: mvn clean deploy -B -U -Pci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
