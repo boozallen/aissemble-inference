@@ -8,6 +8,7 @@
 # #L%
 ###
 from fastapi import APIRouter, status, Depends
+from typing import Optional, List, Any
 from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
     DefaultHandler,
@@ -15,7 +16,7 @@ from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
 from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
     DefaultAdapter,
 )
-from aissemble_open_inference_protocol_fastapi.types.dataplane import (
+from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
@@ -25,9 +26,17 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     ServerLiveResponse,
     ServerMetadataResponse,
     ServerMetadataErrorResponse,
+    ResponseOutput,
+    Parameters,
 )
 from aissemble_open_inference_protocol_fastapi.auth.jwt_auth import (
     authenticate_and_authorize,
+)
+from aissemble_open_inference_protocol_shared.codecs.utils import (
+    decode_inference_request,
+    encode_inference_response,
+    encode_response_output,
+    get_content_type,
 )
 
 security = HTTPBearer(auto_error=False)
@@ -61,7 +70,13 @@ def infer_model(
         authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
     )
 
-    return handler.infer(model_name=model_name, payload=payload)
+    raw_request_payload = payload
+    decoded_payload = decode_inference_request(payload)
+    result = handler.infer(model_name=model_name, payload=decoded_payload)
+
+    return build_inference_response(
+        model_name=model_name, request=raw_request_payload, result=result
+    )
 
 
 @router.post(
@@ -86,8 +101,15 @@ async def infer_model_version(
         authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
     )
 
-    return handler.infer(
-        model_name=model_name, model_version=model_version, payload=payload
+    raw_request_payload = payload
+    decoded_payload = decode_inference_request(payload)
+    result = handler.infer(model_name=model_name, payload=decoded_payload)
+
+    return build_inference_response(
+        model_name=model_name,
+        request=raw_request_payload,
+        result=result,
+        model_version=model_version,
     )
 
 
@@ -275,3 +297,69 @@ def server_metadata(
     )
 
     return handler.server_metadata()
+
+
+def build_inference_response(
+    model_name: str,
+    request: InferenceRequest,
+    result: Any,
+    model_version: Optional[str] = None,
+) -> InferenceResponse:
+    """
+    Construct an InferenceResponse by encoding a handler’s raw Python result according to content_type
+    1. Try per‐output codecs (if request.outputs is set).
+    2. Fallback to a request‐level codec (if request.parameters.content_type is set).
+    3. Otherwise, echo each input’s raw data.
+    """
+    # Per‐output codec
+    outputs: List[ResponseOutput] = []
+    for request_output in request.outputs or []:
+        output = encode_response_output(result, request_output)
+        if output is not None:
+            outputs.append(output)
+
+    if outputs:
+        return InferenceResponse(
+            model_name=model_name,
+            model_version=model_version,
+            id=request.id,
+            outputs=outputs,
+        )
+
+    # Request-level codec (only if top-level parameters.content_type was set)
+    request_content_type = get_content_type(request)
+    if request_content_type:
+        response = encode_inference_response(
+            model_name=model_name,
+            payload=result,
+            model_version=model_version,
+        )
+        if response is not None:
+            response.id = request.id
+            return response
+
+    # No codec matched, just echo the raw data from the inputs
+    outputs = []
+    for request_input in request.inputs or []:
+        content_type = None
+        if request_input.parameters is not None:
+            content_type = request_input.parameters.content_type
+
+        outputs.append(
+            ResponseOutput(
+                name=request_input.name,
+                datatype=request_input.datatype,
+                shape=request_input.shape,
+                data=request_input.data,
+                parameters=Parameters(content_type=content_type)
+                if content_type is not None
+                else None,
+            )
+        )
+
+    return InferenceResponse(
+        model_name=model_name,
+        model_version=model_version,
+        id=request.id,
+        outputs=outputs,
+    )

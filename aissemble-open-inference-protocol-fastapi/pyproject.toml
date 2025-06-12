@@ -26,6 +26,7 @@ Homepage = "https://github.com/boozallen/aissemble-open-inference-protocol"
 packages = [{include = "aissemble_open_inference_protocol_fastapi", from = "src"}]
 
 [tool.poetry.dependencies]
+aissemble-open-inference-protocol-shared = {path = "../aissemble-open-inference-protocol-shared", develop = true}
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 pydantic = "^2.11.4"
 PyJWT="^2.10.1"

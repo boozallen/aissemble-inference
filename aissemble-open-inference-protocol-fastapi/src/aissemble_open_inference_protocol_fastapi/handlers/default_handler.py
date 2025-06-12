@@ -13,7 +13,7 @@ from fastapi import status, HTTPException
 from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
     DataplaneHandler,
 )
-from aissemble_open_inference_protocol_fastapi.types.dataplane import (
+from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,

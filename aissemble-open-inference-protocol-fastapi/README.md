@@ -34,7 +34,7 @@ from typing import Optional
 from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
     DataplaneHandler,
 )
-from aissemble_open_inference_protocol_fastapi.types.dataplane import (
+from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
@@ -118,12 +118,9 @@ Now when starting the FastAPI server, the inference request will route to `MyHan
 
 ## Features
 
-### Content Type Decoding (Work In Progress)
-The `content_type` feature lets you declare, at either request time or in model metadata, how each OIP-compliant input should be converted into a Python object.
+### Content Type Decoding/Encoding (Work In Progress)
+For more information on how to implement content type decoding/encoding, reference the `aissemble-open-inference-protocol-shared` module's [README](../aissemble-open-inference-protocol-shared/README.md)
 
-**Declaring Content Types:**
-- **Input Level**: Include a `content_type` field under each `inputs[].parameters` in the request JSON. This will apply the content type to the particular input only.
-- **Model Metadata Level**: This will apply the content type to the entire set of inputs.
 
 ## Example Usage with Actual ML Model ##
 Please see the [example](../examples/fast-api-inference/README.md) folder dedicated for detailed information on how to integrate models with Fast API OIP.
