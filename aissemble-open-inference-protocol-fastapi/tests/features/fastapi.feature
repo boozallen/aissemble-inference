@@ -12,6 +12,9 @@ Feature: Test FastAPI OIP Implementation
       | GET   | /v2/models/my_model/versions/1       |
       | GET   | /v2/models/my_model/ready            |
       | GET   | /v2/models/my_model/versions/1/ready |
+      | GET   | /v2/health/ready                     |
+      | GET   | /v2/health/live                      |
+      | GET   | /v2                                  |
       | POST  | /v2/models/my_model/infer            |
       | POST  | /v2/models/my_model/versions/1/infer |
 
@@ -28,5 +31,8 @@ Feature: Test FastAPI OIP Implementation
       | GET  | /openapi.json | get             | /v2/models/{model_name}/versions/{model_version}       |
       | GET  | /openapi.json | get             | /v2/models/{model_name}/ready                          |
       | GET  | /openapi.json | get             | /v2/models/{model_name}/versions/{model_version}/ready |
+      | GET  | /openapi.json | get             | /v2/health/ready                                       |
+      | GET  | /openapi.json | get             | /v2/health/live                                        |
+      | GET  | /openapi.json | get             | /v2                                                    |
       | GET  | /openapi.json | post            | /v2/models/{model_name}/infer                          |
       | GET  | /openapi.json | post            | /v2/models/{model_name}/versions/{model_version}/infer |

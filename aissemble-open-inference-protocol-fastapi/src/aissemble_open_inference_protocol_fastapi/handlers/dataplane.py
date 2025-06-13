@@ -15,6 +15,9 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     InferenceResponse,
     ModelMetadataResponse,
     ModelReadyResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    ServerMetadataResponse,
 )
 
 
@@ -42,4 +45,16 @@ class DataplaneHandler(ABC):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
+        pass
+
+    @abstractmethod
+    def server_ready(self) -> ServerReadyResponse:
+        pass
+
+    @abstractmethod
+    def server_live(self) -> ServerLiveResponse:
+        pass
+
+    @abstractmethod
+    def server_metadata(self) -> ServerMetadataResponse:
         pass

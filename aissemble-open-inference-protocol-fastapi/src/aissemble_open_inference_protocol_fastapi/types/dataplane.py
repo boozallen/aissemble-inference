@@ -105,3 +105,21 @@ class ModelMetadataErrorResponse(BaseModel):
 class ModelReadyResponse(BaseModel):
     name: str
     ready: bool
+
+
+class ServerReadyResponse(BaseModel):
+    live: bool
+
+
+class ServerLiveResponse(BaseModel):
+    live: bool
+
+
+class ServerMetadataResponse(BaseModel):
+    name: str
+    version: str
+    extensions: List[str]
+
+
+class ServerMetadataErrorResponse(BaseModel):
+    error: str
