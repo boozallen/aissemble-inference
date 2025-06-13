@@ -9,7 +9,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "grpcio (>=1.73.0,<2.0.0)",
-    "krausening (>=20,<21)"
+    "krausening (>=20,<21)",
+    "grpcio-tools (>=1.73.0,<2.0.0)"
 ]
 dynamic = ["version", "dependencies"]
 
@@ -17,7 +18,6 @@ dynamic = ["version", "dependencies"]
 packages = [{include = "aissemble_open_inference_protocol_grpc", from = "src"}]
 
 [tool.poetry.group.dev.dependencies]
-grpcio-tools = "^1.73.0"
 ruff = "^0.11.13"
 
 [build-system]
