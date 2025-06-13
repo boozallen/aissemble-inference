@@ -18,6 +18,10 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     ModelMetadataResponse,
     ModelMetadataErrorResponse,
     ModelReadyResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    ServerMetadataResponse,
+    ServerMetadataErrorResponse,
 )
 
 router = APIRouter(
@@ -153,3 +157,57 @@ def model_version_ready(
     Check if the specified model version is ready to serve requests.
     """
     return handler.model_ready(model_name=model_name, model_version=model_version)
+
+
+@router.get(
+    "/health/ready",
+    summary="Check if server is ready",
+    response_description="Return HTTP Status Code 200 (OK)",
+    status_code=status.HTTP_200_OK,
+    response_model=ServerReadyResponse,
+)
+def server_ready(
+    handler: DefaultHandler = Depends(DefaultHandler),
+) -> ServerReadyResponse:
+    """
+    Check if the server returns the readiness probe.
+    """
+    return handler.server_ready()
+
+
+@router.get(
+    "/health/live",
+    summary="Check if server is live",
+    response_description="Return HTTP Status Code 200 (OK)",
+    status_code=status.HTTP_200_OK,
+    response_model=ServerLiveResponse,
+)
+def server_live(
+    handler: DefaultHandler = Depends(DefaultHandler),
+) -> ServerLiveResponse:
+    """
+    Check if the server returns the liveness probe.
+    """
+    return handler.server_live()
+
+
+@router.get(
+    "",
+    summary="Get server metadata",
+    response_description="Return HTTP Status Code 200 (OK)",
+    status_code=status.HTTP_200_OK,
+    response_model=ServerMetadataResponse,
+    responses={
+        400: {
+            "model": ServerMetadataErrorResponse,
+            "description": "Returned if the server metadata request is invalid or fails.",
+        },
+    },
+)
+def server_metadata(
+    handler: DefaultHandler = Depends(DefaultHandler),
+) -> ServerMetadataResponse:
+    """
+    Retrieve metadata for the server
+    """
+    return handler.server_metadata()

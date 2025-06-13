@@ -18,6 +18,9 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     InferenceResponse,
     ModelMetadataResponse,
     ModelReadyResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    ServerMetadataResponse,
 )
 
 
@@ -46,6 +49,27 @@ class DefaultHandler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
+
+    def server_ready(
+        self,
+    ) -> ServerReadyResponse:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
+
+    def server_live(
+        self,
+    ) -> ServerLiveResponse:
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
+
+    def server_metadata(
+        self,
+    ) -> ServerMetadataResponse:
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
         )

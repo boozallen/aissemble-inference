@@ -40,6 +40,9 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     ModelMetadataResponse,
     MetadataTensor,
     ModelReadyResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    ServerMetadataResponse,
 )
 
 
@@ -80,6 +83,28 @@ class MyHandler(DataplaneHandler):
     ) -> ModelReadyResponse:
         # Testing: always ready
         return ModelReadyResponse(name=model_name, ready=True)
+    
+    def server_ready(
+            self,
+    ) -> ServerReadyResponse:
+        # Testing: always ready
+        return ServerReadyResponse(live=True)
+
+    def server_live(
+            self,
+    ) -> ServerLiveResponse:
+        # Testing: always live
+        return ServerLiveResponse(live=True)
+
+    def server_metadata(
+            self,
+    ) -> ServerMetadataResponse:
+        # Return a stub ServerMetadataResponse
+        return ServerMetadataResponse(
+            name="Server",
+            version="v2",
+            extensions=["extension"],
+        )
 ```
 
 Use aissemble-open-inference-protocol-fastapi to create a FastAPI app and pass it `MyHandler`
