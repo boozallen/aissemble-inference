@@ -18,6 +18,13 @@
     <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>
     <packaging>pom</packaging>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ghcr.io</id>
+            <url>https://maven.pkg.github.com/boozallen/aissemble-open-inference-protocol</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <modules>
         <module>aissemble-open-inference-protocol-fastapi</module>
         <module>aissemble-open-inference-protocol-grpc</module>
@@ -67,6 +74,7 @@
                             <artifactId>habushu-maven-plugin</artifactId>
                             <version>${version.habushu.plugin}</version>
                             <configuration>
+                                <usePyenv>false</usePyenv>
                                 <deleteVirtualEnv>true</deleteVirtualEnv>
                                 <forceSync>true</forceSync>
                                 <decryptPassword>false</decryptPassword>

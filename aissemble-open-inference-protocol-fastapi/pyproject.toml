@@ -1,13 +1,26 @@
 [project]
 name = "aissemble-open-inference-protocol-fastapi"
 version = "1.0.0.dev"
-description = ""
+description = "A FastAPI implementation of the Open Inference Protocol"
 authors = [
-    {name = "Clay Woods",email = "Woods_Clay@ne.bah.com"}
+    {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11.4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers"
+]
+license = { text = "Booz Allen Public License v1.0" }
+license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/boozallen/aissemble-open-inference-protocol"
 
 [tool.poetry]
 packages = [{include = "aissemble_open_inference_protocol_fastapi", from = "src"}]
