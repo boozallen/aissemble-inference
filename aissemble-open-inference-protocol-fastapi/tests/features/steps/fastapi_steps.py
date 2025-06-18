@@ -13,11 +13,25 @@ def given_i_have_fastapi_app(context):
 
 @when('I send a "{method}" request to "{path}"')
 def when_i_send_a_method_request(context, method, path):
+    context.header = None  # Anonymous
+    send_method_request(context, method, path)
+
+
+@when('I send a "{method}" request to "{path}" with an authorization header')
+def send_method_request_with_header(context, method, path):
+    context.header = {"Authorization": f"Bearer {context.jwt}"}
+    send_method_request(context, method, path)
+
+
+def send_method_request(context, method, path):
     payload = None
+    headers = context.header
     if method.upper() == "POST" and "infer" in path:
         # Create a payload for POST /infer requests; FastAPI returns 422 Unprocessable Entity if no JSON body is sent
         payload = {"inputs": []}
-    context.response = context.client.request(method, path, json=payload)
+    context.response = context.client.request(
+        method, path, json=payload, headers=headers
+    )
     if "json" in context.response.headers.get("content-type", ""):
         context.schema = context.response.json()
 

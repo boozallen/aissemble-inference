@@ -8,9 +8,12 @@
 # #L%
 ###
 from fastapi import APIRouter, status, Depends
-
+from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
     DefaultHandler,
+)
+from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
+    DefaultAdapter,
 )
 from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     InferenceRequest,
@@ -23,6 +26,13 @@ from aissemble_open_inference_protocol_fastapi.types.dataplane import (
     ServerMetadataResponse,
     ServerMetadataErrorResponse,
 )
+from aissemble_open_inference_protocol_fastapi.auth.jwt_auth import (
+    authenticate_and_authorize,
+)
+
+security = HTTPBearer(auto_error=False)
+AUTH_ACTION_READ = "read"
+AUTH_RESOURCE_DATA = "data"
 
 router = APIRouter(
     prefix="/v2",
@@ -41,10 +51,16 @@ def infer_model(
     model_name,
     payload: InferenceRequest,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> InferenceResponse:
     """
     Perform inference using the specified model and return the prediction results.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.infer(model_name=model_name, payload=payload)
 
 
@@ -60,10 +76,16 @@ async def infer_model_version(
     model_version,
     payload: InferenceRequest,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> InferenceResponse:
     """
     Perform inference using the specified model version and return the prediction results.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.infer(
         model_name=model_name, model_version=model_version, payload=payload
     )
@@ -89,10 +111,16 @@ async def infer_model_version(
 def model_metadata(
     model_name: str,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ModelMetadataResponse:
     """
     Retrieve metadata for the specified model.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.model_metadata(model_name=model_name)
 
 
@@ -117,10 +145,16 @@ def model_version_metadata(
     model_name: str,
     model_version: str,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ModelMetadataResponse:
     """
     Retrieve metadata for the specified model version.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.model_metadata(model_name=model_name, model_version=model_version)
 
 
@@ -134,10 +168,16 @@ def model_version_metadata(
 def model_ready(
     model_name: str,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ModelReadyResponse:
     """
     Check if the specified model is ready to serve requests.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.model_ready(model_name=model_name)
 
 
@@ -152,10 +192,16 @@ def model_version_ready(
     model_name: str,
     model_version: str,
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ModelReadyResponse:
     """
     Check if the specified model version is ready to serve requests.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.model_ready(model_name=model_name, model_version=model_version)
 
 
@@ -168,10 +214,16 @@ def model_version_ready(
 )
 def server_ready(
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ServerReadyResponse:
     """
     Check if the server returns the readiness probe.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.server_ready()
 
 
@@ -184,10 +236,16 @@ def server_ready(
 )
 def server_live(
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ServerLiveResponse:
     """
     Check if the server returns the liveness probe.
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.server_live()
 
 
@@ -206,8 +264,14 @@ def server_live(
 )
 def server_metadata(
     handler: DefaultHandler = Depends(DefaultHandler),
+    authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
+    authorization: str = Depends(security),
 ) -> ServerMetadataResponse:
     """
     Retrieve metadata for the server
     """
+    authenticate_and_authorize(
+        authz_adapter, authorization, AUTH_ACTION_READ, AUTH_RESOURCE_DATA
+    )
+
     return handler.server_metadata()
