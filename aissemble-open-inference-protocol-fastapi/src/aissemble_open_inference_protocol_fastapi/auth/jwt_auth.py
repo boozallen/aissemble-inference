@@ -50,6 +50,8 @@ def authenticate_and_authorize(authz_adapter, authorization, action, resource):
     user can perform the requested action on the resource.
     :param authz_adapter: The adapter that communicates with the Authz backend
     :param authorization: The HTTPAuthorizationCredentials object extracted from the Authorization Header
+    :param action: The requested action
+    :param resource: The requested resource to perform the action on
     :return: if the user/subject is not-authorized then a 403 error is raised.
     """
     token_data = verify_jwt_token(authorization)
