@@ -28,6 +28,7 @@
     <modules>
         <module>aissemble-open-inference-protocol-fastapi</module>
         <module>aissemble-open-inference-protocol-grpc</module>
+        <module>examples</module>
     </modules>
 
     <properties>

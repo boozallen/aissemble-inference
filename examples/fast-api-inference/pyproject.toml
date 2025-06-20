@@ -1,0 +1,38 @@
+[tool.poetry]
+packages = [{include = "fast-api-inference", from = "src"}]
+
+[project]
+name = "fast-api-inference"
+version = "1.0.0.dev"
+description = "A FastAPI Example of the Open Inference Protocol"
+authors = [
+    {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11.4"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers"
+]
+license = { text = "Booz Allen Public License v1.0" }
+license-files = ["LICENSE*"]
+dynamic = ["version", "dependencies"]
+
+[tool.poetry.dependencies]
+fastapi = {extras = ["standard"], version = "^0.115.12"}
+tensorflow = ">=2.16.0,<2.17.0"
+krausening = "^21"
+aissemble-open-inference-protocol-fastapi = {path = "../../aissemble-open-inference-protocol-fastapi", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.12"
+behave = "^1.2.6"
+kappa-maki = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
