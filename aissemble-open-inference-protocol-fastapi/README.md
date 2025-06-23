@@ -124,3 +124,6 @@ The `content_type` feature lets you declare, at either request time or in model 
 **Declaring Content Types:**
 - **Input Level**: Include a `content_type` field under each `inputs[].parameters` in the request JSON. This will apply the content type to the particular input only.
 - **Model Metadata Level**: This will apply the content type to the entire set of inputs.
+
+## Example Usage with Actual ML Model ##
+Please see the [example](../examples/fast-api-inference/README.md) folder dedicated for detailed information on how to integrate models with Fast API OIP.
