@@ -10,7 +10,7 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from aissemble_open_inference_protocol_fastapi.types.dataplane import (
+from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,

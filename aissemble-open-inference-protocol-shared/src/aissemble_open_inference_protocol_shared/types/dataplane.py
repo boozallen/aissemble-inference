@@ -1,6 +1,6 @@
 ###
 # #%L
-# aiSSEMBLE::Open Inference Protocol::FastAPI
+# aiSSEMBLE::Open Inference Protocol::Shared
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
@@ -8,15 +8,18 @@
 # #L%
 ###
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional, Union
 
 from pydantic import BaseModel
-from pydantic import Field, RootModel
+from pydantic import Field, RootModel, ConfigDict
 
 
 class Parameters(BaseModel):
     content_type: Optional[str] = None
-    headers: Optional[Dict[str, Any]] = None
+    model_config = ConfigDict(
+        extra="allow",
+        json_schema_extra={"additionalProperties": False},
+    )
 
 
 class TensorData(RootModel[Union[List, Any]]):
@@ -72,7 +75,7 @@ class ResponseOutput(BaseModel):
 class InferenceResponse(BaseModel):
     model_name: str
     model_version: Optional[str] = None
-    id: str
+    id: Optional[str] = None
     parameters: Optional[Parameters] = None
     outputs: List[ResponseOutput]
 
