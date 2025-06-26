@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  authzforce-pdp:
+    image: eclipse-temurin:17-jdk
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./server:/app
+    working_dir: /app
+    command: ["java", "-jar", "app.jar"]

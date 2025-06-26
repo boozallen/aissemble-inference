@@ -15,33 +15,23 @@
 
     <modules>
         <module>aissemble-oip-fastapi-inference</module>
+        <module>aissemble-oip-fastapi-auth</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol Examples</name>
 
     <build>
         <directory>dist</directory>
-        <plugins>
-            <plugin>
-                <groupId>org.technologybrewery.habushu</groupId>
-                <artifactId>habushu-maven-plugin</artifactId>
-                <configuration>
-                    <skipDeploy>true</skipDeploy>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.technologybrewery.habushu</groupId>
+                    <artifactId>habushu-maven-plugin</artifactId>
+                    <configuration>
+                        <skipDeploy>true</skipDeploy>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
-
-    <profiles>
-        <profile>
-            <id>default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <modules>
-                <module>aissemble-oip-fastapi-inference</module>
-            </modules>
-        </profile>
-    </profiles>
-
 </project>

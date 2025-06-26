@@ -13,10 +13,11 @@ from krausening.properties import PropertyManager
 
 class OIPConfig:
     """
-    Configurations for embedding, read from the embeddings properties file.
+    Configurations for OIP
     """
 
     DEFAULT_ALGORITHM = "HS256"
+    DEFAULT_PDP_URL = "http://localhost:8080/pdp"
 
     def __init__(self):
         self.properties = PropertyManager.get_instance().get_properties(
@@ -37,4 +38,12 @@ class OIPConfig:
         """
         value = self.properties.getProperty("auth_algorithm", self.DEFAULT_ALGORITHM)
         environ_override = os.getenv("AUTH_ALGORITHM")
+        return environ_override if environ_override else value
+
+    def pdp_url(self):
+        """
+        Returns the PDP url
+        """
+        value = self.properties.getProperty("pdp_url", self.DEFAULT_PDP_URL)
+        environ_override = os.getenv("OIP_PDP_URL")
         return environ_override if environ_override else value

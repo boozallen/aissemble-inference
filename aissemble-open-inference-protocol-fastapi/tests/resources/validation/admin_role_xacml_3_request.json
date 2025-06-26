@@ -1,0 +1,47 @@
+{
+  "Request": {
+    "ReturnPolicyIdList": false,
+    "CombinedDecision": false,
+    "Category": [
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        "Attribute": [
+          {
+            "AttributeId": "urn:oasis:names:tc:xacml:1.0:subject:subject-id",
+            "IncludeInResult": false,
+            "DataType": "http://www.w3.org/2001/XMLSchema#string",
+            "Value": "tom"
+          },
+          {
+            "AttributeId": "urn:oasis:names:tc:xacml:2.0:subject:role",
+            "IncludeInResult": false,
+            "DataType": "http://www.w3.org/2001/XMLSchema#string",
+            "Value": "admin"
+          }
+        ]
+      },
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "Attribute": [
+          {
+            "AttributeId": "urn:oasis:names:tc:xacml:1.0:resource:resource-id",
+            "IncludeInResult": false,
+            "DataType": "http://www.w3.org/2001/XMLSchema#string",
+            "Value": "resource1"
+          }
+        ]
+      },
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:action",
+        "Attribute": [
+          {
+            "AttributeId": "urn:oasis:names:tc:xacml:1.0:action:action-id",
+            "IncludeInResult": false,
+            "DataType": "http://www.w3.org/2001/XMLSchema#string",
+            "Value": "action1"
+          }
+        ]
+      }
+    ]
+  }
+}
