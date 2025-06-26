@@ -10,11 +10,11 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>examples</artifactId>
+    <artifactId>aissemble-open-inference-protocol-examples</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>fast-api-inference</module>
+        <module>aissemble-oip-fastapi-inference</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol Examples</name>
@@ -39,7 +39,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <modules>
-                <module>fast-api-inference</module>
+                <module>aissemble-oip-fastapi-inference</module>
             </modules>
         </profile>
     </profiles>

@@ -7,8 +7,8 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from abc import ABC, abstractmethod
 from typing import Optional
+from fastapi import status, HTTPException
 
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
@@ -21,40 +21,46 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 )
 
 
-class DataplaneHandler(ABC):
-    @abstractmethod
+class DataplaneHandler:
+    @classmethod
     def infer(
-        self,
+        cls,
         payload: InferenceRequest,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
-    @abstractmethod
+    @classmethod
     def model_metadata(
-        self,
+        cls,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
-    @abstractmethod
+    @classmethod
     def model_ready(
-        self,
+        cls,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
-    @abstractmethod
-    def server_ready(self) -> ServerReadyResponse:
-        pass
+    @classmethod
+    def server_ready(cls) -> ServerReadyResponse:
+        return ServerReadyResponse(live=True)
 
-    @abstractmethod
-    def server_live(self) -> ServerLiveResponse:
-        pass
+    @classmethod
+    def server_live(cls) -> ServerLiveResponse:
+        return ServerLiveResponse(live=True)
 
-    @abstractmethod
-    def server_metadata(self) -> ServerMetadataResponse:
-        pass
+    @classmethod
+    def server_metadata(cls) -> ServerMetadataResponse:
+        return ServerMetadataResponse(name="FastAPI", version="1.0", extensions=[])

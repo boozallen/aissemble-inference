@@ -1,8 +1,8 @@
 [tool.poetry]
-packages = [{include = "fast-api-inference", from = "src"}]
+packages = [{include = "aissemble-oip-fastapi-inference", from = "src"}]
 
 [project]
-name = "fast-api-inference"
+name = "aissemble-oip-fastapi-inference"
 version = "1.0.0.dev"
 description = "A FastAPI Example of the Open Inference Protocol"
 authors = [

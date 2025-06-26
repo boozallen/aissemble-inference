@@ -17,7 +17,7 @@ NOTE: poetry run command will use its .venv created from poetry when starting fa
 poetry run fastapi dev ./src/fast-api-inference/main.py
 ```
 
-### Run Inference Endpoint
+### Run Inference Endpoints
 Run following Curl Command to send inference request.
 
 ```sh
@@ -31,6 +31,49 @@ curl -H 'Content-Type: application/json' \
   }]}' \
       -X POST \
       http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/infer
-
 ```
+
+Run following Curl Command to send Model Metadata request.
+
+```sh
+curl -H 'Content-Type: application/json' \
+      -X GET \
+      http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit
+```
+
+Run following Curl Command to send Model Ready request.
+
+```sh
+curl -H 'Content-Type: application/json' \
+      -X GET \
+      http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/ready
+```
+
+Run following Curl Command to send Server Ready request.
+
+```sh
+curl -H 'Content-Type: application/json' \
+      -X GET \
+      http://127.0.0.1:8000/v2/health/ready
+```
+
+
+Run following Curl Command to send Server Live request.
+
+```sh
+curl -H 'Content-Type: application/json' \
+      -X GET \
+      http://127.0.0.1:8000/v2/health/live
+```
+
+
+Run following Curl Command to send Model Metadata request.
+
+```sh
+curl -H 'Content-Type: application/json' \
+      -X GET \
+      http://127.0.0.1:8000/v2
+```
+
+
 

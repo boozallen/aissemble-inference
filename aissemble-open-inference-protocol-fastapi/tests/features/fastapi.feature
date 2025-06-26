@@ -3,20 +3,20 @@ Feature: Test FastAPI OIP Implementation
   Scenario Outline: The default handler exposes OIP endpoints and the default authz adapter permits anonymous calls
     Given I have an OIP FastAPI app with the default handler
     When I send a "<method>" request to "<path>"
-    Then the response status code should be 501
-    And the response should contain "Not Implemented"
+    Then the response status code should be <response_code>
+    And the response should contain "<response>"
 
     Examples:
-      |method | path                                 |
-      | GET   | /v2/models/my_model                  |
-      | GET   | /v2/models/my_model/versions/1       |
-      | GET   | /v2/models/my_model/ready            |
-      | GET   | /v2/models/my_model/versions/1/ready |
-      | GET   | /v2/health/ready                     |
-      | GET   | /v2/health/live                      |
-      | GET   | /v2                                  |
-      | POST  | /v2/models/my_model/infer            |
-      | POST  | /v2/models/my_model/versions/1/infer |
+      |method | path                                 | response_code | response        |
+      | GET   | /v2/models/my_model                  | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/versions/1       | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/ready            | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/versions/1/ready | 501           | Not Implemented |
+      | GET   | /v2/health/ready                     | 200           | "live":true     |
+      | GET   | /v2/health/live                      | 200           | "live":true     |
+      | GET   | /v2                                  | 200           | "name":"FastAPI"|
+      | POST  | /v2/models/my_model/infer            | 501           | Not Implemented |
+      | POST  | /v2/models/my_model/versions/1/infer | 501           | Not Implemented |
 
 
   Scenario Outline: The OpenAPI schema exposes OIP endpoints
@@ -41,17 +41,17 @@ Feature: Test FastAPI OIP Implementation
   Scenario Outline: The default handler exposes OIP endpoints and the default authz adapter permits authenticated calls
     Given I have an OIP FastAPI app with the default handler
     When I send a "<method>" request to "<path>" with an authorization header
-    Then the response status code should be 501
-    And the response should contain "Not Implemented"
+    Then the response status code should be <response_code>
+    And the response should contain "<response>"
 
     Examples:
-      |method | path                                 |
-      | GET   | /v2/models/my_model                  |
-      | GET   | /v2/models/my_model/versions/1       |
-      | GET   | /v2/models/my_model/ready            |
-      | GET   | /v2/models/my_model/versions/1/ready |
-      | GET   | /v2/health/ready                     |
-      | GET   | /v2/health/live                      |
-      | GET   | /v2                                  |
-      | POST  | /v2/models/my_model/infer            |
-      | POST  | /v2/models/my_model/versions/1/infer |
+      |method | path                                 | response_code | response        |
+      | GET   | /v2/models/my_model                  | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/versions/1       | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/ready            | 501           | Not Implemented |
+      | GET   | /v2/models/my_model/versions/1/ready | 501           | Not Implemented |
+      | GET   | /v2/health/ready                     | 200           | "live":true     |
+      | GET   | /v2/health/live                      | 200           | "live":true     |
+      | GET   | /v2                                  | 200           | "name":"FastAPI"|
+      | POST  | /v2/models/my_model/infer            | 501           | Not Implemented |
+      | POST  | /v2/models/my_model/versions/1/infer | 501           | Not Implemented |

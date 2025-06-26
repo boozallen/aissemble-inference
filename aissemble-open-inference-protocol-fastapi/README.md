@@ -24,7 +24,7 @@ fastapi dev main.py
 View the routes by going to http://127.0.0.1:8000/docs.
 
 ## Implementing a Handler
-The endpoints will call a [default handler](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/default_handler.py) that will return 501 not implemented. To make a handler, create your class and extend the abstract base class [dataplane.py](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py). Then pass your class into the AissembleOIPFastAPI constructor.
+The endpoints will call a [dataplane](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py) that will return 501 not implemented. To make a handler, create your class and extend the class method [dataplane.py](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py). Then pass your class into the AissembleOIPFastAPI constructor.
 
 ### Example of Usage with A Handler
 Create your custom handler class with:

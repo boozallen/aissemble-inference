@@ -23,9 +23,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ModelMetadataResponse,
     ModelReadyResponse,
     MetadataTensor,
-    ServerLiveResponse,
-    ServerMetadataResponse,
-    ServerReadyResponse,
     ResponseOutput,
     Datatype,
 )
@@ -35,7 +32,7 @@ class Handler(DataplaneHandler):
     """
     Implements Open Inferencing Protocol of FastAPI for requesting model.
     This example will load model called convert celsius to fahrenheit and kick off inferencing endpoint defined below.
-    If this handlers doesn't implement one of Open Inferencing Protocol endpoints it would default to DefaultHandler
+    If this handlers doesn't implement one of Open Inferencing Protocol endpoints it would default to DataplaneHandler
     """
 
     def __init__(self):
@@ -72,13 +69,34 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        # Return a stub ModelMetadataResponse
+        model = load_model("model/" + model_name + ".keras")
+
+        input_tensors = []
+        for input in model.inputs:
+            datatype = None
+            if input.dtype == "float32":
+                datatype = "FP32"
+            inputmtensor = MetadataTensor(
+                name="input", datatype=datatype, shape=[input.shape[1]]
+            )
+            input_tensors.append(inputmtensor)
+
+        output_tensors = []
+        for output in model.outputs:
+            datatype = None
+            if output.dtype == "float32":
+                datatype = "FP32"
+            outputmtensor = MetadataTensor(
+                name="output", datatype=datatype, shape=[output.shape[1]]
+            )
+            output_tensors.append(outputmtensor)
+
         return ModelMetadataResponse(
             name=model_name,
             versions=[model_version] if model_version else None,
             platform="python",
-            inputs=[MetadataTensor(name="input", datatype="FP32", shape=[1])],
-            outputs=[MetadataTensor(name="output", datatype="FP32", shape=[1])],
+            inputs=input_tensors,
+            outputs=output_tensors,
         )
 
     def model_ready(
@@ -86,30 +104,11 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        # Testing: always ready
-        return ModelReadyResponse(name=model_name, ready=True)
-
-    def server_ready(
-        self,
-    ) -> ServerReadyResponse:
-        # Testing: always ready
-        return ServerReadyResponse(live=True)
-
-    def server_live(
-        self,
-    ) -> ServerLiveResponse:
-        # Testing: always live
-        return ServerLiveResponse(live=True)
-
-    def server_metadata(
-        self,
-    ) -> ServerMetadataResponse:
-        # Return a stub ServerMetadataResponse
-        return ServerMetadataResponse(
-            name="Server",
-            version="v2",
-            extensions=["extension"],
-        )
+        try:
+            load_model("model/" + model_name + ".keras")
+            return ModelReadyResponse(name=model_name, ready=True)
+        except ValueError:
+            return ModelReadyResponse(name=model_name, ready=False)
 
 
 app = AissembleOIPFastAPI(Handler).app
