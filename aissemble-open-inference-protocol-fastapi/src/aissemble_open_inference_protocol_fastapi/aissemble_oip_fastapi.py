@@ -10,8 +10,8 @@
 
 from fastapi import FastAPI
 
-from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
-    DefaultHandler,
+from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+    DataplaneHandler,
 )
 from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
     DefaultAdapter,
@@ -24,6 +24,6 @@ class AissembleOIPFastAPI:
         self.app = FastAPI()
         self.app.include_router(endpoints.router)
         if handler is not None:
-            self.app.dependency_overrides[DefaultHandler] = handler
+            self.app.dependency_overrides[DataplaneHandler] = handler
         if adapter is not None:
             self.app.dependency_overrides[DefaultAdapter] = adapter

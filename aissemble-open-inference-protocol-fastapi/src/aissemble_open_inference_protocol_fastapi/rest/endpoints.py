@@ -10,8 +10,8 @@
 from fastapi import APIRouter, status, Depends
 from typing import Optional, List, Any
 from fastapi.security import HTTPBearer
-from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
-    DefaultHandler,
+from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+    DataplaneHandler,
 )
 from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
     DefaultAdapter,
@@ -59,7 +59,7 @@ router = APIRouter(
 def infer_model(
     model_name,
     payload: InferenceRequest,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> InferenceResponse:
@@ -90,7 +90,7 @@ async def infer_model_version(
     model_name,
     model_version,
     payload: InferenceRequest,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> InferenceResponse:
@@ -132,7 +132,7 @@ async def infer_model_version(
 )
 def model_metadata(
     model_name: str,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ModelMetadataResponse:
@@ -166,7 +166,7 @@ def model_metadata(
 def model_version_metadata(
     model_name: str,
     model_version: str,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ModelMetadataResponse:
@@ -189,7 +189,7 @@ def model_version_metadata(
 )
 def model_ready(
     model_name: str,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ModelReadyResponse:
@@ -213,7 +213,7 @@ def model_ready(
 def model_version_ready(
     model_name: str,
     model_version: str,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ModelReadyResponse:
@@ -235,7 +235,7 @@ def model_version_ready(
     response_model=ServerReadyResponse,
 )
 def server_ready(
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ServerReadyResponse:
@@ -257,7 +257,7 @@ def server_ready(
     response_model=ServerLiveResponse,
 )
 def server_live(
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ServerLiveResponse:
@@ -285,7 +285,7 @@ def server_live(
     },
 )
 def server_metadata(
-    handler: DefaultHandler = Depends(DefaultHandler),
+    handler: DataplaneHandler = Depends(DataplaneHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     authorization: str = Depends(security),
 ) -> ServerMetadataResponse:
