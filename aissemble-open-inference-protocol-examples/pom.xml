@@ -14,14 +14,12 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>aissemble-oip-fastapi-inference</module>
-        <module>aissemble-oip-fastapi-auth</module>
+        <module>aissemble-oip-fastapi</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol Examples</name>
 
     <build>
-        <directory>dist</directory>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -34,4 +32,5 @@
             </plugins>
         </pluginManagement>
     </build>
+
 </project>

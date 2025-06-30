@@ -10,7 +10,7 @@
 from fastapi import APIRouter, status, Depends, Request
 from typing import Optional, List, Any
 from fastapi.security import HTTPBearer
-from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
+from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
 )
 from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (

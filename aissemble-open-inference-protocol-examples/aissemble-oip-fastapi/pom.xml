@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.boozallen.aissemble</groupId>
+        <artifactId>aissemble-open-inference-protocol-examples</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>aissemble-oip-fastapi</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>aissemble-oip-fastapi-inference</module>
+        <module>aissemble-oip-fastapi-auth</module>
+    </modules>
+
+    <name>aiSSEMBLE::Open Inference Protocol Examples FastAPI</name>
+
+</project>

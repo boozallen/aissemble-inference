@@ -8,16 +8,58 @@
 # #L%
 ###
 import grpc
+from krausening.logging import LogManager
 
+from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2 import (
+    ModelInferResponse,
+)
 from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2_grpc import (
     GRPCInferenceServiceServicer,
 )
+from aissemble_open_inference_protocol_grpc.mappers.model_inference_request_mapper import (
+    ModelInferenceRequestMapper,
+)
 
 
-# TODO One big question here is do we want to use the same handler across our solutions? It makes implementation easy
-#  and easy to migration or add solutions. We could store the handler in an aissemble-oip-shared module so they arent
-#  reliant on each other. A counterpoint is a project only implementing grpc looking at the oip docs would find it odd
-#  that their handler is taking in different formatted data
 class InferenceServicer(GRPCInferenceServiceServicer):
+    logger = LogManager.get_instance().get_logger("InferenceServicer")
+
     def __init__(self, handler):
         self.handler = handler
+
+    def ModelInfer(self, request, context) -> ModelInferResponse:
+        """The ModelInfer API performs inference using the specified model. Errors are
+        indicated by the google.rpc.Status returned for the request. The OK code
+        indicates success and other codes indicate failure.
+        """
+        self.logger.info("Received Model Inference request")
+        try:
+            model_inference_request_mapper = ModelInferenceRequestMapper()
+            inference_request = model_inference_request_mapper.to_inference_request(
+                request
+            )
+        except Exception:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal Server Error!")
+            raise ModelInferenceRequestMapper.MappingException("Internal Server Error!")
+
+        try:
+            self.logger.info("Sending model inference request to the handler")
+            # Send request to handler
+            handler_response = self.handler.infer(
+                payload=inference_request,
+                model_name=request.model_name,
+                model_version=request.model_version,
+            )
+
+            # TODO convert InferenceResponse to ModelInferResponse
+            return ModelInferResponse(
+                model_name=request.model_name,
+                model_version=handler_response.model_version,
+                id=request.id,
+                outputs=[],
+            )
+        except Exception:
+            context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+            context.set_details("Method not implemented!")
+            raise NotImplementedError("Method not implemented!")

@@ -9,6 +9,7 @@
 ###
 from dataclasses import dataclass
 
+
 @dataclass
 class AuthContext:
     authz_adapter: object
