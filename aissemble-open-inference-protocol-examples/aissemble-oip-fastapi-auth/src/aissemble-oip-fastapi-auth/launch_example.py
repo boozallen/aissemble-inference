@@ -8,13 +8,25 @@
 # #L%
 ###
 import subprocess
-import os
+import sys
 import shutil
+
 
 def start_authzforce_docker_container():
     try:
         print("Starting Authzforce container...")
-        subprocess.run(["curl", "-z", "server/app.jar", "-L", "-o", "server/app.jar", "https://repo1.maven.org/maven2/org/ow2/authzforce/authzforce-ce-restful-pdp-cxf-spring-boot-server/7.1.0/authzforce-ce-restful-pdp-cxf-spring-boot-server-7.1.0.jar"], check=True)
+        subprocess.run(
+            [
+                "curl",
+                "-z",
+                "server/app.jar",
+                "-L",
+                "-o",
+                "server/app.jar",
+                "https://repo1.maven.org/maven2/org/ow2/authzforce/authzforce-ce-restful-pdp-cxf-spring-boot-server/7.1.0/authzforce-ce-restful-pdp-cxf-spring-boot-server-7.1.0.jar",
+            ],
+            check=True,
+        )
         subprocess.run(["docker", "compose", "up", "-d"], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Error starting Docker container: {e}")
@@ -40,7 +52,9 @@ def start_fastapi_with_poetry():
 
 def run_poetry_build():
     try:
-        result = subprocess.run(["poetry", "build"], check=True, capture_output=True, text=True)
+        result = subprocess.run(
+            ["poetry", "build"], check=True, capture_output=True, text=True
+        )
         print("Build succeeded!")
         print(result.stdout)
     except subprocess.CalledProcessError as e:
