@@ -57,17 +57,11 @@ def get_content_type(
     """
     Read the `content_type` tag from a ParameterizedObject or its metadata.
     """
-    params = getattr(obj, PARAMETERS, None)
-    if params is not None:
-        content_type = getattr(params, CONTENT_TYPE, None)
-        if content_type:
-            return content_type
-    if metadata is not None:
-        metadata_params = getattr(metadata, PARAMETERS, None)
-        if metadata_params is not None:
-            metadata_content_type = getattr(metadata_params, CONTENT_TYPE, None)
-            if metadata_content_type:
-                return metadata_content_type
+    content_type = getattr(getattr(obj, PARAMETERS, None), CONTENT_TYPE, None)
+    if content_type:
+        return content_type
+    if metadata:
+        return getattr(getattr(metadata, PARAMETERS, None), CONTENT_TYPE, None)
     return None
 
 

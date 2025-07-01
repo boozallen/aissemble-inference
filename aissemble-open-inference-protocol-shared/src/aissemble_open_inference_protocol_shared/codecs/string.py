@@ -8,6 +8,13 @@
 # #L%
 ###
 
+###
+# Acknowledgment:
+# This implementation is inspired by the MLServer project.
+# It follows similar design principles to integrate with the aissemble-open-inference-protocol.
+# See MLServer’s license for details: Apache License, Version 2.0 (https://github.com/SeldonIO/MLServer/blob/master/LICENSE)
+###
+
 from typing import List, Any, Union
 from aissemble_open_inference_protocol_shared.codecs.codec import InputCodec
 from aissemble_open_inference_protocol_shared.codecs.registry import (
@@ -36,7 +43,9 @@ def encode_str(s: str) -> bytes:
     try:
         return s.encode(DEFAULT_STR_CODEC)
     except UnicodeEncodeError as e:
-        raise ValueError(f"String could not be encoded using '{DEFAULT_STR_CODEC}': {e}") from e
+        raise ValueError(
+            f"String could not be encoded using '{DEFAULT_STR_CODEC}': {e}"
+        ) from e
 
 
 def decode_str(b: Any) -> str:

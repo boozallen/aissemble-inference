@@ -8,6 +8,13 @@
 # #L%
 ###
 
+###
+# Acknowledgment:
+# This implementation is inspired by the MLServer project.
+# It follows similar design principles to integrate with the aissemble-open-inference-protocol.
+# See MLServer’s license for details: Apache License, Version 2.0 (https://github.com/SeldonIO/MLServer/blob/master/LICENSE)
+###
+
 from typing import Dict, Any, Optional, Iterable, Union
 from aissemble_open_inference_protocol_shared.codecs.codec import (
     InputCodec,
