@@ -8,50 +8,44 @@
 # #L%
 ###
 from typing import Optional
-from abc import ABC, abstractmethod
+from fastapi import status, HTTPException
 
+from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+    DataplaneHandler,
+)
 from aissemble_open_inference_protocol_shared.types.dataplane import (
+    ModelMetadataResponse,
     InferenceRequest,
     InferenceResponse,
-    ModelMetadataResponse,
     ModelReadyResponse,
-    ServerReadyResponse,
-    ServerLiveResponse,
-    ServerMetadataResponse,
 )
 
 
-class DataplaneHandler(ABC):
-    @abstractmethod
+class HandlerNoOptionalImpl(DataplaneHandler):
     def infer(
         self,
         payload: InferenceRequest,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
-    @abstractmethod
     def model_metadata(
         self,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        pass
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
 
-    @abstractmethod
     def model_ready(
         self,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        pass
-
-    def server_ready(self) -> ServerReadyResponse:
-        return ServerReadyResponse(live=True)
-
-    def server_live(self) -> ServerLiveResponse:
-        return ServerLiveResponse(live=True)
-
-    def server_metadata(self) -> ServerMetadataResponse:
-        return ServerMetadataResponse(name="FastAPI", version="1.0", extensions=[])
+        raise HTTPException(
+            status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        )
