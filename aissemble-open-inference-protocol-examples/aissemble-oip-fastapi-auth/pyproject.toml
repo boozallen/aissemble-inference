@@ -1,7 +1,10 @@
+[tool.poetry]
+packages = [{include = "aissemble-oip-fastapi-auth", from = "src"}]
+
 [project]
-name = "aissemble-open-inference-protocol-fastapi"
+name = "aissemble-oip-fastapi-auth"
 version = "1.0.0.dev"
-description = "A FastAPI implementation of the Open Inference Protocol"
+description = "A FastAPI Example of the Open Inference Protocol with authorization/authentication"
 authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
 ]
@@ -19,19 +22,9 @@ license = { text = "Booz Allen Public License v1.0" }
 license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
 
-[project.urls]
-Homepage = "https://github.com/boozallen/aissemble-open-inference-protocol"
-
-[tool.poetry]
-packages = [{include = "aissemble_open_inference_protocol_fastapi", from = "src"}]
-
 [tool.poetry.dependencies]
-aissemble-open-inference-protocol-shared = {path = "../aissemble-open-inference-protocol-shared", develop = true}
-fastapi = {extras = ["standard"], version = "^0.115.12"}
-pydantic = "^2.11.4"
-PyJWT="^2.10.1"
 krausening = ">=20"
-requests = ">=2.32.4"
+aissemble-open-inference-protocol-fastapi = {path = "../../aissemble-open-inference-protocol-fastapi", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.12"

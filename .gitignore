@@ -10,7 +10,7 @@
 *.tar.gz
 *.tgz
 *.rar
-
+*.jar
 # Package lock json
 package-lock.json
 

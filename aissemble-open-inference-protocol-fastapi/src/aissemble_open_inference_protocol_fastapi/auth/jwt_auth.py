@@ -35,10 +35,18 @@ def verify_jwt_token(authorization):
             payload = jwt.decode(
                 authorization.credentials, secret_key, algorithms=[algorithm]
             )
+        except jwt.ExpiredSignatureError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Token expired"
+            )
+        except jwt.InvalidTokenError:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
+            )
         except jwt.PyJWTError:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid token",
+                detail="Unexpected error parsing token",
             )
 
     return payload
@@ -56,7 +64,10 @@ def authenticate_and_authorize(authz_adapter, authorization, action, resource):
     """
     token_data = verify_jwt_token(authorization)
     if not authz_adapter.authorize(
-        user=token_data.get("sub"), action=action, resource=resource
+        user=token_data.get("sub"),
+        resource=resource,
+        action=action,
+        role=token_data.get("roles", None),
     ):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"

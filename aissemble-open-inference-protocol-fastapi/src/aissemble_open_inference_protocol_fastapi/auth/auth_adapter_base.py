@@ -10,9 +10,10 @@
 from abc import ABC, abstractmethod
 from krausening.logging import LogManager
 import json
+from typing import Optional
 
 
-class AuthzAdapterBase(ABC):
+class AuthAdapterBase(ABC):
     """
     Check if the user is allowed to perform the action on the resource
     """
@@ -20,13 +21,28 @@ class AuthzAdapterBase(ABC):
     logger = LogManager.get_instance().get_logger("AuthzAdapterBase")
 
     @abstractmethod
-    def authorize(self, user: dict, action: str, resource: str) -> bool:
+    def _authorize_impl(
+        self, user: dict, resource: str, action: str, role: Optional[str] = None
+    ) -> bool:
         pass
 
-    def log_authorize(self, user: dict, action: str, resource: str):
+    def authorize(
+        self, user: dict, resource: str, action: str, role: Optional[str] = None
+    ) -> bool:
+        self.log_authorize(user=user, resource=resource, action=action, role=role)
+
+        return self._authorize_impl(
+            user=user, resource=resource, action=action, role=role
+        )
+
+    def log_authorize(
+        self, user: dict, resource: str, action: str, role: Optional[str] = None
+    ):
         user_for_logging = json.dumps(user, indent=2)
 
         self.logger.info("Authorization start")
         self.logger.info(f"User:\n{user_for_logging}")
         self.logger.info(f"action: {action}")
         self.logger.info(f"resource: {resource}")
+        if role:
+            self.logger.info(f"role: {role}")
