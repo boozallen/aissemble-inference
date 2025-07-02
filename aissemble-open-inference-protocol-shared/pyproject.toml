@@ -17,9 +17,6 @@ classifiers = [
 license = { text = "Booz Allen Public License v1.0" }
 license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
-dependencies = [
-    "krausening (>=20,<21)",
-]
 
 [project.urls]
 Homepage = "https://github.com/boozallen/aissemble-open-inference-protocol"
@@ -33,6 +30,7 @@ packages = [
 [tool.poetry.dependencies]
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 pydantic = "^2.11.4"
+krausening = ">=20"
 
 
 [tool.poetry.group.dev.dependencies]
