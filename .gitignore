@@ -22,6 +22,6 @@ dist/
 target/
 .idea/
 *.iml
-venv/
+.venv/
 __pycache__/
 .python-version

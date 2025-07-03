@@ -10,7 +10,6 @@ can follow [this guide](https://docs.docker.com/compose/install/) to install it.
 also need Poetry, so ensure you have it installed by following [this poetry install guide](https://python-poetry.org/docs/#installation)
 2. Start the Authzforce server and the FastAPI server by running the following:
 ```sh
-# Run the Authzforce server and the OIP REST server
 python ./src/aissemble-oip-fastapi-auth/launch_example.py
 ```
 3. Create the **authorized** jwt token (saved as an environment variable) by running the following in a terminal
