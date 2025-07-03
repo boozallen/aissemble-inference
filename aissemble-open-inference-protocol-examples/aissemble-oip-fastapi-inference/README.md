@@ -3,77 +3,25 @@ This example demonstrates how to hook model into Open Interface Protocol and use
 The example model is trained model that converts Celsius into Fahrenheit. 
 The input will read as Celsius and output print as Fahrenheit value.
 
-## Setting up the Project
-We need to build and install dependencies before we can stand up fastAPI server.
-Following command shall build and install dependencies.
+## Running the example
+
+1. Build and install dependencies to prepare the fastAPI server by running the following Poetry command.
 ```sh
-mvnd clean install
+poetry install
 ```
-
-## Running Example FastAPI
-Start the FastAPI server using following command.
-NOTE: poetry run command will use its .venv created from poetry when starting fastapi server. 
+2. Start the FastAPI server using the following command.
 ```sh
-poetry run fastapi dev ./src/fast-api-inference/main.py
+# NOTE: This poetry run command will start the FastAPI server using the local .venv.
+poetry run fastapi dev ./src/aissemble-oip-fastapi-inference/main.py
 ```
+3. Run the following curl commands to send the corresponding request.
 
-### Run Inference Endpoints
-Run following Curl Command to send inference request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -d '{"id" : "2214",
-  "inputs" : [{
-      "name" : "sample",
-      "shape" : [1],
-      "datatype"  : "FP32",
-      "data" : [ [ 25], [ 12 ] ]
-  }]}' \
-      -X POST \
-      http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/infer
-```
-
-Run following Curl Command to send Model Metadata request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -X GET \
-      http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit
-```
-
-Run following Curl Command to send Model Ready request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -X GET \
-      http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/ready
-```
-
-Run following Curl Command to send Server Ready request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -X GET \
-      http://127.0.0.1:8000/v2/health/ready
-```
-
-
-Run following Curl Command to send Server Live request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -X GET \
-      http://127.0.0.1:8000/v2/health/live
-```
-
-
-Run following Curl Command to send Model Metadata request.
-
-```sh
-curl -H 'Content-Type: application/json' \
-      -X GET \
-      http://127.0.0.1:8000/v2
-```
-
-
+| API              | Command                                                                                                                                                                                                                                                                                                                                             |
+|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Inference        | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-d '{"id" : "2214",<br/>"inputs" : [{<br/>"name" : "sample",<br/>"shape" : [1],<br/>"datatype"  : "FP32",<br/>"data" : [ [ 25], [ 12 ] ]<br/>}]}' \\<br/>-X POST \\<br/>http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/infer </pre> |
+| Model Metadata   | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-X GET \\<br/>http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit</pre>|
+| Server Ready     | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-X GET \\<br/>http://127.0.0.1:8000/v2/health/ready</pre>|
+| Server Live     | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-X GET \\<br/>http://127.0.0.1:8000/v2/health/live</pre>|
+| Server Metadata     | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-X GET \\<br/>http://127.0.0.1:8000/v2</pre>|
+| Model Ready     | <pre>curl -w "\nHTTP Code: %{http_code}\n" \\<br/>-H 'Content-Type: application/json' \\<br/>-X GET \\<br/>http://127.0.0.1:8000/v2/models/convert_celsius_to_fahrenheit/ready</pre>|
 
