@@ -121,5 +121,5 @@ class XacmlRequestBuilder:
         request_dict = {"Request": request.to_dict()}
 
         json_string_request = json.dumps(request_dict, indent=2)
-        print(json_string_request)
+
         return json_string_request
