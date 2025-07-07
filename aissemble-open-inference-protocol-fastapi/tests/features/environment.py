@@ -9,7 +9,7 @@
 
 import jwt
 from datetime import datetime, timedelta
-from aissemble_open_inference_protocol_fastapi.config.oip_config import OIPConfig
+from aissemble_open_inference_protocol_shared.config.oip_config import OIPConfig
 import os
 
 os.environ["KRAUSENING_BASE"] = "tests/resources/krausening/base"

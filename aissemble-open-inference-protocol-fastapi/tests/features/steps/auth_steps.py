@@ -1,5 +1,5 @@
 from behave import given, then, when
-from aissemble_open_inference_protocol_fastapi.auth.xacml3_builder import (
+from aissemble_open_inference_protocol_shared.auth.xacml3_builder import (
     XacmlRequestBuilder,
 )
 import json

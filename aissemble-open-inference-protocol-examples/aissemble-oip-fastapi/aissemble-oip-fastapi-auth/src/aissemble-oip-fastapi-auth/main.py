@@ -19,7 +19,7 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 )
 
 # To enable authorization in your own project you should import AuthzforceAdapter
-from aissemble_open_inference_protocol_fastapi.auth.authzforce_adapter import (
+from aissemble_open_inference_protocol_shared.auth.authzforce_adapter import (
     AuthzforceAdapter,
 )
 from .generate_simple_jwt import (
