@@ -24,7 +24,7 @@ dynamic = ["version", "dependencies"]
 
 [tool.poetry.dependencies]
 krausening = ">=20"
-aissemble-open-inference-protocol-fastapi = {path = "../../aissemble-open-inference-protocol-fastapi", develop = true}
+aissemble-open-inference-protocol-fastapi = {path = "../../../aissemble-open-inference-protocol-fastapi", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.12"

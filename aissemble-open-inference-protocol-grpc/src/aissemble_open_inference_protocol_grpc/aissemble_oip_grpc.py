@@ -8,6 +8,7 @@
 # #L%
 ###
 import asyncio
+import inspect
 import signal
 from concurrent.futures import ThreadPoolExecutor
 
@@ -19,14 +20,17 @@ from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2_grpc import
 )
 from aissemble_open_inference_protocol_grpc.grpc_config import GrpcConfig
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
-
-HANDLED_SIGNALS = [signal.SIGINT, signal.SIGTERM, signal.SIGQUIT]
+from aissemble_open_inference_protocol_shared.handlers.default_handler import (
+    DefaultHandler,
+)
 
 
 class AissembleOIPgRPC:
     logger = LogManager.get_instance().get_logger("AissembleOIPgRPC")
 
-    def __init__(self, handler=None, gprc_properties: str = None):
+    def __init__(self, handler=DefaultHandler, gprc_properties: str = None):
+        if inspect.isclass(handler):
+            handler = handler()
         self.handler = handler
         self.grpc_config = GrpcConfig(gprc_properties)
 
@@ -60,7 +64,7 @@ class AissembleOIPgRPC:
         self.logger.info("Adding terminate signal handlers")
         loop = asyncio.get_running_loop()
 
-        for sig in HANDLED_SIGNALS:
+        for sig in signal.SIGINT, signal.SIGTERM, signal.SIGQUIT:
             loop.add_signal_handler(sig, lambda s=sig: asyncio.create_task(self.stop()))
 
     async def stop(self):

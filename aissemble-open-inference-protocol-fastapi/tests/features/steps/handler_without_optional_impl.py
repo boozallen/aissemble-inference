@@ -10,7 +10,7 @@
 from typing import Optional
 from fastapi import status, HTTPException
 
-from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (

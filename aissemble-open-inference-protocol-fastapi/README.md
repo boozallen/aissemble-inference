@@ -31,7 +31,7 @@ Create your custom handler class with:
 ```python
 from typing import Optional
 
-from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (
@@ -40,9 +40,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ModelMetadataResponse,
     MetadataTensor,
     ModelReadyResponse,
-    ServerReadyResponse,
-    ServerLiveResponse,
-    ServerMetadataResponse,
 )
 
 
@@ -83,28 +80,6 @@ class MyHandler(DataplaneHandler):
     ) -> ModelReadyResponse:
         # Testing: always ready
         return ModelReadyResponse(name=model_name, ready=True)
-    
-    def server_ready(
-            self,
-    ) -> ServerReadyResponse:
-        # Testing: always ready
-        return ServerReadyResponse(live=True)
-
-    def server_live(
-            self,
-    ) -> ServerLiveResponse:
-        # Testing: always live
-        return ServerLiveResponse(live=True)
-
-    def server_metadata(
-            self,
-    ) -> ServerMetadataResponse:
-        # Return a stub ServerMetadataResponse
-        return ServerMetadataResponse(
-            name="Server",
-            version="v2",
-            extensions=["extension"],
-        )
 ```
 
 Use aissemble-open-inference-protocol-fastapi to create a FastAPI app and pass it `MyHandler`
@@ -123,4 +98,4 @@ For more information on how to implement content type decoding/encoding, referen
 
 
 ## Example Usage with Actual ML Model ##
-Please see the [example](../examples/fast-api-inference/README.md) folder dedicated for detailed information on how to integrate models with Fast API OIP.
+Please see the [aissemble-oip-fastapi](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/aissemble-oip-fastapi) folder dedicated for detailed information on how to integrate models with Fast API OIP.

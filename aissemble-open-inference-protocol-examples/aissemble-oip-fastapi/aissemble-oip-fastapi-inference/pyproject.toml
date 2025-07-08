@@ -26,7 +26,7 @@ dynamic = ["version", "dependencies"]
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 tensorflow = ">=2.16.0,<2.17.0"
 krausening = ">=20"
-aissemble-open-inference-protocol-fastapi = {path = "../../aissemble-open-inference-protocol-fastapi", develop = true}
+aissemble-open-inference-protocol-fastapi = {path = "../../../aissemble-open-inference-protocol-fastapi", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.12"

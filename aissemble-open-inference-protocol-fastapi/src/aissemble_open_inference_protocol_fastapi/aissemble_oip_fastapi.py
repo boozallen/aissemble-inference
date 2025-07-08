@@ -10,7 +10,7 @@
 
 from fastapi import FastAPI
 
-from aissemble_open_inference_protocol_fastapi.handlers.default_handler import (
+from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
 )
 
