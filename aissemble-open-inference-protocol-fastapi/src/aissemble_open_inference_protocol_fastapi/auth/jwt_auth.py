@@ -10,6 +10,9 @@
 from fastapi import HTTPException, status
 from ..config.oip_config import OIPConfig
 import jwt
+from aissemble_open_inference_protocol_fastapi.auth.auth_context import (
+    AuthContext,
+)
 
 config = OIPConfig()
 
@@ -52,21 +55,21 @@ def verify_jwt_token(authorization):
     return payload
 
 
-def authenticate_and_authorize(authz_adapter, authorization, action, resource):
+def authenticate_and_authorize(auth_context: AuthContext):
     """
     This method verifies the jwt is valid and then calls the authz adapter to see if the
     user can perform the requested action on the resource.
-    :param authz_adapter: The adapter that communicates with the Authz backend
-    :param authorization: The HTTPAuthorizationCredentials object extracted from the Authorization Header
-    :param action: The requested action
-    :param resource: The requested resource to perform the action on
+    :param auth_context: Contains the context, including token (HTTPAuthorizationCredentials),
+    resource, action, user ip, request url
     :return: if the user/subject is not-authorized then a 403 error is raised.
     """
-    token_data = verify_jwt_token(authorization)
-    if not authz_adapter.authorize(
+    token_data = verify_jwt_token(auth_context.bearer_token)
+    if not auth_context.authz_adapter.authorize(
         user=token_data.get("sub"),
-        resource=resource,
-        action=action,
+        resource=auth_context.auth_resource,
+        action=auth_context.auth_action,
+        user_ip=auth_context.user_ip,
+        request_url=auth_context.request_url,
         role=token_data.get("roles", None),
     ):
         raise HTTPException(
