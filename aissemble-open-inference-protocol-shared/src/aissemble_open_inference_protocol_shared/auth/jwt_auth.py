@@ -10,7 +10,7 @@
 from fastapi import HTTPException, status
 from ..config.oip_config import OIPConfig
 import jwt
-from aissemble_open_inference_protocol_fastapi.auth.auth_context import (
+from aissemble_open_inference_protocol_shared.auth.auth_context import (
     AuthContext,
 )
 

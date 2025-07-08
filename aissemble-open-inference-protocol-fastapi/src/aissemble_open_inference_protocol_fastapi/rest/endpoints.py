@@ -32,7 +32,7 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 from aissemble_open_inference_protocol_shared.auth.jwt_auth import (
     authenticate_and_authorize,
 )
-from aissemble_open_inference_protocol_fastapi.auth.auth_context import (
+from aissemble_open_inference_protocol_shared.auth.auth_context import (
     AuthContext,
 )
 from aissemble_open_inference_protocol_shared.codecs.utils import (
