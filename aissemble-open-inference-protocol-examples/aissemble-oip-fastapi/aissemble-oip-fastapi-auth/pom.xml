@@ -6,7 +6,7 @@
 
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
-        <artifactId>aissemble-open-inference-protocol-examples</artifactId>
+        <artifactId>aissemble-oip-fastapi</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
