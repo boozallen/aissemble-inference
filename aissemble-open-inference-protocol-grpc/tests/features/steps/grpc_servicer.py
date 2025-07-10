@@ -1,16 +1,25 @@
 import nose.tools as nt
-from behave import *
+from behave import given, when, then
 from steps.handlers.test_dataplane_handler import (
     TestDataplaneHandler,
 )
 
-from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2 import (
+from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2 import (
     ModelInferRequest,
     InferTensorContents,
     InferParameter,
+    ModelInferResponse,
 )
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
 from aissemble_open_inference_protocol_shared.codecs.string import StringCodec
+from aissemble_open_inference_protocol_shared.types.dataplane import (
+    InferenceResponse,
+    ResponseOutput,
+    TensorData,
+)
+from aissemble_open_inference_protocol_grpc.mappers.model_inference_response_mapper import (
+    ModelInferenceResponseMapper,
+)
 
 use_step_matcher("re")
 
@@ -107,10 +116,65 @@ def the_handler_receives_the_request_with_the_expected_data(context):
         "ID did not map correctly to inference request",
     )
     _assert_parameters(
-        expected_infer_request.parameters, actual_infer_request.parameters[0]
+        expected_infer_request.parameters, actual_infer_request.parameters
     )
     _assert_inputs(expected_infer_request.inputs[0], actual_infer_request.inputs[0])
-    _assert_outputs(expected_infer_request.outputs[0], actual_infer_request.outputs[0])
+    _assert_infer_request_outputs(
+        expected_infer_request.outputs[0], actual_infer_request.outputs[0]
+    )
+
+
+@given("the handler has model inferencing results")
+def the_handler_has_model_inferencing_results(context):
+    context.inference_response = InferenceResponse(
+        model_name="test_model",
+        model_version="123",
+        id="test-id",
+        outputs=[
+            ResponseOutput(
+                name="output-0",
+                shape=[1, 3],
+                datatype="INT64",
+                data=TensorData(root=[1, 2, 3]),
+                parameters={"content_type": "str"},
+            )
+        ],
+    )
+
+
+@when("an infer response is sent to the handler")
+def an_infer_response_is_sent_to_the_handler(context):
+    inference_response_mapper = ModelInferenceResponseMapper()
+    context.mapped_response = inference_response_mapper.to_model_inference_response(
+        context.inference_response
+    )
+
+
+@then("the servicer's response corresponds to the handler's results")
+def the_servicers_response_corresponds_to_the_handlers_results(context):
+    actual_response = context.mapped_response
+    expected_response = context.inference_response
+
+    nt.eq_(
+        actual_response.model_name,
+        expected_response.model_name,
+        "Model name did not match",
+    )
+    nt.eq_(
+        actual_response.model_version,
+        expected_response.model_version,
+        "Model version did not match",
+    )
+    nt.eq_(actual_response.id, expected_response.id, "Request ID did not match")
+    nt.eq_(
+        len(actual_response.outputs),
+        len(expected_response.outputs),
+        "Number of outputs did not match",
+    )
+
+    _assert_infer_response_outputs(
+        expected_response.outputs[0], actual_response.outputs[0]
+    )
 
 
 # TODO why are the params mapped to model_extra
@@ -133,7 +197,7 @@ def _assert_inputs(expected_infer_input, actual_infer_input):
     )
     nt.eq_(
         expected_infer_input.datatype,
-        actual_infer_input.datatype,
+        actual_infer_input.datatype.value,
         "Input datatype did not map correctly to inference request",
     )
     nt.eq_(
@@ -141,18 +205,19 @@ def _assert_inputs(expected_infer_input, actual_infer_input):
         actual_infer_input.shape,
         "Input shape did not map correctly to inference request",
     )
-    _assert_parameters(
-        expected_infer_input.parameters, actual_infer_input.parameters[0]
-    )
+    _assert_parameters(expected_infer_input.parameters, actual_infer_input.parameters)
+
     contents_descriptor, contents_value = expected_infer_input.contents.ListFields()[0]
     nt.eq_(
-        contents_value,
-        actual_infer_input.data.root[0],
+        list(contents_value),
+        actual_infer_input.data.root,
         "Input content did not map correctly to inference request",
     )
 
 
-def _assert_outputs(expected_infer_request_outputs, actual_infer_request_outputs):
+def _assert_infer_request_outputs(
+    expected_infer_request_outputs, actual_infer_request_outputs
+):
     nt.eq_(
         expected_infer_request_outputs.name,
         actual_infer_request_outputs.name,
@@ -160,5 +225,28 @@ def _assert_outputs(expected_infer_request_outputs, actual_infer_request_outputs
     )
     _assert_parameters(
         expected_infer_request_outputs.parameters,
-        actual_infer_request_outputs.parameters[0],
+        actual_infer_request_outputs.parameters,
     )
+
+
+def _assert_infer_response_outputs(
+    expected_infer_response_output, actual_infer_response_output
+):
+    nt.eq_(
+        actual_infer_response_output.name,
+        expected_infer_response_output.name,
+        "Output name did not match",
+    )
+
+    nt.eq_(
+        actual_infer_response_output.shape,
+        expected_infer_response_output.shape,
+        "Output shape did not match",
+    )
+
+    field_descriptor, actual_value = actual_infer_response_output.contents.ListFields()[
+        0
+    ]
+
+    expected_value = expected_infer_response_output.data.root
+    nt.eq_(list(actual_value), expected_value, "Output tensor contents did not match")

@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, Mock
 from types import SimpleNamespace
 from steps.handlers.test_dataplane_handler import TestDataplaneHandler
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
-from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2 import (
+from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2 import (
     ModelInferRequest,
     InferTensorContents,
 )

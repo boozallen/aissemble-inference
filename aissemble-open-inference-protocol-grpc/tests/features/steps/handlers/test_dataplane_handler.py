@@ -36,8 +36,9 @@ class TestDataplaneHandler(DataplaneHandler):
         self.inference_response = InferenceResponse(
             model_name=model_name,
             model_version=model_version,
-            id="id",
+            id=payload.id,
             outputs=[response_output],
+            parameters=payload.parameters,
         )
         return self.inference_response
 

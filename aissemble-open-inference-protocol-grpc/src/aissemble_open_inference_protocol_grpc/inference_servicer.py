@@ -10,24 +10,33 @@
 import grpc
 from krausening.logging import LogManager
 
-from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2 import (
+from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2 import (
+    ModelInferRequest,
     ModelInferResponse,
 )
-from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2_grpc import (
-    GRPCInferenceServiceServicer,
+from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2_grpc import (
+    GrpcInferenceServiceServicer,
 )
 from aissemble_open_inference_protocol_grpc.mappers.model_inference_request_mapper import (
     ModelInferenceRequestMapper,
 )
+from aissemble_open_inference_protocol_grpc.mappers.model_inference_response_mapper import (
+    ModelInferenceResponseMapper,
+)
+from aissemble_open_inference_protocol_grpc.mappers.utils import (
+    MappingException,
+)
 
 
-class InferenceServicer(GRPCInferenceServiceServicer):
+class InferenceServicer(GrpcInferenceServiceServicer):
     logger = LogManager.get_instance().get_logger("InferenceServicer")
 
     def __init__(self, handler):
         self.handler = handler
 
-    def ModelInfer(self, request, context) -> ModelInferResponse:
+    def ModelInfer(
+        self, request: ModelInferRequest, context: grpc.ServicerContext
+    ) -> ModelInferResponse:
         """The ModelInfer API performs inference using the specified model. Errors are
         indicated by the google.rpc.Status returned for the request. The OK code
         indicates success and other codes indicate failure.
@@ -41,7 +50,7 @@ class InferenceServicer(GRPCInferenceServiceServicer):
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Internal Server Error!")
-            raise ModelInferenceRequestMapper.MappingException("Internal Server Error!")
+            raise MappingException("Failed to serialize model inference request!")
 
         try:
             self.logger.info("Sending model inference request to the handler")
@@ -52,14 +61,12 @@ class InferenceServicer(GRPCInferenceServiceServicer):
                 model_version=request.model_version,
             )
 
-            # TODO convert InferenceResponse to ModelInferResponse
-            return ModelInferResponse(
-                model_name=request.model_name,
-                model_version=handler_response.model_version,
-                id=request.id,
-                outputs=[],
+            inference_response_mapper = ModelInferenceResponseMapper()
+            return inference_response_mapper.to_model_inference_response(
+                handler_response
             )
+
         except Exception:
-            context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-            context.set_details("Method not implemented!")
-            raise NotImplementedError("Method not implemented!")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Internal Server Error!")
+            raise MappingException("Failed to serialize inference response!")

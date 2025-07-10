@@ -3,7 +3,7 @@ syntax = "proto3";
 package inference;
 
 // Inference Server GRPC endpoints.
-service GRPCInferenceService
+service GrpcInferenceService
 {
   // The ServerLive API indicates if the inference server is able to receive
   // and respond to metadata and inference requests.

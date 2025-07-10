@@ -15,8 +15,8 @@ from concurrent.futures import ThreadPoolExecutor
 from grpc import aio
 from krausening.logging import LogManager
 
-from aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2_grpc import (
-    add_GRPCInferenceServiceServicer_to_server,
+from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2_grpc import (
+    add_GrpcInferenceServiceServicer_to_server,
 )
 from aissemble_open_inference_protocol_grpc.grpc_config import GrpcConfig
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
@@ -68,7 +68,7 @@ class AissembleOIPgRPC:
             ThreadPoolExecutor(max_workers=self.grpc_config.grpc_workers),
             interceptors=self._get_interceptors(),
         )
-        add_GRPCInferenceServiceServicer_to_server(
+        add_GrpcInferenceServiceServicer_to_server(
             self._inference_servicer, self._server
         )
         self._server.add_insecure_port(
