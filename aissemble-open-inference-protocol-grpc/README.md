@@ -35,5 +35,7 @@ There are several configurations available that affect the sever. These can be i
 | grpc_port          | 8080          | The port the grpc server will start on                                                                  |
 | grpc_workers       | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                          |
 | auth_enabled       | false         | Whether authentication is enabled for the gRPC server                                                   |
-| protected_endpoints| None          | Comma seperated list of endpoints which will require authentication (if auth_enabled is true)        |
+| protected_endpoints| None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true)           |
+
+> Note: If `auth_enabled = true` and no protected_endpoints are provided, all endpoints will be protected by default.
 
