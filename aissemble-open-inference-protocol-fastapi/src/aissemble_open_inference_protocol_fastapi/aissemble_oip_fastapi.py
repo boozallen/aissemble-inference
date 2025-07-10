@@ -14,7 +14,7 @@ from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
 )
 
-from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
+from aissemble_open_inference_protocol_shared.auth.default_adapter import (
     DefaultAdapter,
 )
 from aissemble_open_inference_protocol_fastapi.rest import endpoints

@@ -13,7 +13,7 @@ from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
 )
-from aissemble_open_inference_protocol_fastapi.auth.default_adapter import (
+from aissemble_open_inference_protocol_shared.auth.default_adapter import (
     DefaultAdapter,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (
@@ -29,10 +29,10 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ResponseOutput,
     Parameters,
 )
-from aissemble_open_inference_protocol_fastapi.auth.jwt_auth import (
+from aissemble_open_inference_protocol_shared.auth.jwt_auth import (
     authenticate_and_authorize,
 )
-from aissemble_open_inference_protocol_fastapi.auth.auth_context import (
+from aissemble_open_inference_protocol_shared.auth.auth_context import (
     AuthContext,
 )
 from aissemble_open_inference_protocol_shared.codecs.utils import (

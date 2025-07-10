@@ -29,9 +29,13 @@ By default, the gRPC endpoints will return a Method Not Implemented. TODO on how
 ## Configuration
 There are several configurations available that affect the sever. These can be implemented with the (TODO update with aissemble config library). You can also set them via environment variables.
 
-| Configuration name | default value | description                                                                    |
-|--------------------|---------------|--------------------------------------------------------------------------------|
-| grpc_host          | 0.0.0.0       | The host the grpc server will start on                                         |
-| grpc_port          | 8080          | The port the grpc server will start on                                         |
-| grpc_workers       | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers |
+| Configuration name | default value | description                                                                                             |
+|--------------------|---------------|---------------------------------------------------------------------------------------------------------|
+| grpc_host          | 0.0.0.0       | The host the grpc server will start on                                                                  |
+| grpc_port          | 8080          | The port the grpc server will start on                                                                  |
+| grpc_workers       | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                          |
+| auth_enabled       | false         | Whether authentication is enabled for the gRPC server                                                   |
+| protected_endpoints| None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true)           |
+
+> Note: If `auth_enabled = true` and no protected_endpoints are provided, all endpoints will be protected by default.
 

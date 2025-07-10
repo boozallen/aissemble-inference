@@ -1,6 +1,6 @@
 ###
 # #%L
-# aiSSEMBLE::Open Inference Protocol::FastAPI
+# aiSSEMBLE::Open Inference Protocol::Shared
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
@@ -9,10 +9,10 @@
 ###
 import requests
 from .auth_adapter_base import AuthAdapterBase
-from aissemble_open_inference_protocol_fastapi.auth.xacml3_builder import (
+from aissemble_open_inference_protocol_shared.auth.xacml3_builder import (
     XacmlRequestBuilder,
 )
-from aissemble_open_inference_protocol_fastapi.config.oip_config import OIPConfig
+from ..config.oip_config import OIPConfig
 
 from typing import Optional
 
