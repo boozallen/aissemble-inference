@@ -19,6 +19,25 @@ BEARER_PREFIX = "Bearer "
 
 
 class AuthInterceptor(ServerInterceptor):
+    """
+    This interceptor verifies a Bearer JWT, decodes it using the configured secret and algorithm,
+    then delegates to the provided auth_adapter to enforce resource-based access control.
+
+    Scenarios:
+    1. auth_enabled=True and the requested endpoint is in protected_endpoints:
+       - Run validation
+    2. auth_enabled=True and protected_endpoints is empty (None or empty set):
+       - Protect all endpoints; authorization is applied to every RPC.
+    3. auth_enabled=True and the requested endpoint is NOT in protected_endpoints:
+       - Short-circuit and allow the call without any authorization checks.
+    4. auth_enabled=False:
+       - AuthInterceptor is not added to the server; no authorization logic is executed.
+
+    Args:
+        auth_adapter: An adapter implementing .authorize(user, resource, action, user_ip, request_url, role).
+        protected_endpoints (set[str], optional): A set of RPC method paths to protect. If None or empty,
+            all endpoints are considered protected.
+    """
     def __init__(
         self,
         auth_adapter,
@@ -53,6 +72,10 @@ class AuthInterceptor(ServerInterceptor):
             return handler
 
         async def wrapped(request, context):
+            """
+            This wrapper is necessary because we need access to the context object at the point of request handling.
+            It allows us to extract metadata like the user IP and authorization token, and to call context.abort if any stage of authorization fails. 
+            """
             # Pull IP from context
             peer = context.peer()  # e.g. "ipv4:1.2.3.4:56789"
             _, addr = peer.split(":", 1)
