@@ -38,6 +38,7 @@ class AuthInterceptor(ServerInterceptor):
         protected_endpoints (set[str], optional): A set of RPC method paths to protect. If None or empty,
             all endpoints are considered protected.
     """
+
     def __init__(
         self,
         auth_adapter,
@@ -74,7 +75,7 @@ class AuthInterceptor(ServerInterceptor):
         async def wrapped(request, context):
             """
             This wrapper is necessary because we need access to the context object at the point of request handling.
-            It allows us to extract metadata like the user IP and authorization token, and to call context.abort if any stage of authorization fails. 
+            It allows us to extract metadata like the user IP and authorization token, and to call context.abort if any stage of authorization fails.
             """
             # Pull IP from context
             peer = context.peer()  # e.g. "ipv4:1.2.3.4:56789"

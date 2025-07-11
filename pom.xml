@@ -30,6 +30,7 @@
         <module>aissemble-open-inference-protocol-grpc</module>
         <module>aissemble-open-inference-protocol-shared</module>
         <module>aissemble-open-inference-protocol-examples</module>
+        <module>aissemble-open-inference-protocol-kserve</module>
     </modules>
 
     <properties>
