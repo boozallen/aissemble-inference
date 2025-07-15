@@ -13,9 +13,9 @@
 import grpc
 import warnings
 
-import aissemble_open_inference_protocol_grpc.grpcInferenceService_pb2 as grpcInferenceService__pb2
+import aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2 as grpc__inference__service__pb2
 
-GRPC_GENERATED_VERSION = "1.72.1"
+GRPC_GENERATED_VERSION = "1.73.0"
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -31,14 +31,14 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f"The grpc package installed is at version {GRPC_VERSION},"
-        + f" but the generated code in grpcInferenceService_pb2_grpc.py depends on"
+        + f" but the generated code in grpc_inference_service_pb2_grpc.py depends on"
         + f" grpcio>={GRPC_GENERATED_VERSION}."
         + f" Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}"
         + f" or downgrade your generated code using grpcio-tools<={GRPC_VERSION}."
     )
 
 
-class GRPCInferenceServiceStub(object):
+class GrpcInferenceServiceStub(object):
     """Inference Server GRPC endpoints."""
 
     def __init__(self, channel):
@@ -48,44 +48,44 @@ class GRPCInferenceServiceStub(object):
             channel: A grpc.Channel.
         """
         self.ServerLive = channel.unary_unary(
-            "/inference.GRPCInferenceService/ServerLive",
-            request_serializer=grpcInferenceService__pb2.ServerLiveRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ServerLiveResponse.FromString,
+            "/inference.GrpcInferenceService/ServerLive",
+            request_serializer=grpc__inference__service__pb2.ServerLiveRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ServerLiveResponse.FromString,
             _registered_method=True,
         )
         self.ServerReady = channel.unary_unary(
-            "/inference.GRPCInferenceService/ServerReady",
-            request_serializer=grpcInferenceService__pb2.ServerReadyRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ServerReadyResponse.FromString,
+            "/inference.GrpcInferenceService/ServerReady",
+            request_serializer=grpc__inference__service__pb2.ServerReadyRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ServerReadyResponse.FromString,
             _registered_method=True,
         )
         self.ModelReady = channel.unary_unary(
-            "/inference.GRPCInferenceService/ModelReady",
-            request_serializer=grpcInferenceService__pb2.ModelReadyRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ModelReadyResponse.FromString,
+            "/inference.GrpcInferenceService/ModelReady",
+            request_serializer=grpc__inference__service__pb2.ModelReadyRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ModelReadyResponse.FromString,
             _registered_method=True,
         )
         self.ServerMetadata = channel.unary_unary(
-            "/inference.GRPCInferenceService/ServerMetadata",
-            request_serializer=grpcInferenceService__pb2.ServerMetadataRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ServerMetadataResponse.FromString,
+            "/inference.GrpcInferenceService/ServerMetadata",
+            request_serializer=grpc__inference__service__pb2.ServerMetadataRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ServerMetadataResponse.FromString,
             _registered_method=True,
         )
         self.ModelMetadata = channel.unary_unary(
-            "/inference.GRPCInferenceService/ModelMetadata",
-            request_serializer=grpcInferenceService__pb2.ModelMetadataRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ModelMetadataResponse.FromString,
+            "/inference.GrpcInferenceService/ModelMetadata",
+            request_serializer=grpc__inference__service__pb2.ModelMetadataRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ModelMetadataResponse.FromString,
             _registered_method=True,
         )
         self.ModelInfer = channel.unary_unary(
-            "/inference.GRPCInferenceService/ModelInfer",
-            request_serializer=grpcInferenceService__pb2.ModelInferRequest.SerializeToString,
-            response_deserializer=grpcInferenceService__pb2.ModelInferResponse.FromString,
+            "/inference.GrpcInferenceService/ModelInfer",
+            request_serializer=grpc__inference__service__pb2.ModelInferRequest.SerializeToString,
+            response_deserializer=grpc__inference__service__pb2.ModelInferResponse.FromString,
             _registered_method=True,
         )
 
 
-class GRPCInferenceServiceServicer(object):
+class GrpcInferenceServiceServicer(object):
     """Inference Server GRPC endpoints."""
 
     def ServerLive(self, request, context):
@@ -136,50 +136,50 @@ class GRPCInferenceServiceServicer(object):
         raise NotImplementedError("Method not implemented!")
 
 
-def add_GRPCInferenceServiceServicer_to_server(servicer, server):
+def add_GrpcInferenceServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
         "ServerLive": grpc.unary_unary_rpc_method_handler(
             servicer.ServerLive,
-            request_deserializer=grpcInferenceService__pb2.ServerLiveRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ServerLiveResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ServerLiveRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ServerLiveResponse.SerializeToString,
         ),
         "ServerReady": grpc.unary_unary_rpc_method_handler(
             servicer.ServerReady,
-            request_deserializer=grpcInferenceService__pb2.ServerReadyRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ServerReadyResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ServerReadyRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ServerReadyResponse.SerializeToString,
         ),
         "ModelReady": grpc.unary_unary_rpc_method_handler(
             servicer.ModelReady,
-            request_deserializer=grpcInferenceService__pb2.ModelReadyRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ModelReadyResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ModelReadyRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ModelReadyResponse.SerializeToString,
         ),
         "ServerMetadata": grpc.unary_unary_rpc_method_handler(
             servicer.ServerMetadata,
-            request_deserializer=grpcInferenceService__pb2.ServerMetadataRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ServerMetadataResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ServerMetadataRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ServerMetadataResponse.SerializeToString,
         ),
         "ModelMetadata": grpc.unary_unary_rpc_method_handler(
             servicer.ModelMetadata,
-            request_deserializer=grpcInferenceService__pb2.ModelMetadataRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ModelMetadataResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ModelMetadataRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ModelMetadataResponse.SerializeToString,
         ),
         "ModelInfer": grpc.unary_unary_rpc_method_handler(
             servicer.ModelInfer,
-            request_deserializer=grpcInferenceService__pb2.ModelInferRequest.FromString,
-            response_serializer=grpcInferenceService__pb2.ModelInferResponse.SerializeToString,
+            request_deserializer=grpc__inference__service__pb2.ModelInferRequest.FromString,
+            response_serializer=grpc__inference__service__pb2.ModelInferResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        "inference.GRPCInferenceService", rpc_method_handlers
+        "inference.GrpcInferenceService", rpc_method_handlers
     )
     server.add_generic_rpc_handlers((generic_handler,))
     server.add_registered_method_handlers(
-        "inference.GRPCInferenceService", rpc_method_handlers
+        "inference.GrpcInferenceService", rpc_method_handlers
     )
 
 
 # This class is part of an EXPERIMENTAL API.
-class GRPCInferenceService(object):
+class GrpcInferenceService(object):
     """Inference Server GRPC endpoints."""
 
     @staticmethod
@@ -198,9 +198,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ServerLive",
-            grpcInferenceService__pb2.ServerLiveRequest.SerializeToString,
-            grpcInferenceService__pb2.ServerLiveResponse.FromString,
+            "/inference.GrpcInferenceService/ServerLive",
+            grpc__inference__service__pb2.ServerLiveRequest.SerializeToString,
+            grpc__inference__service__pb2.ServerLiveResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -228,9 +228,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ServerReady",
-            grpcInferenceService__pb2.ServerReadyRequest.SerializeToString,
-            grpcInferenceService__pb2.ServerReadyResponse.FromString,
+            "/inference.GrpcInferenceService/ServerReady",
+            grpc__inference__service__pb2.ServerReadyRequest.SerializeToString,
+            grpc__inference__service__pb2.ServerReadyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -258,9 +258,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ModelReady",
-            grpcInferenceService__pb2.ModelReadyRequest.SerializeToString,
-            grpcInferenceService__pb2.ModelReadyResponse.FromString,
+            "/inference.GrpcInferenceService/ModelReady",
+            grpc__inference__service__pb2.ModelReadyRequest.SerializeToString,
+            grpc__inference__service__pb2.ModelReadyResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -288,9 +288,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ServerMetadata",
-            grpcInferenceService__pb2.ServerMetadataRequest.SerializeToString,
-            grpcInferenceService__pb2.ServerMetadataResponse.FromString,
+            "/inference.GrpcInferenceService/ServerMetadata",
+            grpc__inference__service__pb2.ServerMetadataRequest.SerializeToString,
+            grpc__inference__service__pb2.ServerMetadataResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -318,9 +318,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ModelMetadata",
-            grpcInferenceService__pb2.ModelMetadataRequest.SerializeToString,
-            grpcInferenceService__pb2.ModelMetadataResponse.FromString,
+            "/inference.GrpcInferenceService/ModelMetadata",
+            grpc__inference__service__pb2.ModelMetadataRequest.SerializeToString,
+            grpc__inference__service__pb2.ModelMetadataResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -348,9 +348,9 @@ class GRPCInferenceService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            "/inference.GRPCInferenceService/ModelInfer",
-            grpcInferenceService__pb2.ModelInferRequest.SerializeToString,
-            grpcInferenceService__pb2.ModelInferResponse.FromString,
+            "/inference.GrpcInferenceService/ModelInfer",
+            grpc__inference__service__pb2.ModelInferRequest.SerializeToString,
+            grpc__inference__service__pb2.ModelInferResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -21,7 +21,7 @@ grpc = AissembleOIPgRPC()
 if __name__ == '__main__':
     asyncio.run(grpc.start())
 ```
-The gRPC server will come up after a few seconds and will be OIP compliant. The proto specifications can be found in the [grpcInferenceService.proto](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-grpc/proto/grpcInferenceService.proto) file. 
+The gRPC server will come up after a few seconds and will be OIP compliant. The proto specifications can be found in the [grpc_inference_service.proto](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-grpc/proto/grpc_inference_service.proto) file. 
 
 ### Implementing the Endpoints
 By default, the gRPC endpoints will return a Method Not Implemented. TODO on how users can implement their functions with the endpoints 
