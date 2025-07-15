@@ -23,19 +23,79 @@ if __name__ == '__main__':
 ```
 The gRPC server will come up after a few seconds and will be OIP compliant. The proto specifications can be found in the [grpc_inference_service.proto](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-grpc/proto/grpc_inference_service.proto) file. 
 
-### Implementing the Endpoints
-By default, the gRPC endpoints will return a Method Not Implemented. TODO on how users can implement their functions with the endpoints 
+### Implementing the Endpoints Handler
+By default, most of the gRPC endpoints will return a Method Not Implemented. You can implement these functions by creating a custom handler extending `DataplaneHandler`. Example:
+```python
+from typing import Optional
+
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
+from aissemble_open_inference_protocol_shared.types.dataplane import (
+    InferenceRequest,
+    InferenceResponse,
+    ModelMetadataResponse,
+    MetadataTensor,
+    ModelReadyResponse,
+)
+
+
+class MyHandler(DataplaneHandler):
+    def __init__(self):
+        super().__init__()
+
+    def infer(
+            self,
+            payload: InferenceRequest,
+            model_name: str,
+            model_version: Optional[str] = None,
+    ) -> InferenceResponse:
+        return InferenceResponse(
+            model_name=model_name, model_version=model_version, id="id", outputs=[]
+        )
+
+    def model_metadata(
+            self,
+            model_name: str,
+            model_version: Optional[str] = None,
+    ) -> ModelMetadataResponse:
+        # Return a stub ModelMetadataResponse
+        return ModelMetadataResponse(
+            name=model_name,
+            versions=[model_version] if model_version else None,
+            platform="python",
+            inputs=[MetadataTensor(name="input", datatype="FP32", shape=[1])],
+            outputs=[
+                MetadataTensor(name="output", datatype="FP32", shape=[1])
+            ],
+        )
+
+    def model_ready(
+            self,
+            model_name: str,
+            model_version: Optional[str] = None,
+    ) -> ModelReadyResponse:
+        # Testing: always ready
+        return ModelReadyResponse(name=model_name, ready=True)
+```
+Use aissemble-open-inference-protocol-grpc to create a gRPC server and pass it `MyHandler`
+```python
+from aissemble_open_inference_protocol_grpc.aissemble_oip_grpc import AissembleOIPgRPC
+
+grpc = AissembleOIPgRPC(MyHandler())
+```
+Now when starting the server, the inference requests will route to the handler.
 
 ## Configuration
-There are several configurations available that affect the sever. These can be implemented with the (TODO update with aissemble config library). You can also set them via environment variables.
+There are several configurations available that affect the server. These can be implemented via Krausening or environment variables.
 
-| Configuration name | default value | description                                                                                             |
-|--------------------|---------------|---------------------------------------------------------------------------------------------------------|
-| grpc_host          | 0.0.0.0       | The host the grpc server will start on                                                                  |
-| grpc_port          | 8080          | The port the grpc server will start on                                                                  |
-| grpc_workers       | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                          |
-| auth_enabled       | false         | Whether authentication is enabled for the gRPC server                                                   |
-| protected_endpoints| None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true)           |
+| Configuration name  | default value | description                                                                                   |
+|---------------------|---------------|-----------------------------------------------------------------------------------------------|
+| grpc_host           | 0.0.0.0       | The host the grpc server will start on                                                        |
+| grpc_port           | 8080          | The port the grpc server will start on                                                        |
+| grpc_workers        | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                |
+| auth_enabled        | false         | Whether authentication is enabled for the gRPC server                                         |
+| protected_endpoints | None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true) |
 
 > Note: If `auth_enabled = true` and no protected_endpoints are provided, all endpoints will be protected by default.
 
