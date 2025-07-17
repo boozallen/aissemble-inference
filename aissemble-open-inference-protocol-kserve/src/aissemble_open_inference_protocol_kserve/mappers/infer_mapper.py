@@ -26,18 +26,20 @@ class InferMapper:
         inference_input_list = []
         inference_output_list = []
         # TODO Parameters need fix.
-        for input in request.inputs:
-            req_input = RequestInput(
-                name=input.name,
-                shape=input.shape,
-                datatype=Datatype[input.datatype],
-                parameters=input.parameters,
-                data=TensorData(root=input.data),
-            )
-            inference_input_list.append(req_input)
-        for output in request.request_outputs:
-            req_output = RequestOutput(name=output.name, parameters=output.parameters)
-            inference_output_list.append(req_output)
+        if request.inputs is not None:
+            for input in request.inputs:
+                req_input = RequestInput(
+                    name=input.name,
+                    shape=input.shape,
+                    datatype=Datatype[input.datatype],
+                    parameters=input.parameters,
+                    data=TensorData(root=input.data),
+                )
+                inference_input_list.append(req_input)
+        if request.request_outputs is not None:
+            for output in request.request_outputs:
+                req_output = RequestOutput(name=output.name, parameters=output.parameters)
+                inference_output_list.append(req_output)
         return InferenceRequest(
             id=request.id,
             parameters=request.parameters,

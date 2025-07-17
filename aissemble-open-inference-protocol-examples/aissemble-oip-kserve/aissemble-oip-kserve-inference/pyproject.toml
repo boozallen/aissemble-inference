@@ -1,0 +1,39 @@
+[tool.poetry]
+packages = [{include = "aissemble-oip-kserve-inference", from = "src"}]
+
+[project]
+name = "aissemble-oip-kserve-inference"
+version = "1.0.0.dev"
+description = "A KServe Example of the Open Inference Protocol"
+authors = [
+    {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9,<3.13"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "License :: Other/Proprietary License",
+    "Operating System :: OS Independent",
+    "Framework :: FastAPI",
+    "Intended Audience :: Developers"
+]
+license = { text = "Booz Allen Public License v1.0" }
+license-files = ["LICENSE*"]
+dynamic = ["version", "dependencies"]
+
+[tool.poetry.dependencies]
+tensorflow = ">=2.16.0,<2.17.0"
+krausening = ">=20"
+kserve = "^0.15.2"
+aissemble-open-inference-protocol-kserve = {path = "../../../aissemble-open-inference-protocol-kserve", develop = true}
+aissemble-open-inference-protocol-shared = {path = "../../../aissemble-open-inference-protocol-shared", develop = true}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.11.12"
+behave = "^1.2.6"
+kappa-maki = "^1.0.2"
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
