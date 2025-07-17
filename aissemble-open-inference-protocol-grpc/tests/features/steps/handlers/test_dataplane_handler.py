@@ -7,6 +7,11 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ModelReadyResponse,
     ModelMetadataResponse,
     ResponseOutput,
+    MetadataTensor,
+    Datatype,
+    ServerMetadataResponse,
+    ServerLiveResponse,
+    ServerReadyResponse,
 )
 
 
@@ -16,6 +21,11 @@ class TestDataplaneHandler(DataplaneHandler):
         self.model_name = None
         self.request_payload = None
         self.inference_response = None
+        self.model_metadata_response = None
+        self.model_ready_response = None
+        self.server_ready_response = None
+        self.server_live_response = None
+        self.server_metadata_response = None
 
     def infer(
         self,
@@ -45,9 +55,41 @@ class TestDataplaneHandler(DataplaneHandler):
     def model_metadata(
         self, model_name: str, model_version: Optional[str] = None
     ) -> ModelMetadataResponse:
-        pass
+        self.model_name = model_name
+        self.model_version = model_version
+        model_input_tensor = [
+            MetadataTensor(name="input", datatype=Datatype.INT64, shape=[1, 1])
+        ]
+        model_output_tensor = [
+            MetadataTensor(name="output", datatype=Datatype.FP64, shape=[1, 1])
+        ]
+        self.model_metadata_response = ModelMetadataResponse(
+            name=model_name,
+            versions=["1.0", "2.0", "3.0"],
+            platform="GPU",
+            inputs=model_input_tensor,
+            outputs=model_output_tensor,
+        )
+        return self.model_metadata_response
 
     def model_ready(
         self, model_name: str, model_version: Optional[str] = None
     ) -> ModelReadyResponse:
-        pass
+        self.model_name = model_name
+        self.model_version = model_version
+        self.model_ready_response = ModelReadyResponse(name=model_name, ready=True)
+        return self.model_ready_response
+
+    def server_metadata(self) -> ServerMetadataResponse:
+        self.server_metadata_response = ServerMetadataResponse(
+            name="Model Server", version="1.0", extensions=["v2"]
+        )
+        return self.server_metadata_response
+
+    def server_ready(self) -> ServerReadyResponse:
+        self.server_ready_response = ServerReadyResponse(live=True)
+        return self.server_ready_response
+
+    def server_live(self) -> ServerLiveResponse:
+        self.server_live_response = ServerLiveResponse(live=True)
+        return self.server_live_response
