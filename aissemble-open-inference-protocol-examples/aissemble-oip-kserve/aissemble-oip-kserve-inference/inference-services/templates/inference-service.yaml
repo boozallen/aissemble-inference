@@ -1,0 +1,16 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: kserve-model
+spec:
+  predictor:
+    containers:
+      - name: "kserve-model"
+        image: kserve-model:0.1.1
+        imagePullPolicy: IfNotPresent
+        readinessProbe:
+          httpGet:
+            path: /v2/health/ready
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 60

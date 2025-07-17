@@ -1,0 +1,18 @@
+kserve:
+  kserve:
+    version: &defaultVersion v0.14.0
+    controller:
+      deploymentMode: "RawDeployment"
+      rbacProxyImage: gcr.io/kubebuilder/kube-rbac-proxy:v0.13.1
+      gateway:
+        domain: bah-example.us # This is a temp value and should be updated when we are ready to deploy
+        disableIstioVirtualHost: true
+        localGateway:
+          gateway: nginx/ingress-nginx-controller
+          gatewayService: ingress-nginx-controller.ingress-nginx.svc.cluster.local
+        ingressGateway:
+          gateway: nginx/ingress-ingress-gateway
+          gatewayService: ingress-nginx-controller.ingress-nginx.svc.cluster.local
+          className: nginx
+    modelmesh:
+      enabled: false

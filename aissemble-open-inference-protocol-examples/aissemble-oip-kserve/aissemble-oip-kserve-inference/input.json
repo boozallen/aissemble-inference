@@ -1,0 +1,15 @@
+{
+  "id" : "1",
+  "inputs" : [
+    {
+      "name" : "sample",
+      "shape" : [1],
+      "datatype"  : "FP32",
+      "parameters": {
+        "content_type": "str"
+      },
+      "data" : [ [ 0], [ 12 ] ]
+      
+  }
+  ]
+}

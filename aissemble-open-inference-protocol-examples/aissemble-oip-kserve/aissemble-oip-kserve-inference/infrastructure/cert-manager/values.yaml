@@ -1,0 +1,9 @@
+cert-manager:
+  namespace: cert-manager
+
+  global:
+    leaderElection:
+      namespace: "cert-manager"
+
+  crds:
+    enabled: true
