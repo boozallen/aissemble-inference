@@ -1,6 +1,6 @@
 ###
 # #%L
-# aissemble-open-inference-protocol-shared
+# aiSSEMBLE::Open Inference Protocol::Shared
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%

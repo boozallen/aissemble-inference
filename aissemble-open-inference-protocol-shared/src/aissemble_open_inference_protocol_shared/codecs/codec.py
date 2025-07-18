@@ -1,6 +1,6 @@
 ###
 # #%L
-# aissemble-open-inference-protocol-shared
+# aiSSEMBLE::Open Inference Protocol::Shared
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
@@ -12,7 +12,8 @@
 # Acknowledgment:
 # This implementation is inspired by the MLServer project.
 # It follows similar design principles to integrate with the aissemble-open-inference-protocol.
-# See MLServer’s license for details: Apache License, Version 2.0 (https://github.com/SeldonIO/MLServer/blob/master/LICENSE)
+# See MLServer’s license for details:
+# Apache License Version 2.0 (https://github.com/SeldonIO/MLServer/blob/master/LICENSE)
 ###
 
 from typing import Any, ClassVar, Type, Union, Optional

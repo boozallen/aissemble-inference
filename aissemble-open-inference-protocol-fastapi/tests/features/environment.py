@@ -1,12 +1,12 @@
+###
 # #%L
-# aiSSEMBLE::Extensions::Transform::Spark::Python
+# aiSSEMBLE::Open Inference Protocol::FastAPI
 # %%
-# Copyright (C) 2021 Booz Allen
+# Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-
 import jwt
 from datetime import datetime, timedelta
 from aissemble_open_inference_protocol_shared.config.oip_config import OIPConfig

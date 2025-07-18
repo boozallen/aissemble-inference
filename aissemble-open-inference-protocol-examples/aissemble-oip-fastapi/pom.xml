@@ -18,6 +18,6 @@
         <module>aissemble-oip-fastapi-auth</module>
     </modules>
 
-    <name>aiSSEMBLE::Open Inference Protocol Examples FastAPI</name>
+    <name>aiSSEMBLE::Open Inference Protocol Examples::FastAPI</name>
 
 </project>

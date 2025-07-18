@@ -13,7 +13,7 @@
     <artifactId>aissemble-oip-fastapi-inference</artifactId>
     <packaging>habushu</packaging>
 
-    <name>aiSSEMBLE::Open Inference Protocol Examples FastAPI Inference</name>
+    <name>aiSSEMBLE::Open Inference Protocol Examples::FastAPI Inference</name>
     <description>Example of how to use the FastAPI Open Interface protocol</description>
 
     <build>

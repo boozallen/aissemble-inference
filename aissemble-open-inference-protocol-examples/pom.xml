@@ -15,6 +15,7 @@
 
     <modules>
         <module>aissemble-oip-fastapi</module>
+        <module>aissemble-oip-grpc</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol Examples</name>
