@@ -25,7 +25,7 @@ from aissemble_open_inference_protocol_shared.auth.authzforce_adapter import (
 from .generate_simple_jwt import (
     create_simple_jwt_token,
 )
-from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (

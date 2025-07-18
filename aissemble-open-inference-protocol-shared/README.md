@@ -68,4 +68,4 @@ Content types are listed in order of precedence.
        - Optionally override `encode_request`/`decode_request` or `encode_response`/`decode_response`
        - Decorate with `@register_request_codec`
 
-Once registered, any request or response tagged with `"content_type":"<your-type>"` will use your codec automatically.  
+Once registered, any request or response tagged with `"content_type":"<your-type>"` will use your codec automatically. 

@@ -3,7 +3,7 @@ name = "aissemble-open-inference-protocol-shared"
 version = "1.0.0.dev"
 description = "Shared Utilities for aiSSEMBLE Open Inference Protocol"
 authors = [
-    {name = "Annie Chang",email = "chang_anne@bah.com"}
+    {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
 ]
 readme = "README.md"
 requires-python = ">=3.11.4,<3.13"

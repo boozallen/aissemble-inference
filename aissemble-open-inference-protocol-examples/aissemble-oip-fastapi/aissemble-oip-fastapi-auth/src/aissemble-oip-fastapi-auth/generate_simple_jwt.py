@@ -15,7 +15,6 @@ ALGORITHM = "HS256"
 
 
 def create_simple_jwt_token(data: dict, expires_delta: timedelta = timedelta(hours=10)):
-    # data["roles"] = "admin"
     to_encode = data.copy()
     expire = datetime.utcnow() + expires_delta
     to_encode.update({"exp": expire})

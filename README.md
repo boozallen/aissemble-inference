@@ -1,6 +1,4 @@
 # aiSSEMBLE Open Inference Protocol
-> [!NOTE]  
-> This project is a work in progress
 
 This repository provides a reference implementation of the Open Inference Protocol (OIP) — a standard designed 
 to promote interoperability across diverse inference runtimes and platforms. By adhering to a consistent API 
