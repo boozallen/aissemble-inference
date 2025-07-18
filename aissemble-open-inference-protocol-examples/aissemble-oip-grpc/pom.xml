@@ -13,6 +13,11 @@
     <artifactId>aissemble-oip-grpc</artifactId>
     <packaging>pom</packaging>
 
+    <modules>
+        <module>aissemble-oip-grpc-inference</module>
+        <module>aissemble-oip-grpc-auth</module>
+    </modules>
+
     <name>aiSSEMBLE::Open Inference Protocol Examples::gRPC</name>
 
 </project>

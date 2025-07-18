@@ -99,3 +99,8 @@ There are several configurations available that affect the server. These can be 
 
 > Note: If `auth_enabled = true` and no protected_endpoints are provided, all endpoints will be protected by default.
 
+## Examples
+
+For working examples, see the examples directory:
+
+- [gRPC Examples](https://github.com/boozallen/aissemble-open-inference-protocol/tree/dev/aissemble-open-inference-protocol-examples/aissemble-oip-grpc)

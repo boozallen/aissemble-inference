@@ -9,3 +9,7 @@ To see examples of how aiSSEMBLE OIP is used, follow the links below.
 ### KServe Integration
 - [KServe Integration with aissemble OIP](./aissemble-oip-kserve/aissemble-oip-kserve-inference/README.md) - An example demonstrating how to integrate aissemble open inference protocol handler with KServe.
 
+### gRPC
+- [Inference Example](./aissemble-oip-grpc/aissemble-oip-grpc-inference/) - An example demonstrating how to implement custom handlers for all Open Inference Protocol gRPC endpoints
+- [Authorization Example](./aissemble-oip-grpc/aissemble-oip-grpc-auth/) - An example demonstrating JWT-based authorization and role-based access using a custom `AuthAdapter`.
+
