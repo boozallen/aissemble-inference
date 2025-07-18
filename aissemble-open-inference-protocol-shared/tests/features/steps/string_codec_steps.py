@@ -80,8 +80,6 @@ def step_when_encode_response(context):
 def step_when_encode_request(context):
     request_output = RequestOutput(
         name="output-0",
-        datatype="BYTES",
-        shape=[len(context.payload), 1],
         parameters=Parameters(content_type="str"),
     )
     context.result = encode_response_output(context.payload, request_output)

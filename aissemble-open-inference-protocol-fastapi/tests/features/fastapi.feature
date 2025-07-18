@@ -55,3 +55,11 @@ Feature: Test FastAPI OIP Implementation
       | GET   | /v2                                  | 200           | "name":"FastAPI"|
       | POST  | /v2/models/my_model/infer            | 501           | Not Implemented |
       | POST  | /v2/models/my_model/versions/1/infer | 501           | Not Implemented |
+
+  Scenario: The inference endpoint maps handlers response to the REST response object
+    Given I have a handler that returns outputs data
+    And I have an OIP FastAPI app with the handler
+    And I have an infer request
+    When I send a "POST" request to "/v2/models/my_model/infer"
+    Then the response status code should be 200
+    Then the response should contain "byte output data"

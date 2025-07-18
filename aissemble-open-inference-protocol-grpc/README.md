@@ -86,8 +86,8 @@ grpc = AissembleOIPgRPC(MyHandler())
 ```
 Now when starting the server, the inference requests will route to the handler.
 
-## Configurations
-There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/blob/dev/README.md) or environment variables.
+## Configuration
+There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/tree/dev/krausening-python/) or environment variables.
 
 | Configuration Name    | Default Value | Description                                                                                   |
 |-----------------------|---------------|-----------------------------------------------------------------------------------------------|

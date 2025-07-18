@@ -8,7 +8,7 @@
 # #L%
 ###
 from fastapi import APIRouter, status, Depends, Request
-from typing import Optional, List, Any
+from typing import Optional, List
 from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
@@ -27,7 +27,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ServerMetadataResponse,
     ServerMetadataErrorResponse,
     ResponseOutput,
-    Parameters,
 )
 from aissemble_open_inference_protocol_shared.auth.jwt_auth import (
     authenticate_and_authorize,
@@ -370,14 +369,14 @@ def server_metadata(
 def build_inference_response(
     model_name: str,
     request: InferenceRequest,
-    result: Any,
+    result: InferenceResponse,
     model_version: Optional[str] = None,
 ) -> InferenceResponse:
     """
     Construct an InferenceResponse by encoding a handler’s raw Python result according to content_type
     1. Try per‐output codecs (if request.outputs is set).
     2. Fallback to a request‐level codec (if request.parameters.content_type is set).
-    3. Otherwise, echo each input’s raw data.
+    3. Otherwise, echo each result's raw data.
     """
     # Per‐output codec
     outputs: List[ResponseOutput] = []
@@ -406,31 +405,10 @@ def build_inference_response(
             response.id = request.id
             return response
 
-    # No codec matched, just echo the raw data from the inputs
-    outputs = []
-    for request_input in request.inputs or []:
-        content_type = None
-        if request_input.parameters is not None:
-            content_type = request_input.parameters.content_type
+    # No codec matched - TODO we need to handle the case where the handler and/or request content-type are unknown
 
-        outputs.append(
-            ResponseOutput(
-                name=request_input.name,
-                datatype=request_input.datatype,
-                shape=request_input.shape,
-                data=request_input.data,
-                parameters=Parameters(content_type=content_type)
-                if content_type is not None
-                else None,
-            )
-        )
-
-    return InferenceResponse(
-        model_name=model_name,
-        model_version=model_version,
-        id=request.id,
-        outputs=outputs,
-    )
+    # No content type give in output or requestOutput so just return response data as is
+    return result
 
 
 def _get_user_ip_from_request(request: Request):
