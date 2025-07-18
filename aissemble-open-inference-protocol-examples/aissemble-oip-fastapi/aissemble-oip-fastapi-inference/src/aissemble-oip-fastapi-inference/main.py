@@ -1,6 +1,6 @@
 ###
 # #%L
-# aiSSEMBLE::Open Inference Protocol FastAPI Examples
+# aiSSEMBLE::Open Inference Protocol Examples::FastAPI Inference
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
@@ -13,8 +13,7 @@ from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
     AissembleOIPFastAPI,
 )
 from tensorflow.keras.models import load_model
-
-from aissemble_open_inference_protocol_fastapi.handlers.dataplane import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (

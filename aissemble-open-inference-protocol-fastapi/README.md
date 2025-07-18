@@ -3,13 +3,13 @@
 The [Open Inference Protocol(OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to create FastAPI routes that are compatible with the Open Inference Protocol. By leveraging this library, you get a set to OIP compatible dataplane objects and routes.
 
 ## Installation
-Add aissemble-open-inference-protocol-fastapi to an application
+Add `aissemble-open-inference-protocol-fastapi` to an application
 ```bash
 pip install aissemble-open-inference-protocol-fastapi
 ```
 
 ## Example of basic usage
-Use aissemble-open-inference-protocol-fastapi to create a FastAPI app by creating a file `main.py` with
+Use `aissemble-open-inference-protocol-fastapi` to create a FastAPI app by creating a file `main.py` with
 ```python
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import AissembleOIPFastAPI
 
@@ -24,7 +24,7 @@ fastapi dev main.py
 View the routes by going to http://127.0.0.1:8000/docs.
 
 ## Implementing a Handler
-The endpoints will call a [default handler](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/default_handler.py) that will return 501 not implemented. To make a handler, create your class and extend the abstract base method [dataplane.py](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-fastapi/src/aissemble_open_inference_protocol_fastapi/handlers/dataplane.py). Then pass your class into the AissembleOIPFastAPI constructor.
+The endpoints will call a [default handler](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/handlers/default_handler.py) that will return 501 Not Implemented. To make a handler, create your class and extend the abstract base method [dataplane.py](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/handlers/dataplane.py). Then pass your class into the `AissembleOIPFastAPI` constructor.
 
 ### Example of Usage with A Handler
 Create your custom handler class with:
@@ -82,7 +82,7 @@ class MyHandler(DataplaneHandler):
         return ModelReadyResponse(name=model_name, ready=True)
 ```
 
-Use aissemble-open-inference-protocol-fastapi to create a FastAPI app and pass it `MyHandler`
+Use `aissemble-open-inference-protocol-fastapi` to create a FastAPI app and pass it `MyHandler`
 ```python
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import AissembleOIPFastAPI
 
@@ -91,11 +91,21 @@ app = AissembleOIPFastAPI(MyHandler).app
 
 Now when starting the FastAPI server, the inference request will route to `MyHandler.infer()`
 
+
+### Example Usage with Actual ML Model
+Please see the [aissemble-oip-fastapi](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/aissemble-oip-fastapi) folder for detailed examples on how to integrate ML models with the aiSSEMBLE OIP FastAPI implementation.
+
+
 ## Features
 
-### Content Type Decoding/Encoding (Work In Progress)
-For more information on how to implement content type decoding/encoding, reference the `aissemble-open-inference-protocol-shared` module's [README](../aissemble-open-inference-protocol-shared/README.md)
+### Content Type Decoding/Encoding
+For more information on how to implement content type decoding/encoding, reference the `aissemble-open-inference-protocol-shared` module's [README](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/README.md)
 
+## Configurations
+There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/blob/dev/README.md) or environment variables.
 
-## Example Usage with Actual ML Model ##
-Please see the [aissemble-oip-fastapi](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/aissemble-oip-fastapi) folder dedicated for detailed information on how to integrate models with Fast API OIP.
+| Configuration Name     | Environment Variable       | Default Value              | Description                                                                |
+|------------------------|----------------------------|----------------------------|----------------------------------------------------------------------------|
+| `auth_secret`          | `AUTH_SECRET`              | None                       | The secret key used to decode jwt token                                    |
+| `auth_algorithm`       | `AUTH_ALGORITHM`           | HS256                      | The algorithm used to decode jwt tokens                                    |
+| `pdp_url`              | `OIP_PDP_URL`              | http://localhost:8080/pdp  | The URL of the Policy Decision Point (PDP) used for authorization checks   |

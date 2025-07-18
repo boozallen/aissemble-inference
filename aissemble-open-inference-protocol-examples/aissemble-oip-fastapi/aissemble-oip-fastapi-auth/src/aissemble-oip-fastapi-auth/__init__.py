@@ -1,6 +1,6 @@
 ###
 # #%L
-# aiSSEMBLE::Open Inference Protocol FastAPI Examples
+# aiSSEMBLE::Open Inference Protocol Examples::FastAPI with Auth
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
