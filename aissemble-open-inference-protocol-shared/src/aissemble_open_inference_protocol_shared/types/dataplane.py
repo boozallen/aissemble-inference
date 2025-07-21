@@ -40,7 +40,7 @@ class RequestOutput(BaseModel):
     parameters: Optional[Parameters] = None
 
 
-class Datatype(Enum):
+class Datatype(str, Enum):
     BOOL = "BOOL"
     UINT8 = "UINT8"
     UINT16 = "UINT16"
