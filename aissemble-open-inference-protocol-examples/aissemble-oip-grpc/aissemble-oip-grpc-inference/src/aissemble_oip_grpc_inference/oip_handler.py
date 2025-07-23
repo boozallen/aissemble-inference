@@ -1,0 +1,162 @@
+###
+# #%L
+# aiSSEMBLE::Open Inference Protocol Examples::gRPC Inference
+# %%
+# Copyright (C) 2024 Booz Allen Hamilton Inc.
+# %%
+# This software package is licensed under the Booz Allen Public License. All Rights Reserved.
+# #L%
+###
+from typing import Optional
+
+from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.types.dataplane import (
+    InferenceRequest,
+    InferenceResponse,
+    ModelMetadataResponse,
+    ModelReadyResponse,
+    MetadataTensor,
+    ResponseOutput,
+    Datatype,
+    ServerMetadataResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    TensorData,
+)
+
+
+class OIPHandler(DataplaneHandler):
+    """
+    Custom handler that implements all Open Inference Protocol endpoints.
+    This example demonstrates how to implement custom handlers for each endpoint:
+    - ModelInfer: Performs simple mathematical operations on input data
+    - ModelMetadata: Returns metadata about the model
+    - ModelReady: Checks if the model is ready for inference
+    - ServerMetadata: Returns server information
+    - ServerReady: Returns server readiness status
+    - ServerLive: Returns server liveness status
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def infer(
+        self,
+        payload: InferenceRequest,
+        model_name: str,
+        model_version: Optional[str] = None,
+    ) -> InferenceResponse:
+        """
+        Perform inference using the provided input data.
+        This example performs simple mathematical operations based on the model name.
+        """
+        print(
+            f"Received inference request for model: {model_name}, version: {model_version}"
+        )
+
+        if not payload.inputs:
+            raise ValueError("No input data provided")
+
+        input_tensor = payload.inputs[0]
+
+        # Get the data from the TensorData object
+        try:
+            data_list = [int(x) for x in input_tensor.data.root]
+            print(f"Processing input data: {data_list}")
+        except Exception as e:
+            print(f"Error processing data: {e}")
+            raise ValueError(f"Invalid input data format: {e}")
+
+        if model_name == "multiply":
+            result = [x * 2 for x in data_list]
+        elif model_name == "add":
+            result = [x + 10 for x in data_list]
+        elif model_name == "square":
+            result = [x**2 for x in data_list]
+        else:
+            result = data_list
+
+        print(f"Output data: {result}")
+        # Create response with proper TensorData structure
+        response = InferenceResponse(
+            model_name=model_name,
+            model_version=model_version,
+            id=payload.id,
+            outputs=[
+                ResponseOutput(
+                    name="output-0",
+                    shape=input_tensor.shape,
+                    datatype=input_tensor.datatype,
+                    data=TensorData(root=result),
+                    parameters=payload.outputs[0].parameters,
+                )
+            ],
+            parameters=payload.parameters,
+        )
+        return response
+
+    def model_metadata(
+        self,
+        model_name: str,
+        model_version: Optional[str] = None,
+    ) -> ModelMetadataResponse:
+        """
+        Return metadata about the model including input/output tensor specifications.
+        """
+        print(
+            f"Received model metadata request for model: {model_name}, version: {model_version}"
+        )
+
+        return ModelMetadataResponse(
+            name=model_name,
+            versions=[model_version] if model_version else None,
+            platform="python",
+            inputs=[MetadataTensor(name="input", datatype=Datatype.INT64, shape=[1])],
+            outputs=[MetadataTensor(name="output", datatype=Datatype.INT64, shape=[1])],
+        )
+
+    def model_ready(
+        self,
+        model_name: str,
+        model_version: Optional[str] = None,
+    ) -> ModelReadyResponse:
+        """
+        Check if the model is ready for inference.
+        This example considers specific models as ready.
+        """
+        print(
+            f"Received model ready request for model: {model_name}, version: {model_version}"
+        )
+
+        ready_models = ["multiply", "add", "square", "default"]
+        is_ready = model_name in ready_models
+
+        return ModelReadyResponse(name=model_name, ready=is_ready)
+
+    def server_metadata(self) -> ServerMetadataResponse:
+        """
+        Return metadata about the server.
+        """
+        print("Received server metadata request")
+
+        return ServerMetadataResponse(
+            name="aiSSEMBLE OIP gRPC Inference Example",
+            version="1.0.0",
+            extensions=["v2", "aissemble"],
+        )
+
+    def server_ready(self) -> ServerReadyResponse:
+        """
+        Return server readiness status.
+        """
+        print("Received server ready request")
+
+        return ServerReadyResponse(live=True)
+
+    def server_live(self) -> ServerLiveResponse:
+        """
+        Return server liveness status.
+        """
+        print("Received server live request")
+
+        return ServerLiveResponse(live=True)
