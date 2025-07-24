@@ -38,7 +38,9 @@ class InferMapper:
                 inference_input_list.append(req_input)
         if request.request_outputs is not None:
             for output in request.request_outputs:
-                req_output = RequestOutput(name=output.name, parameters=output.parameters)
+                req_output = RequestOutput(
+                    name=output.name, parameters=output.parameters
+                )
                 inference_output_list.append(req_output)
         return InferenceRequest(
             id=request.id,

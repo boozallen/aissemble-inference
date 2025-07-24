@@ -1,6 +1,6 @@
-# aiSSEMBLE Open Inference Protocol gRPC
+# aiSSEMBLE Open Inference Protocol&trade; gRPC
 
-The [Open Inference Protocol(OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to create a gRPC server that is compatible with the Open Inference Protocol. It handles standing up and tearing down the server so you only need to worry about the inferencing functionality.
+The [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to create a gRPC server that is compatible with the Open Inference Protocol. It handles standing up and tearing down the server so you only need to worry about the inferencing functionality.
 
 ## Installation
 Add `aissemble-open-inference-protocol-grpc` to an application
@@ -97,10 +97,8 @@ There are several configurations available that affect the server. These can be 
 | `auth_enabled`        | false         | Whether authentication is enabled for the gRPC server                                         |
 | `protected_endpoints` | None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true) |
 
-> Note: If `auth_enabled = true` and no protected_endpoints are provided, all endpoints will be protected by default.
+> [!NOTE]  
+> If `auth_enabled = true` and no `protected_endpoints` are provided, all endpoints will be protected by default.
 
 ## Examples
-
-For working examples, see the examples directory:
-
-- [gRPC Examples](https://github.com/boozallen/aissemble-open-inference-protocol/tree/dev/aissemble-open-inference-protocol-examples/aissemble-oip-grpc)
+For working examples, refer to the [Examples](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/README.md#grpc) documentation.
