@@ -40,6 +40,9 @@ from aissemble_open_inference_protocol_grpc.mappers.utils import (
     MappingException,
 )
 from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.codecs.utils import (
+    build_inference_response,
+)
 
 
 class InferenceServicer(GrpcInferenceServiceServicer):
@@ -74,6 +77,12 @@ class InferenceServicer(GrpcInferenceServiceServicer):
                 model_name=request.model_name,
                 model_version=request.model_version,
             )
+            encoded_response = build_inference_response(
+                request.model_name,
+                inference_request,
+                handler_response,
+                request.model_version,
+            )
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Internal Server Error!")
@@ -82,7 +91,7 @@ class InferenceServicer(GrpcInferenceServiceServicer):
         try:
             inference_response_mapper = ModelInferenceResponseMapper()
             return inference_response_mapper.to_model_inference_response(
-                handler_response
+                encoded_response
             )
         except Exception:
             context.set_code(grpc.StatusCode.INTERNAL)

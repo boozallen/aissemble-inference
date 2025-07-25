@@ -8,7 +8,6 @@
 # #L%
 ###
 from fastapi import APIRouter, status, Depends, Request
-from typing import Optional, List
 from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_shared.handlers.default_handler import (
     DefaultHandler,
@@ -26,7 +25,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ServerLiveResponse,
     ServerMetadataResponse,
     ServerMetadataErrorResponse,
-    ResponseOutput,
 )
 from aissemble_open_inference_protocol_shared.auth.jwt_auth import (
     authenticate_and_authorize,
@@ -36,9 +34,7 @@ from aissemble_open_inference_protocol_shared.auth.auth_context import (
 )
 from aissemble_open_inference_protocol_shared.codecs.utils import (
     decode_inference_request,
-    encode_inference_response,
-    encode_response_output,
-    get_content_type,
+    build_inference_response,
 )
 from krausening.logging import LogManager
 from functools import partial
@@ -364,51 +360,6 @@ def server_metadata(
     authenticate_and_authorize(auth_context)
 
     return handler.server_metadata()
-
-
-def build_inference_response(
-    model_name: str,
-    request: InferenceRequest,
-    result: InferenceResponse,
-    model_version: Optional[str] = None,
-) -> InferenceResponse:
-    """
-    Construct an InferenceResponse by encoding a handler’s raw Python result according to content_type
-    1. Try per‐output codecs (if request.outputs is set).
-    2. Fallback to a request‐level codec (if request.parameters.content_type is set).
-    3. Otherwise, echo each result's raw data.
-    """
-    # Per‐output codec
-    outputs: List[ResponseOutput] = []
-    for request_output in request.outputs or []:
-        output = encode_response_output(result, request_output)
-        if output is not None:
-            outputs.append(output)
-
-    if outputs:
-        return InferenceResponse(
-            model_name=model_name,
-            model_version=model_version,
-            id=request.id,
-            outputs=outputs,
-        )
-
-    # Request-level codec (only if top-level parameters.content_type was set)
-    request_content_type = get_content_type(request)
-    if request_content_type:
-        response = encode_inference_response(
-            model_name=model_name,
-            payload=result,
-            model_version=model_version,
-        )
-        if response is not None:
-            response.id = request.id
-            return response
-
-    # No codec matched - TODO we need to handle the case where the handler and/or request content-type are unknown
-
-    # No content type give in output or requestOutput so just return response data as is
-    return result
 
 
 def _get_user_ip_from_request(request: Request):
