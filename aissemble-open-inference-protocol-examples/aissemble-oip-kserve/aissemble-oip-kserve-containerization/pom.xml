@@ -6,18 +6,19 @@
 
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
-        <artifactId>aissemble-open-inference-protocol-examples</artifactId>
+        <artifactId>aissemble-oip-kserve</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aissemble-oip-kserve</artifactId>
+    <artifactId>aissemble-oip-kserve-containerization</artifactId>
     <packaging>pom</packaging>
 
     <modules>
-        <module>aissemble-oip-kserve-inference</module>
-        <module>aissemble-oip-kserve-containerization</module>
+        <module>aissemble-oip-kserve-containerization-deploy</module>
+        <module>aissemble-oip-kserve-containerization-docker</module>
     </modules>
 
-    <name>aiSSEMBLE::Open Inference Protocol Examples::KServe</name>
+    <name>aiSSEMBLE::Open Inference Protocol Examples::KServe Containerization</name>
+    <description>Example of how to Containerize the model and deploy using KServe Open Interface protocol</description>
 
 </project>
