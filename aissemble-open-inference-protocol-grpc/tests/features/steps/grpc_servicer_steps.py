@@ -229,6 +229,11 @@ def the_servicers_response_corresponds_to_the_handlers_results(context):
         expected_response.outputs[0], actual_response.outputs[0]
     )
 
+    expected_datatype = str(expected_response.outputs[0].datatype)
+    actual_datatype = actual_response.outputs[0].datatype
+
+    nt.eq_(actual_datatype, expected_datatype, "Datatypes did not match")
+
 
 @then("the handler receives the model metadata request with the expected data")
 def the_handler_receives_the_model_metadata_request_with_the_expected_data(context):
