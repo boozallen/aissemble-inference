@@ -23,7 +23,7 @@ from steps.handler_with_overridden_impl import (
 )
 def given_custom_handler_without_required_methods(context):
     api = AissembleOIPFastAPI(HandlerNoImpl)
-    context.client = TestClient(api.app)
+    context.client = TestClient(api.server)
 
 
 @given(
@@ -31,7 +31,7 @@ def given_custom_handler_without_required_methods(context):
 )
 def given_custom_handler_without_optional_methods(context):
     api = AissembleOIPFastAPI(HandlerNoOptionalImpl)
-    context.client = TestClient(api.app)
+    context.client = TestClient(api.server)
 
 
 @given(
@@ -39,7 +39,7 @@ def given_custom_handler_without_optional_methods(context):
 )
 def given_custom_handler_overridden_methods(context):
     api = AissembleOIPFastAPI(HandlerOverriddenImpl)
-    context.client = TestClient(api.app)
+    context.client = TestClient(api.server)
 
 
 @when("model method is called")

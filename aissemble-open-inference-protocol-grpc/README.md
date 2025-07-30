@@ -25,6 +25,7 @@ The gRPC server will come up after a few seconds and will be OIP compliant. The 
 
 ### Implementing the Endpoints Handler
 By default, most of the gRPC endpoints will return a Method Not Implemented. You can implement these functions by creating a custom handler extending `DataplaneHandler`. Example:
+
 ```python
 from typing import Optional
 
@@ -87,15 +88,18 @@ grpc = AissembleOIPgRPC(MyHandler())
 Now when starting the server, the inference requests will route to the handler.
 
 ## Configuration
-There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/tree/dev/krausening-python/) or environment variables.
+There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/tree/dev/krausening-python/) properties file `oip.properties` or environment variables.
 
-| Configuration Name    | Default Value | Description                                                                                   |
-|-----------------------|---------------|-----------------------------------------------------------------------------------------------|
-| `grpc_host`           | 0.0.0.0       | The host the grpc server will start on                                                        |
-| `grpc_port`           | 8080          | The port the grpc server will start on                                                        |
-| `grpc_workers`        | 3             | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                |
-| `auth_enabled`        | false         | Whether authentication is enabled for the gRPC server                                         |
-| `protected_endpoints` | None          | Comma separated list of endpoints which will require authentication (if auth_enabled is true) |
+| Configuration Name         | Environment Variable       | Default Value             | Description                                                                                           |
+|----------------------------|----------------------------|---------------------------|-------------------------------------------------------------------------------------------------------|
+| `grpc_host`                | `GRPC_HOST`                | 0.0.0.0                   | The host the grpc server will start on                                                                |
+| `grpc_port`                | `GRPC_PORT`                | 8081                      | The port the grpc server will start on                                                                |
+| `grpc_workers`             | `GRPC_WORKERS`             | 3                         | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                        |
+| `auth_enabled`             | `AUTH_ENABLED`             | true                      | Whether authentication is enabled for the server. Strongly recommend enabling for higher environments |
+| `grpc_protected_endpoints` | `GRPC_ORITECTED_ENDPOINTS` | None                      | Comma separated list of endpoints which will require authentication (if auth_enabled is true)         |
+| `auth_secret`              | `AUTH_SECRET`              | None                      | The secret key used to decode jwt token                                                               |
+| `auth_algorithm`           | `AUTH_ALGORITHM`           | HS256                     | The algorithm used to decode jwt tokens                                                               |
+| `pdp_url`                  | `OIP_PDP_URL`              | http://localhost:8080/pdp | The URL of the Policy Decision Point (PDP) used for authorization checks                              |
 
 > [!NOTE]  
 > If `auth_enabled = true` and no `protected_endpoints` are provided, all endpoints will be protected by default.

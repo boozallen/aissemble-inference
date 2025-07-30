@@ -7,6 +7,8 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
+import os
+
 from fastapi import APIRouter, status
 from typing import Optional
 from fastapi.security import HTTPBearer
@@ -105,7 +107,11 @@ def auth_login(
     return {"jwt": jwt_token}
 
 
+# Set the Krausening configuration path so the properties will be picked up. This is assuming the script is being run
+# locally and would fail for dockerized deployments. This is only to ease running the example
+os.environ["KRAUSENING_BASE"] = os.getcwd() + "/src/resources/krausening/base/"
+
 # To enable authorization in your own project you need to inject AuthzforceAdapter
 # into your app like the example below
-app = AissembleOIPFastAPI(Handler, AuthzforceAdapter).app
-app.include_router(routerWithSecurity)
+server = AissembleOIPFastAPI(Handler, AuthzforceAdapter).server
+server.include_router(routerWithSecurity)

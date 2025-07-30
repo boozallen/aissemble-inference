@@ -9,7 +9,7 @@
 ###
 from fastapi import APIRouter, status, Depends, Request
 from fastapi.security import HTTPBearer
-from aissemble_open_inference_protocol_shared.handlers.default_handler import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DefaultHandler,
 )
 from aissemble_open_inference_protocol_shared.auth.default_adapter import (
