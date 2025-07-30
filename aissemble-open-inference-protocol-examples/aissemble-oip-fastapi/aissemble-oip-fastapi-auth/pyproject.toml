@@ -1,5 +1,5 @@
 [tool.poetry]
-packages = [{include = "aissemble-oip-fastapi-auth", from = "src"}]
+packages = [{include = "aissemble_oip_fastapi_auth", from = "src"}]
 
 [project]
 name = "aissemble-oip-fastapi-auth"

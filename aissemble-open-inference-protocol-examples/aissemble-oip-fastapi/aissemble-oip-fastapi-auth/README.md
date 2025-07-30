@@ -16,7 +16,7 @@ that the authorization will then use to PERMIT or DENY an inference endpoint cal
 ## Running the Example
 1. Start the Authzforce server and the FastAPI server by running the following:
     ```sh
-    python ./src/aissemble-oip-fastapi-auth/launch_example.py
+    python ./src/aissemble_oip_fastapi_auth/launch_example.py
     ```
 2. Create the **authorized** jwt token (saved as an environment variable) by running the following in a terminal
     ```sh
@@ -38,17 +38,17 @@ that the authorization will then use to PERMIT or DENY an inference endpoint cal
       -d '{
       "id": "string",
       "parameters": {
-        "content_type": "string"
+        "content_type": "str"
       },
       "inputs": [
         {
           "name": "string",
           "shape": [
-            0
+            1
           ],
-          "datatype": "BOOL",
+          "datatype": "BYTES",
           "parameters": {
-            "content_type": "string"
+            "content_type": "str"
           },
           "data": [
             "string"
@@ -78,17 +78,17 @@ that the authorization will then use to PERMIT or DENY an inference endpoint cal
       -d '{
       "id": "string",
       "parameters": {
-        "content_type": "string"
+        "content_type": "str"
       },
       "inputs": [
         {
           "name": "string",
           "shape": [
-            0
+            1
           ],
-          "datatype": "BOOL",
+          "datatype": "BYTES",
           "parameters": {
-            "content_type": "string"
+            "content_type": "str"
           },
           "data": [
             "string"

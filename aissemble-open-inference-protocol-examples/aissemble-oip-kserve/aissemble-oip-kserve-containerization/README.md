@@ -32,19 +32,16 @@ curl --request POST \
    -H "Content-Type: application/json" \
    --url http://localhost:8080/v2/models/convert_celsius_to_fahrenheit/infer \
    --data '{
-   "id" : "1",
-   "inputs" : [
-   {
-   "name" : "sample",
-   "shape" : [1],
-   "datatype"  : "FP32",
-   "parameters": {
-   "content_type": "str"
-   },
-   "data" : [[ 0]]
-   }
-   ]
-   }'
+  "id": "1",
+  "inputs": [
+    {
+      "name": "sample",
+      "shape": [1,1],
+      "datatype": "FP32",
+      "data": [0.1]
+    }
+  ]
+ }'
 ```
 
 ## Running gRPC Based Example

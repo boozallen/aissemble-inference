@@ -7,6 +7,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.9,<3.13"
+
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -31,7 +32,7 @@ packages = [
 fastapi = {extras = ["standard"], version = "^0.115.12"}
 pydantic = "^2.11.4"
 krausening = ">=20"
-
+numpy = ">=1.26.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.11.12"
