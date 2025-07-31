@@ -1,0 +1,13 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: kserve-model
+spec:
+  predictor:
+    containers:
+      - name: "aissemble-oip-kserve-containerization-docker"
+        image: aissemble-oip-kserve-containerization-docker:1.0.0-SNAPSHOT
+        args:
+          - --http_port=8080
+          - --grpc_port=8081
+

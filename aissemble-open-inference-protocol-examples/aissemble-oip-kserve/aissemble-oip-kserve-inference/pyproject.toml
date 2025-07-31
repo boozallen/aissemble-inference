@@ -1,5 +1,5 @@
 [tool.poetry]
-packages = [{include = "aissemble-oip-kserve-inference", from = "src"}]
+packages = [{include = "aissemble_oip_kserve_inference", from = "src"}]
 
 [project]
 name = "aissemble-oip-kserve-inference"

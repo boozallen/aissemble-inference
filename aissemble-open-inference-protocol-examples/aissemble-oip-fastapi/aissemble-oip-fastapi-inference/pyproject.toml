@@ -1,5 +1,5 @@
 [tool.poetry]
-packages = [{include = "aissemble-oip-fastapi-inference", from = "src"}]
+packages = [{include = "aissemble_oip_fastapi_inference", from = "src"}]
 
 [project]
 name = "aissemble-oip-fastapi-inference"

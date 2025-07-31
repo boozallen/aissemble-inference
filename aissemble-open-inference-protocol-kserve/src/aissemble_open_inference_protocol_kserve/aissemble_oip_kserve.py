@@ -9,7 +9,7 @@
 ###
 from kserve import Model, InferRequest, InferResponse
 
-from aissemble_open_inference_protocol_kserve import InferMapper
+from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import InferMapper
 
 
 class AissembleOIPKServe(Model):

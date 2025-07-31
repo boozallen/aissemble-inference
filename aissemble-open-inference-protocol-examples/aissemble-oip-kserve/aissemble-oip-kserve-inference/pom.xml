@@ -26,4 +26,19 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>aissemble-open-inference-protocol-kserve</artifactId>
+            <version>${project.version}</version>
+            <type>habushu</type>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>aissemble-open-inference-protocol-shared</artifactId>
+            <version>${project.version}</version>
+            <type>habushu</type>
+        </dependency>
+    </dependencies>
+
 </project>
