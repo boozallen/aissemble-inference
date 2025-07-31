@@ -33,4 +33,4 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY resources/model /model
 
-ENTRYPOINT ["/opt/venv/bin/python3.12", "-m", "aissemble-oip-kserve-inference.main"]
+ENTRYPOINT ["/opt/venv/bin/python3.12", "-m", "aissemble_oip_kserve_inference.main"]
