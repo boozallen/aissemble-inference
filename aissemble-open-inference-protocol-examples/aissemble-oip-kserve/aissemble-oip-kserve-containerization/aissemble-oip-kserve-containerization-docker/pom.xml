@@ -42,15 +42,17 @@
                 <artifactId>docker-maven-plugin</artifactId>
                 <extensions>true</extensions>
                 <executions>
-                <execution>
-                    <id>build-docker-image</id>
-                    <phase>install</phase>
-                    <goals>
-                        <goal>build</goal>
-                    </goals>
-                </execution>
+                    <execution>
+                        <id>build-docker-image</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
+                    <!-- Example expected to be run locally so skipping push -->
+                    <skipPush>true</skipPush>
                     <images>
                         <image>
                             <name>${project.artifactId}:${project.version}</name>
@@ -61,7 +63,7 @@
                                     <!-- use a separate state dir to ensure pre-configured credentials are not deleted -->
                                     <dockerStateDir>~/.docker/fabric8</dockerStateDir>
                                     <platforms>
-                                        <platform>linux/amd64,linux/arm64</platform>
+                                        <platform>linux/amd64</platform>
                                     </platforms>
                                 </buildx>
                             </build>
