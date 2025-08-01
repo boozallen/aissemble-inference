@@ -179,6 +179,41 @@ def encode_inference_response(
     )
 
 
+def build_inference_response(
+    model_name: str,
+    request: InferenceRequest,
+    result: InferenceResponse,
+    model_version: Optional[str] = None,
+) -> InferenceResponse:
+    """
+    Construct an InferenceResponse by encoding a handler's raw Python result according to content_type
+    1. Handler output content_type takes precedence.
+    2. Try per-output content_type (if request.outputs is set).
+    3. Fallback to a request-level content_type (if request.parameters.content_type is set).
+    4. Otherwise, fallback to None content_type.
+    """
+    # Import here to avoid circular import
+    from aissemble_open_inference_protocol_shared.codecs.strategies.output_processing_strategy import (
+        ProcessAllOutputsStrategy,
+        ProcessRequestedOutputsStrategy,
+    )
+
+    request_outputs = getattr(request, "outputs", None) or []
+    if not request_outputs:
+        strategy = ProcessAllOutputsStrategy(request, result)
+    else:
+        strategy = ProcessRequestedOutputsStrategy(request, result)
+
+    outputs = strategy.process_outputs()
+
+    return InferenceResponse(
+        model_name=model_name,
+        model_version=model_version,
+        parameters=getattr(result, "parameters", None),
+        outputs=outputs,
+    )
+
+
 class SingleTensorRequestCodec(RequestCodec):
     """
     Base class for request-level codecs that wrap a single tensor.
