@@ -39,7 +39,9 @@ from aissemble_open_inference_protocol_grpc.mappers.model_metadata_response_mapp
 from aissemble_open_inference_protocol_grpc.mappers.utils import (
     MappingException,
 )
-from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
 from aissemble_open_inference_protocol_shared.codecs.utils import (
     build_inference_response,
 )

@@ -19,7 +19,7 @@ from handlers.test_handler import TestHandler
 @given("I have an OIP FastAPI app with the default handler")
 def given_i_have_fastapi_app(context):
     api = AissembleOIPFastAPI()
-    context.client = TestClient(api.app)
+    context.client = TestClient(api.server)
 
 
 @given("I have a handler that returns outputs data")
@@ -30,7 +30,7 @@ def i_have_a_handler_that_returns_outputs_data(context):
 @given("I have an OIP FastAPI app with the handler")
 def i_have_an_oip_fast_api_app_with_the_handler(context):
     api = AissembleOIPFastAPI(context.handler)
-    context.client = TestClient(api.app)
+    context.client = TestClient(api.server)
     context.api = api
 
 

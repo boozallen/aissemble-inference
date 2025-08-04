@@ -14,8 +14,6 @@ from aissemble_open_inference_protocol_shared.auth.auth_context import (
     AuthContext,
 )
 
-config = OIPConfig()
-
 
 def verify_jwt_token(authorization):
     """
@@ -27,12 +25,13 @@ def verify_jwt_token(authorization):
         # No Authorization header means this is an anonymous user
         payload = {"sub": "Anonymous", "name": "Anonymous"}
     else:
-        if not authorization.scheme == "Bearer":
+        if authorization.scheme != "Bearer":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid or missing Authorization header",
             )
         try:
+            config = OIPConfig()
             secret_key = config.auth_secret()
             algorithm = config.auth_algorithm()
             payload = jwt.decode(
@@ -63,15 +62,17 @@ def authenticate_and_authorize(auth_context: AuthContext):
     resource, action, user ip, request url
     :return: if the user/subject is not-authorized then a 403 error is raised.
     """
-    token_data = verify_jwt_token(auth_context.bearer_token)
-    if not auth_context.authz_adapter.authorize(
-        user=token_data.get("sub"),
-        resource=auth_context.auth_resource,
-        action=auth_context.auth_action,
-        user_ip=auth_context.user_ip,
-        request_url=auth_context.request_url,
-        role=token_data.get("roles", None),
-    ):
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
-        )
+    config = OIPConfig()
+    if config.auth_enabled:
+        token_data = verify_jwt_token(auth_context.bearer_token)
+        if not auth_context.authz_adapter.authorize(
+            user=token_data.get("sub"),
+            resource=auth_context.auth_resource,
+            action=auth_context.auth_action,
+            user_ip=auth_context.user_ip,
+            request_url=auth_context.request_url,
+            role=token_data.get("roles", None),
+        ):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, detail="Access denied"
+            )

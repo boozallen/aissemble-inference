@@ -8,7 +8,9 @@
 # #L%
 ###
 from typing import Optional
-from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,

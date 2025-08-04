@@ -48,7 +48,7 @@
     <input>
         <global>
             <glob>
-                {*.proto,*.xml,*.py,*.feature}
+                {*.proto,*.xml,*.py,Dockerfile,*.feature}
             </glob>
             <includes>
                 <include>src/</include>

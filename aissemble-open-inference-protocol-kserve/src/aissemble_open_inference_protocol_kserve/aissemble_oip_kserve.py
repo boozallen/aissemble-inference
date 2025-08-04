@@ -7,17 +7,23 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from kserve import Model, InferRequest, InferResponse
+from kserve import Model, InferRequest, InferResponse, ModelServer
 
 from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import InferMapper
+from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
+    AissembleOIPService,
+)
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+    DefaultHandler,
+)
 
 
-class AissembleOIPKServe(Model):
-    def __init__(self, name: str, handler=None):
-        super().__init__(name)
-        self.name = name
+class AissembleOIPKServe(Model, AissembleOIPService):
+    def __init__(self, name: str, handler: DataplaneHandler = DefaultHandler()):
+        Model.__init__(self, name)
+        AissembleOIPService.__init__(self, handler=handler, adapter=None)
         self.model = None
-        self.handler = handler
 
     def predict(
         self,
@@ -38,3 +44,7 @@ class AissembleOIPKServe(Model):
         )
 
         return infer_response
+
+    async def start(self):
+        self.load()
+        ModelServer().start([self])

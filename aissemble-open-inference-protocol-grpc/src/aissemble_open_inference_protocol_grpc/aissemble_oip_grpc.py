@@ -18,63 +18,63 @@ from krausening.logging import LogManager
 from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2_grpc import (
     add_GrpcInferenceServiceServicer_to_server,
 )
-from aissemble_open_inference_protocol_grpc.grpc_config import GrpcConfig
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
 from aissemble_open_inference_protocol_grpc.auth.auth_interceptor import AuthInterceptor
+
+from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
+    AissembleOIPService,
+)
 from aissemble_open_inference_protocol_shared.auth.default_adapter import DefaultAdapter
 from aissemble_open_inference_protocol_shared.auth.auth_adapter_base import (
     AuthAdapterBase,
 )
-from aissemble_open_inference_protocol_shared.handlers.default_handler import (
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
     DefaultHandler,
 )
 
 
-class AissembleOIPgRPC:
+class AissembleOIPgRPC(AissembleOIPService):
     logger = LogManager.get_instance().get_logger("AissembleOIPgRPC")
 
     def __init__(
         self,
-        handler=DefaultHandler,
+        handler: DataplaneHandler = DefaultHandler(),
         adapter: AuthAdapterBase = DefaultAdapter(),
-        grpc_properties: str = None,
     ):
-        if inspect.isclass(handler):
-            handler = handler()
-        self.handler = handler
-        self.adapter = adapter
-        self.grpc_config = GrpcConfig(grpc_properties)
+        super().__init__(handler, adapter)
+        self.server = self.create_server()
 
     async def start(self):
         # Add signal handlers to shut down gracefully
         self._add_terminate_signal_handlers()
 
-        self._create_server()
+        # Create server if not already created
+        if not self.server:
+            self.create_server()
         self.logger.info("Starting OIP gRPC Server")
 
-        await self._server.start()
+        await self.server.start()
         self.logger.info(
-            f"gRPC server started at grpc://{self.grpc_config.host}:{self.grpc_config.port}"
+            f"gRPC server started at grpc://{self.config.grpc_host}:{self.config.grpc_port}"
         )
-        if self.grpc_config.auth_enabled:
+        if self.config.auth_enabled:
             self.logger.info("Authorization is enabled")
         else:
             self.logger.info("Authorization is disabled")
-        await self._server.wait_for_termination()
+        await self.server.wait_for_termination()
 
-    def _create_server(self):
-        self._inference_servicer = InferenceServicer(self.handler)
-        self._server = aio.server(
-            ThreadPoolExecutor(max_workers=self.grpc_config.grpc_workers),
+    def create_server(self):
+        inference_servicer = InferenceServicer(self.handler)
+        self.server = aio.server(
+            ThreadPoolExecutor(max_workers=self.config.grpc_workers),
             interceptors=self._get_interceptors(),
         )
-        add_GrpcInferenceServiceServicer_to_server(
-            self._inference_servicer, self._server
+        add_GrpcInferenceServiceServicer_to_server(inference_servicer, self.server)
+        self.server.add_insecure_port(
+            f"{self.config.grpc_host}:{self.config.grpc_port}"
         )
-        self._server.add_insecure_port(
-            f"{self.grpc_config.host}:{self.grpc_config.port}"
-        )
-        return self._server
+        return self.server
 
     def _add_terminate_signal_handlers(self):
         self.logger.info("Adding terminate signal handlers")
@@ -85,15 +85,15 @@ class AissembleOIPgRPC:
 
     def _get_interceptors(self):
         interceptors = []
-        if self.grpc_config.auth_enabled:
+        if self.config.auth_enabled:
             interceptors.append(
                 AuthInterceptor(
                     auth_adapter=self.adapter,
-                    protected_endpoints=self.grpc_config.protected_endpoints,
+                    protected_endpoints=self.config.grpc_protected_endpoints,
                 )
             )
         return interceptors
 
     async def stop(self):
         self.logger.info("Stopping OIP GRPC Server")
-        await self._server.stop(grace=10)
+        await self.server.stop(grace=10)

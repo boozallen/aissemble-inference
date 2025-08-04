@@ -110,4 +110,4 @@ class Handler(DataplaneHandler):
             return ModelReadyResponse(name=model_name, ready=False)
 
 
-app = AissembleOIPFastAPI(Handler).app
+server = AissembleOIPFastAPI(Handler).server

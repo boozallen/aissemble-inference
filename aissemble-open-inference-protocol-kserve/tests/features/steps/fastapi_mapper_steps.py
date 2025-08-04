@@ -1,6 +1,11 @@
-from behave import given, then, when
 import nose.tools as nt
+from behave import given, then, when
 from kserve import InferRequest, InferInput, InferResponse, InferOutput
+from kserve.protocol.infer_type import RequestedOutput
+
+from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import (
+    InferMapper,
+)
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     Parameters,
     InferenceRequest,
@@ -10,11 +15,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     ResponseOutput,
     Datatype,
     TensorData,
-)
-from kserve.protocol.infer_type import RequestedOutput
-
-from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import (
-    InferMapper,
 )
 
 
