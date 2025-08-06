@@ -8,4 +8,9 @@ spec:
       - name: "aissemble-oip-kserve-containerization-docker"
         image: aissemble-oip-kserve-containerization-docker:1.0.0-SNAPSHOT
         args:
-          - --http_port=8080
+          - --enable_grpc=true
+          - --grpc_port=8081
+        ports:
+          - name: h2c
+            containerPort: 8081
+            protocol: TCP

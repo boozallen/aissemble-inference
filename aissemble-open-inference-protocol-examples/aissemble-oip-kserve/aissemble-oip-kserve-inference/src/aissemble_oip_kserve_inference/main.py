@@ -61,7 +61,7 @@ class customFastAPIHandler(DataplaneHandler):
                     name=model_name,
                     shape=payload.inputs[0].shape,
                     datatype=Datatype.FP32,
-                    data=[output_list],
+                    data=output_list,
                 )
             ],
         )

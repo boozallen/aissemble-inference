@@ -42,7 +42,6 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         infer_response = InferMapper.inference_response_to_infer_response(
             inference_response
         )
-
         return infer_response
 
     async def start(self):
