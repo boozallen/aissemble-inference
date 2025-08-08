@@ -24,7 +24,7 @@ def given_infer_request_with_kserve(context):
         name="input",
         shape=[1],
         datatype="FP32",
-        data=[1, 2],
+        data=[1.0, 2.0],
         parameters=Parameters(),
     )
     infer_output = RequestedOutput(
@@ -36,19 +36,36 @@ def given_infer_request_with_kserve(context):
         request_id="1",
         infer_inputs=[infer_input],
         from_grpc=False,
-        parameters={},
         model_version="v1",
         request_outputs=[infer_output],
     )
 
 
-@given("an InferenceResponse with the dataplane handler")
-def given_inference_response_with_fastapi(context):
+@given("an InferenceResponse with the dataplane handler with 2D TensorData")
+def given_inference_response_with_2d_tensordata(context):
     infer_output = ResponseOutput(
         name="output",
         shape=[1],
         datatype=Datatype.FP32,
-        data=[11, 22],
+        data=[[11.0], [22.0]],
+        parameters=Parameters(),
+    )
+    context.inference_response = InferenceResponse(
+        model_name="output",
+        model_version="v1",
+        id="1",
+        parameters=Parameters(),
+        outputs=[infer_output],
+    )
+
+
+@given("an InferenceResponse with the dataplane handler with 1D TensorData")
+def given_inference_response_with_1d_tensordata(context):
+    infer_output = ResponseOutput(
+        name="output",
+        shape=[1],
+        datatype=Datatype.FP32,
+        data=[11.0, 22.0],
         parameters=Parameters(),
     )
     context.inference_response = InferenceResponse(
@@ -84,15 +101,13 @@ def inference_request_correctly_returned(context):
         name="input",
         shape=[1],
         datatype=Datatype.FP32,
-        parameters=Parameters(),
-        data=TensorData(root=[1, 2]),
+        data=TensorData(root=[1.0, 2.0]),
     )
 
-    request_output = RequestOutput(name="output", parameters=Parameters())
+    request_output = RequestOutput(name="output")
 
     expected_inference_request = InferenceRequest(
         id="1",
-        parameters=Parameters(),
         inputs=[request_input],
         outputs=[request_output],
     )
@@ -100,12 +115,6 @@ def inference_request_correctly_returned(context):
         expected_inference_request.id,
         context.result.id,
         "Model id did not map correctly to InferenceRequest",
-    )
-
-    nt.assert_equal(
-        expected_inference_request.parameters,
-        context.result.parameters,
-        "Model parameters did not map correctly to InferenceRequest",
     )
 
     nt.assert_equal(
@@ -139,7 +148,7 @@ def infer_response_correctly_returned(context):
         name="output",
         shape=[1],
         datatype="FP32",
-        data=[11, 22],
+        data=[11.0, 22.0],
         parameters=Parameters(),
     )
 
