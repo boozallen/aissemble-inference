@@ -36,9 +36,6 @@ from aissemble_open_inference_protocol_grpc.mappers.model_inference_response_map
 from aissemble_open_inference_protocol_grpc.mappers.model_metadata_response_mapper import (
     ModelMetadataResponseMapper,
 )
-from aissemble_open_inference_protocol_grpc.mappers.utils import (
-    MappingException,
-)
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
@@ -66,10 +63,19 @@ class InferenceServicer(GrpcInferenceServiceServicer):
             inference_request = model_inference_request_mapper.to_inference_request(
                 request
             )
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise MappingException("Failed to serialize model inference request!")
+        except Exception as e:
+            context.abort(
+                grpc.StatusCode.INTERNAL,
+                f"Failed to deserialize model inference request: {e}",
+            )
+
+        try:
+            inference_request.validate_oip()
+        except (ValueError, TypeError) as e:
+            context.abort(
+                grpc.StatusCode.INVALID_ARGUMENT,
+                f"Failed to validate InferenceRequest {e}",
+            )
 
         try:
             self.logger.info("Sending model inference request to the handler")
@@ -79,26 +85,31 @@ class InferenceServicer(GrpcInferenceServiceServicer):
                 model_name=request.model_name,
                 model_version=request.model_version,
             )
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
+
+        try:
+            handler_response.validate_oip()
+        except (ValueError, TypeError) as e:
+            context.abort(
+                grpc.StatusCode.INTERNAL, f"Failed to validate InferenceResponse {e}"
+            )
+
+        try:
             encoded_response = build_inference_response(
                 request.model_name,
                 inference_request,
                 handler_response,
                 request.model_version,
             )
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
-
-        try:
             inference_response_mapper = ModelInferenceResponseMapper()
             return inference_response_mapper.to_model_inference_response(
                 encoded_response
             )
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise MappingException("Failed to serialize inference response!")
+        except Exception as e:
+            context.abort(
+                grpc.StatusCode.INTERNAL, f"Failed to serialize inference response! {e}"
+            )
 
     def ModelMetadata(
         self, request: ModelMetadataRequest, context
@@ -106,10 +117,8 @@ class InferenceServicer(GrpcInferenceServiceServicer):
         try:
             response = self.handler.model_metadata(request.name, request.version)
             return ModelMetadataResponseMapper.from_model_metadata_response(response)
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
 
     def ModelReady(self, request: ModelReadyRequest, context) -> ModelReadyResponse:
         try:
@@ -117,28 +126,22 @@ class InferenceServicer(GrpcInferenceServiceServicer):
                 model_name=request.name, model_version=request.version
             )
             return ModelReadyResponse(ready=response.ready)
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
 
     def ServerLive(self, request: ServerLiveRequest, context) -> ServerLiveResponse:
         try:
             response = self.handler.server_live()
             return ServerLiveResponse(live=response.live)
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
 
     def ServerReady(self, request: ServerReadyRequest, context) -> ServerReadyResponse:
         try:
             response = self.handler.server_ready()
             return ServerReadyResponse(ready=response.live)
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
 
     def ServerMetadata(
         self, request: ServerMetadataRequest, context
@@ -150,7 +153,5 @@ class InferenceServicer(GrpcInferenceServiceServicer):
                 version=response.version,
                 extensions=response.extensions,
             )
-        except Exception:
-            context.set_code(grpc.StatusCode.INTERNAL)
-            context.set_details("Internal Server Error!")
-            raise
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")

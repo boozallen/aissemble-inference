@@ -42,7 +42,7 @@ def start_fastapi_with_poetry():
                 "run",
                 "fastapi",
                 "dev",
-                "./src/aissemble-oip-fastapi-auth/main.py",
+                "./src/aissemble_oip_fastapi_auth/main.py",
             ]
         )
     except KeyboardInterrupt:

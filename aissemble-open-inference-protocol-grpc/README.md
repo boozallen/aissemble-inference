@@ -24,8 +24,12 @@ if __name__ == '__main__':
 The gRPC server will come up after a few seconds and will be OIP compliant. The proto specifications can be found in the [grpc_inference_service.proto](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-grpc/proto/grpc_inference_service.proto) file.
 
 ### Implementing the Endpoints Handler
-By default, most of the gRPC endpoints will return a Method Not Implemented. You can implement these functions by creating a custom handler extending `DataplaneHandler`. Example:
+By default, most of the gRPC endpoints will return a Method Not Implemented. You can implement these functions by creating a custom handler extending `DataplaneHandler`.
 
+> [!NOTE]
+> All incoming `InferenceRequest` and outgoing `InferenceResponse` objects will be automatically validated against their declared tensor shapes and datatypes. Any discrepancy will raise an error and abort the call.
+
+Example:
 ```python
 from typing import Optional
 
@@ -33,6 +37,7 @@ from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (
+    Datatype,
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
@@ -65,9 +70,9 @@ class MyHandler(DataplaneHandler):
             name=model_name,
             versions=[model_version] if model_version else None,
             platform="python",
-            inputs=[MetadataTensor(name="input", datatype="FP32", shape=[1])],
+            inputs=[MetadataTensor(name="input", datatype=Datatype.FP32, shape=[1])],
             outputs=[
-                MetadataTensor(name="output", datatype="FP32", shape=[1])
+                MetadataTensor(name="output", datatype=Datatype.FP32, shape=[1])
             ],
         )
 

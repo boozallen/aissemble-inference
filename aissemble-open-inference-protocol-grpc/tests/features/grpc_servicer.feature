@@ -14,7 +14,7 @@ Feature: Tests aissemble-open-inference-protocol-gRPC servicer functionality
     When an infer response is sent to the handler
     Then the servicer's response corresponds to the handler's results
 
-  Scenario: When a Model metadata request is sent to the gRCP servicer, it routes to the handler and returns the handler's model metadata
+  Scenario: When a Model metadata request is sent to the gRPC servicer, it routes to the handler and returns the handler's model metadata
     Given a handler to perform the request exists
     And an aissemble oip gRPC servicer exists with the handler
     And a model metadata request exists
@@ -22,7 +22,7 @@ Feature: Tests aissemble-open-inference-protocol-gRPC servicer functionality
     Then the handler receives the model metadata request with the expected data
     And the servicer's model metadata response corresponds to the handler's results
 
-  Scenario: When a model ready requests is sent to the gRCP servicer, it routes to the handler and returns then
+  Scenario: When a model ready requests is sent to the gRPC servicer, it routes to the handler and returns then
   handlers model metadata
     Given a handler to perform the request exists
     And an aissemble oip gRPC servicer exists with the handler
@@ -31,7 +31,7 @@ Feature: Tests aissemble-open-inference-protocol-gRPC servicer functionality
     Then the handler receives the model ready request with the expected data
     And the servicer's model ready response corresponds to the handler's results
 
-  Scenario: When a server metadata requests is sent to the gRCP servicer, it routes to the handler and returns then
+  Scenario: When a server metadata requests is sent to the gRPC servicer, it routes to the handler and returns then
   handlers model metadata
     Given a handler to perform the request exists
     And an aissemble oip gRPC servicer exists with the handler
@@ -39,7 +39,7 @@ Feature: Tests aissemble-open-inference-protocol-gRPC servicer functionality
     When the server metadata request is sent to the gRPC servicer
     Then the servicer's server metadata response corresponds to the handler's results
 
-  Scenario: When a server ready requests is sent to the gRCP servicer, it routes to the handler and returns then
+  Scenario: When a server ready requests is sent to the gRPC servicer, it routes to the handler and returns then
   handlers model metadata
     Given a handler to perform the request exists
     And an aissemble oip gRPC servicer exists with the handler
@@ -47,7 +47,7 @@ Feature: Tests aissemble-open-inference-protocol-gRPC servicer functionality
     When the server ready request is sent to the gRPC servicer
     Then the servicer's server ready response corresponds to the handler's results
 
-  Scenario: When a server live requests is sent to the gRCP servicer, it routes to the handler and returns then
+  Scenario: When a server live requests is sent to the gRPC servicer, it routes to the handler and returns then
   handlers model metadata
     Given a handler to perform the request exists
     And an aissemble oip gRPC servicer exists with the handler
