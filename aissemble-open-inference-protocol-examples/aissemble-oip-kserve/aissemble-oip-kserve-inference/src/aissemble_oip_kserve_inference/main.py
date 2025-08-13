@@ -7,10 +7,13 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from kserve import ModelServer
 import numpy as np
-from typing import Optional
+import math
+from typing import Optional, Union, Dict
+
 from tensorflow.keras.models import load_model
+
+from kserve import InferRequest, InferResponse, ModelServer
 
 from krausening.logging import LogManager
 
@@ -126,6 +129,36 @@ class KserveCustomModel(AissembleOIPKServe):
         self.name = name
         self.model_path = model_path
         self.handler = handler
+
+    def preprocess(
+        self, payload: Union[Dict, InferRequest], headers: Dict[str, str] = None
+    ) -> Union[Dict, InferRequest]:
+        # During preprocess, if input has format 2d float array  i.e.[ [30.1], [50.2] ... ] then flatten input data into list of floats i.e. [30.1,50.2 ...]
+        for input_val in payload.inputs:
+            preprocessed_data = []
+            for data_val in input_val.data:
+                if isinstance(data_val, list):
+                    for data in data_val:
+                        preprocessed_data.append(data)
+                else:
+                    preprocessed_data.append(data_val)
+            input_val.data = preprocessed_data
+        return payload
+
+    def postprocess(
+        self,
+        result: Union[Dict, InferResponse],
+        headers: Dict[str, str] = None,
+        response_headers: Dict[str, str] = None,
+    ) -> Union[Dict, InferResponse]:
+        # During postprocess, if output has format of list of floats with long decimal numbers,  i.e.[100.24564563, 180.289683..] then convert output to round up nearest whole number i.e. [ 101, 181...]
+        for infer_output in result.outputs:
+            postprocessed_data = []
+            for infer_data in infer_output.data:
+                rounded = math.ceil(infer_data)
+                postprocessed_data.append(rounded)
+            infer_output.data = postprocessed_data
+        return result
 
     def load(self):
         self.model = load_model("model/" + self.model_path + ".keras")

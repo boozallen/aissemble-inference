@@ -36,5 +36,9 @@ class AissembleOIPService(ABC):
         self.server = None
 
     @abstractmethod
+    def load(self):
+        pass
+
+    @abstractmethod
     async def start(self):
         pass

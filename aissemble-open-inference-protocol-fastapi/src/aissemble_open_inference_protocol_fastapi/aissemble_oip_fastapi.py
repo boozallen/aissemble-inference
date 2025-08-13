@@ -45,3 +45,6 @@ class AissembleOIPFastAPI(AissembleOIPService):
         server = uvicorn.Server(config=config)
         # Run FastAPI server
         await server.serve()
+
+    def load(self):
+        pass
