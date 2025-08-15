@@ -39,3 +39,16 @@ Feature: Validate that request/responses are OIP-compliant
       | InferenceRequest           | input-1  | []              | FP64               | None             | "unsuccessful"  |
       | InferenceResponse          | output-0 | [2,1]           | BYTES              | [[0.1],["foo"]]  | "unsuccessful"  |
       | InferenceResponse          | output-1 | [3,4]           | BOOL               | None             | "unsuccessful"  |
+
+
+  Scenario Outline: Input shape is valid if the desired shape is dynamic
+    Given an input shape of <actual_data> is given and <desired_shape> is desired
+    When the input shape validation is performed
+    Then the shape validation is <valid>
+    Examples:
+      | actual_data               | desired_shape | valid |
+      | [[1,2],[1,2],[4,0]]       | [3,2]         | True  |
+      | [[1,2,3],[1,2],[4,0,5,6]] | [3,-1]        | True  |
+      | [[1,3],[1,3],[1,3]]       | [-1,2]        | True  |
+      | [2,99]                    | [2,-1]        | False |
+      | [[6],[3,1,2],[]]          | [3,-1]        | True  |

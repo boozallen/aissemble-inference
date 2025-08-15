@@ -12,8 +12,11 @@ import asyncio
 from aissemble_open_inference_protocol_grpc.aissemble_oip_grpc import AissembleOIPgRPC
 from aissemble_oip_grpc_inference.oip_handler import OIPHandler
 
-my_handler = OIPHandler()
-grpc = AissembleOIPgRPC(my_handler)
+
+async def _main():
+    my_handler = OIPHandler()
+    grpc = AissembleOIPgRPC(my_handler)
+    await grpc.start()
 
 
 def run_server():
@@ -29,4 +32,4 @@ def run_server():
     print("Available models: multiply, add, square, default")
     print()
 
-    asyncio.run(grpc.start())
+    asyncio.run(_main())

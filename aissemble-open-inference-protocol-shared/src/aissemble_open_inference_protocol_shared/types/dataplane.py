@@ -17,6 +17,8 @@ from krausening.logging import LogManager
 
 logger = LogManager.get_instance().get_logger("Dataplane")
 
+DYNAMIC_SHAPE_SPECIFIER = -1
+
 
 class Parameters(BaseModel):
     content_type: Optional[str] = None
@@ -184,7 +186,6 @@ def get_actual_shape(data):
     Returns a list of lengths at each nesting level. Assumes shape is rectangular.
     """
     shape = []
-
     while isinstance(data, list):
         shape.append(len(data))
         data = data[0]
@@ -234,12 +235,10 @@ def validate_shape(expected_shape: List[int], data: Union[List[Any], Any]) -> No
     If nested, also ensures the structure is rectangular (no ragged lists) and matches the nested pattern.
     """
     # check that flattened data has the correct number of elements
-    flat = flatten(data)
-    expected_count = int(np.prod(expected_shape)) if expected_shape else 1
-    if len(flat) != expected_count:
+    if not shape_is_valid(expected_shape, data):
         raise ValueError(
             f"Shape mismatch - declared {expected_shape} "
-            f"({expected_count} elements), but got {len(flat)} elements"
+            f", but got {get_actual_shape(data)}"
         )
 
     # if data is nested and multidimensional, then check for rectangular structure & nested pattern
@@ -248,6 +247,7 @@ def validate_shape(expected_shape: List[int], data: Union[List[Any], Any]) -> No
         and isinstance(data, list)
         and len(expected_shape) > 1
         and any(isinstance(elt, list) for elt in data)
+        and DYNAMIC_SHAPE_SPECIFIER not in expected_shape
     ):
         # np.array creates a true N-dimensional object array only if the data is fully rectangular
         # otherwise, it returns an array of separate list objects.
@@ -264,3 +264,38 @@ def validate_shape(expected_shape: List[int], data: Union[List[Any], Any]) -> No
             raise ValueError(
                 f"Shape mismatch in nested representation - expected {expected_shape}, but got {actual_shape}"
             )
+
+
+def shape_is_valid(expected_shape, tensor_data):
+    shape_is_valid = False
+    actual_shape = get_actual_shape(tensor_data)
+    if DYNAMIC_SHAPE_SPECIFIER in expected_shape:
+        logger.info(f"Inference request with dynamic input shape '{expected_shape}'.")
+        shape_is_valid = _expected_equals_actual_with_wildcard(
+            expected_shape, actual_shape
+        )
+    else:
+        shape_is_valid = _shape_is_smooth_and_expected(expected_shape, tensor_data)
+
+    return shape_is_valid
+
+
+def _shape_is_smooth_and_expected(expected_shape, tensor_data):
+    shape_is_smooth = False
+    flat = flatten(tensor_data)
+    expected_count = int(np.prod(expected_shape)) if expected_shape else 1
+    if len(flat) == expected_count:
+        # if the flattened data length equals the expected matrix product
+        # then the data is considered smooth (not ragged)
+        shape_is_smooth = True
+
+    return shape_is_smooth
+
+
+def _expected_equals_actual_with_wildcard(
+    expected, actual, wildcard=DYNAMIC_SHAPE_SPECIFIER
+):
+    if len(expected) != len(actual):
+        return False
+
+    return all(a == b or a == wildcard for a, b in zip(expected, actual))
