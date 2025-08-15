@@ -10,6 +10,7 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     flatten,
     validate_shape,
     validate_datatype,
+    shape_is_valid,
 )
 
 DATAPLANE_CLASSES = {
@@ -121,3 +122,26 @@ def step_the_inference_request_response_is_validated(
     except Exception as e:
         context.validation_result = "unsuccessful"
         context.exception = e
+
+
+@given("an input shape of {actual_data} is given and {desired_shape} is desired")
+def step_an_input_shape_of_is_given_and_is_desired(
+    context,
+    actual_data,
+    desired_shape,
+):
+    context.actual_data = ast.literal_eval(actual_data)
+    context.desired_shape = ast.literal_eval(desired_shape)
+
+
+@when("the input shape validation is performed")
+def step_input_shape_validation_is_performed(context):
+    context.shape_validity = shape_is_valid(context.desired_shape, context.actual_data)
+
+
+@then("the shape validation is {valid}")
+def step_the_shape_validation_is_valid(context, valid):
+    valid = valid.strip().lower() == "true"
+    assert context.shape_validity == valid, (
+        f"Expected validation to be '{valid}', but got '{context.shape_validity}'"
+    )
