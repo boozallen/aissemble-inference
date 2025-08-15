@@ -101,7 +101,7 @@ class InferenceResponse(BaseModel):
                 try:
                     output_value.validate_oip()
                 except Exception as e:
-                    raise type(e)(f"output ('{output_value.name})': {e}") from e
+                    raise type(e)(f"output ('{output_value.name}'): {e}") from e
         else:
             logger.info(
                 f"InferenceResponse for model '{self.model_name}' contained no outputs."
@@ -121,7 +121,7 @@ class InferenceRequest(BaseModel):
             try:
                 input_value.validate_oip()
             except Exception as e:
-                raise type(e)(f"input ('{input_value.name})': {e}") from e
+                raise type(e)(f"input ('{input_value.name}'): {e}") from e
 
 
 class MetadataTensor(BaseModel):

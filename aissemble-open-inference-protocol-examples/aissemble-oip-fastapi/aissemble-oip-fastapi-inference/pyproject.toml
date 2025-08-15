@@ -9,7 +9,7 @@ authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.9,<3.13"
+requires-python = ">=3.10,<3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -23,8 +23,9 @@ license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
 
 [tool.poetry.dependencies]
-fastapi = {extras = ["standard"], version = "^0.115.12"}
+fastapi = {extras = ["standard"], version = ">=0.116.1"}
 tensorflow = ">=2.16.0,<2.17.0"
+keras = ">=3.11.0"
 krausening = ">=20"
 aissemble-open-inference-protocol-fastapi = {path = "../../../aissemble-open-inference-protocol-fastapi", develop = true}
 
