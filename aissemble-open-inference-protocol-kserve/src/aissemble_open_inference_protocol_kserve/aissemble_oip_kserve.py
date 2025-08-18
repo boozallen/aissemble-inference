@@ -44,6 +44,12 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         )
         return infer_response
 
+    def load(self):
+        """As loading model is different for each client, it is up to user to implement load based on their use case.
+        NOTE: setting self.ready to True indicates KServe Model is ready to serve."""
+        self.ready = True
+        return self.ready
+
     async def start(self):
         self.load()
         ModelServer().start([self])
