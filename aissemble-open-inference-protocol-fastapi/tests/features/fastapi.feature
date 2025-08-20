@@ -63,3 +63,37 @@ Feature: Test FastAPI OIP Implementation
     When I send a "POST" request to "/v2/models/my_model/infer"
     Then the response status code should be 200
     Then the response should contain "byte output data"
+
+  Scenario Outline: The inference request validation
+    Given I have an OIP FastAPI app with the default handler
+    And inference request has "<data>" with "<shape>" and "<datatype>"
+    When I send a "POST" request to "/v2/models/my_model/infer"
+    Then the response status code should be <response_code>
+    And the response should contain "<response>"
+
+    Examples:
+      | data    | shape  | datatype | response_code | response          |
+      | [1,2,3] | [1, 1] | BYTES    | 422           | Shape mismatch    |
+      | [1,2,3] | [1, 3] | BYTES    | 422           | Datatype mismatch |
+      | [1,2,3] | [1, 3] | INT8     | 501           | Not Implemented   |
+      | [1,2,3] | [3]    | INT8     | 501           | Not Implemented   |
+      | [1,2,3] | [-1]   | INT8     | 501           | Not Implemented   |
+      | [1,2,3] | [1, 1] | INT8     | 422           | Shape mismatch    |
+
+  Scenario Outline: The inference response validation
+    Given I have a handler that returns outputs data
+    And I have an OIP FastAPI app with the handler
+    And inference response has "<data>" with "<shape>" and "<datatype>"
+    When I send a "POST" request to "/v2/models/my_model/infer"
+    Then the response status code should be <response_code>
+    And the response should contain "<response>"
+
+    Examples:
+      | data    | shape  | datatype | response_code | response                     |
+      | [1,2,3] | [1, 1] | BYTES    | 422           | Shape mismatch               |
+      | [1,2,3] | [1, 3] | BYTES    | 422           | Datatype mismatch            |
+      | [1,2,3] | [1, 3] | INT8     | 200           | "name":"invalid-output-test" |
+      | [1,2,3] | [3]    | INT8     | 200           | "name":"invalid-output-test" |
+      | [1,2,3] | [-1]   | INT8     | 200           | "name":"invalid-output-test" |
+      | [1,2,3] | [1, 1] | INT8     | 422           | Shape mismatch               |
+

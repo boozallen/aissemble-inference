@@ -12,8 +12,10 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     Parameters,
     TensorData,
     RequestOutput,
+    ResponseOutput,
 )
 from handlers.test_handler import TestHandler
+import re
 
 
 @given("I have an OIP FastAPI app with the default handler")
@@ -36,17 +38,28 @@ def i_have_an_oip_fast_api_app_with_the_handler(context):
 
 @given("I have an infer request")
 def i_have_an_infer_request(context):
-    _input = RequestInput(
-        name="input-1",
-        shape=[1],
-        datatype=Datatype.BYTES,
-        data=TensorData(root="some data"),
+    create_inference_request(context)
+
+
+@given('inference request has "{data}" with "{shape}" and "{datatype}"')
+def inference_request_has_data_with_shape_and_datatype(context, data, shape, datatype):
+    context.input = get_request_input(
+        name="invalid-input-test",
+        shape=json.loads(shape),
+        datatype=Datatype(datatype),
+        data=json.loads(data),
     )
-    _output1 = RequestOutput(name="output-1", parameters=Parameters(content_type="str"))
-    _output2 = RequestOutput(name="output-2")
-    context.request_payload = InferenceRequest(
-        id="test request", inputs=[_input], outputs=[_output1, _output2]
+
+
+@given('inference response has "{data}" with "{shape}" and "{datatype}"')
+def inference_response_has_data_with_shape_and_datatype(context, data, shape, datatype):
+    context.handler.response_output = ResponseOutput(
+        name="invalid-output-test",
+        shape=json.loads(shape),
+        datatype=Datatype(datatype),
+        data=TensorData(root=json.loads(data)),
     )
+    context.output = RequestOutput(name="invalid-output-test")
 
 
 @when('I send a "{method}" request to "{path}"')
@@ -65,13 +78,8 @@ def send_method_request(context, method, path):
     headers = context.header
     if method.upper() == "POST" and "infer" in path:
         # Create a payload for POST /infer requests; JSON body must be sent
-        if hasattr(context, "request_payload"):
-            payload = json.dumps(context.request_payload, default=lambda o: o.__dict__)
-        else:
-            payload = json.dumps(
-                InferenceRequest(id="test request", inputs=[]),
-                default=lambda o: o.__dict__,
-            )
+        create_inference_request(context)
+        payload = get_json_str(context.request_payload)
         context.response = context.client.request(
             method, path, content=payload, headers=headers
         )
@@ -99,3 +107,50 @@ def step_impl(context, message):
 def schema_contains_method_and_route(context, method, route):
     nt.ok_(route in context.schema["paths"], f"{route} not in OpenAPI paths")
     nt.ok_(method in context.schema["paths"][route], f"{method} not in {route} path")
+
+
+def create_inference_request(context):
+    context.request_payload = InferenceRequest(id="test request", inputs=[], outputs=[])
+
+    if hasattr(context, "input"):
+        context.request_payload.id = "test inference request validation"
+        context.request_payload.inputs.append(context.input)
+    else:
+        context.request_payload.inputs.append(get_request_input(name="input-1"))
+
+    if hasattr(context, "output"):
+        context.request_payload.id = "test inference response validation"
+        context.request_payload.outputs.append(context.output)
+    else:
+        _output1 = RequestOutput(
+            name="output-1", parameters=Parameters(content_type="str")
+        )
+        _output2 = RequestOutput(name="output-2")
+        context.request_payload.outputs.append(_output1)
+        context.request_payload.outputs.append(_output2)
+
+
+def get_json_str(obj):
+    content = f"{obj.inputs[0].data.root}"
+    if content == "some data":
+        replaced_content = f'"{content}"'
+    else:
+        content = replaced_content = f"{content}".replace("[", "").replace("]", "")
+
+    json_str = json.dumps(obj, default=lambda o: o.__dict__)
+    # update the generated json str to match the expected json format for data
+    json_str = re.sub(
+        r'"data":\s+\{"root":\s+("|\[)' + content + '("|\])\}',
+        r'"data": [' + replaced_content + "]",
+        json_str,
+    )
+    return json_str
+
+
+def get_request_input(name, shape=[1], datatype=Datatype.BYTES, data="some data"):
+    return RequestInput(
+        name=name,
+        shape=shape,
+        datatype=datatype,
+        data=TensorData(root=data),
+    )
