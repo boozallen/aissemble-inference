@@ -7,7 +7,7 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from fastapi import APIRouter, status, Depends, Request
+from fastapi import APIRouter, status, Depends, Request, HTTPException
 from fastapi.security import HTTPBearer
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DefaultHandler,
@@ -86,12 +86,15 @@ def infer_model(
     authenticate_and_authorize(auth_context)
 
     raw_request_payload = payload
+
+    validate_oip(raw_request_payload)
     decoded_payload = decode_inference_request(payload)
     result = handler.infer(model_name=model_name, payload=decoded_payload)
-
-    return build_inference_response(
+    inference_response = build_inference_response(
         model_name=model_name, request=raw_request_payload, result=result
     )
+    validate_oip(inference_response)
+    return inference_response
 
 
 @router.post(
@@ -123,15 +126,18 @@ async def infer_model_version(
     authenticate_and_authorize(auth_context)
 
     raw_request_payload = payload
+    validate_oip(raw_request_payload)
     decoded_payload = decode_inference_request(payload)
     result = handler.infer(model_name=model_name, payload=decoded_payload)
 
-    return build_inference_response(
+    inference_response = build_inference_response(
         model_name=model_name,
         request=raw_request_payload,
         result=result,
         model_version=model_version,
     )
+    validate_oip(inference_response)
+    return inference_response
 
 
 @router.get(
@@ -383,3 +389,17 @@ def _get_user_ip_from_request(request: Request):
             )
 
     return ip
+
+
+def validate_oip(data: InferenceRequest | InferenceResponse):
+    """
+    Validate InferenceRequest or InferenceResponse data against shape and datatype
+    :param data: inference resquest or inference response
+    """
+    try:
+        data.validate_oip()
+    except (ValueError, TypeError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Failed to validate InferenceResponse {e}",
+        )

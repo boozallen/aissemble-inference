@@ -26,6 +26,8 @@ View the routes by going to http://127.0.0.1:8000/docs.
 ## Implementing a Handler
 The endpoints will call a [default handler](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/handlers/default_handler.py) that will return 501 Not Implemented. To make a handler, create your class and extend the abstract base method [dataplane.py](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/handlers/dataplane.py). Then pass your class into the `AissembleOIPFastAPI` constructor.
 
+_Note: All incoming `InferenceRequest` and outgoing `InferenceResponse` objects will be automatically validated against their declared tensor shapes and datatypes. Any discrepancy will raise an error and abort the call.
+
 ### Example of Usage with a Handler
 Create your custom handler class with:
 ```python

@@ -18,6 +18,15 @@ SECRET_KEY = config.auth_secret()
 ALGORITHM = config.auth_algorithm()
 
 
+def before_scenario(context, scenario):
+    if hasattr(context, "request_payload"):
+        delattr(context, "request_payload")
+    if hasattr(context, "input"):
+        delattr(context, "input")
+    if hasattr(context, "output"):
+        delattr(context, "output")
+
+
 def before_all(context):
     to_encode = {"sub": "some-user-id", "name": "Some User"}
     expires_delta = timedelta(hours=1)

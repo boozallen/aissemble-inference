@@ -35,12 +35,19 @@ class TestHandler(DataplaneHandler):
             datatype=Datatype.INT64,
             data=TensorData(root=[1, 2, 3]),
         )
-        return InferenceResponse(
+        inference_response = InferenceResponse(
             model_name=model_name,
             model_version=model_version,
             id=payload.id,
-            outputs=[output1, output2],
+            outputs=[],
         )
+        if hasattr(self, "response_output"):
+            inference_response.outputs.append(self.response_output)
+        else:
+            inference_response.outputs.append(output1)
+            inference_response.outputs.append(output2)
+
+        return inference_response
 
     def model_metadata(
         self, model_name: str, model_version: Optional[str] = None
