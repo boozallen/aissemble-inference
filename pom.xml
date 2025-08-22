@@ -17,6 +17,7 @@
     <name>aiSSEMBLE::Open Inference Protocol</name>
     <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>
     <packaging>pom</packaging>
+    <url>https://github.com/boozallen/aissemble-open-inference-protocol</url>
 
     <distributionManagement>
         <snapshotRepository>
@@ -24,6 +25,36 @@
             <url>https://maven.pkg.github.com/boozallen/aissemble-open-inference-protocol</url>
         </snapshotRepository>
     </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/boozallen/aissemble-open-inference-protocol.git</connection>
+        <developerConnection>scm:git:https://github.com/boozallen/aissemble-open-inference-protocol.git</developerConnection>
+        <url>https://github.com/boozallen/aissemble-open-inference-protocol</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <organization>
+        <name>Booz Allen Hamilton Inc.</name>
+        <url>https://www.boozallen.com</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>aissemble</id>
+            <name>aiSSEMBLE Baseline Community</name>
+            <organization>Booz Allen Hamilton</organization>
+            <organizationUrl>https://boozallen.com</organizationUrl>
+            <email>aissemble@bah.com</email>
+        </developer>
+    </developers>
+
+    <licenses>
+        <license>
+            <name>Booz Allen Public License v1.0</name>
+            <url>https://github.com/boozallen/Public-License/blob/master/LICENSE.md</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
     <modules>
         <module>aissemble-open-inference-protocol-fastapi</module>
@@ -85,6 +116,39 @@
                                 <addPypiRepoAsPackageSources>false</addPypiRepoAsPackageSources>
                                 <useDevRepository>true</useDevRepository>
                             </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <id>release-ci</id>
+            <modules>
+                <module>aissemble-open-inference-protocol-kserve</module>
+                <module>aissemble-open-inference-protocol-grpc</module>
+                <module>aissemble-open-inference-protocol-fastapi</module>
+                <module>aissemble-open-inference-protocol-shared</module>
+            </modules>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.technologybrewery.habushu</groupId>
+                            <artifactId>habushu-maven-plugin</artifactId>
+                            <version>${version.habushu.plugin}</version>
+                            <configuration>
+                                <usePyenv>false</usePyenv>
+                                <deleteVirtualEnv>true</deleteVirtualEnv>
+                                <forceSync>true</forceSync>
+                                <decryptPassword>false</decryptPassword>
+                                <rewriteLocalPathDepsInArchives>true</rewriteLocalPathDepsInArchives>
+                                <addPypiRepoAsPackageSources>false</addPypiRepoAsPackageSources>
+                                <useDevRepository>false</useDevRepository>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.sonatype.central</groupId>
+                            <artifactId>central-publishing-maven-plugin</artifactId>
                         </plugin>
                     </plugins>
                 </pluginManagement>
