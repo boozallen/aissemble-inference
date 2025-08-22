@@ -1,0 +1,92 @@
+# This workflow kicks off the release job of aiSSEMBLE Open Inference Protocol
+# and deploys artifacts to Maven Central, ghcr.io and pypi
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Release aissemble-open-inference-protocol
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseBranch:
+        description: "Release Branch"
+        required: true
+        type: string
+        default: "release-RELEASE_VERSION"
+      releaseVersion:
+        description: "Release Version (X.Y.Z)"
+        required: true
+        type: string
+      developmentVersion:
+        description: "Next Dev Version"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ inputs.releaseVersion }}
+      NEXT_DEVELOPMENT_VERSION: ${{ inputs.developmentVersion }}
+    steps:
+      - name: Print release parameters
+        run: |
+          echo "Releasing with the following parameters"
+          echo "Release version: ${{ env.RELEASE_VERSION }}"
+          echo "Next Development version: ${{ env.NEXT_DEVELOPMENT_VERSION }}"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.releaseBranch }}
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.4'
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Create settings.xml
+        id: create-settings-xml
+        run: |
+          cat > $HOME/.m2/settings.xml << EOF
+          <settings>
+            <servers>
+              <server>
+                <id>central</id>
+                <username>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_USER }}</username>
+                <password>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_KEY }}</password>
+              </server>
+              <server>
+                <id>ghcr.io</id>
+                <username>\${env.GITHUB_ACTOR}</username>
+                <password>\${env.GITHUB_TOKEN}</password>
+              </server>
+              <server>
+                <id>pypi</id>
+                <username>${{ secrets.PYPI_USERNAME }}</username>
+                <password>${{ secrets.PYPI_TOKEN }}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: Release aissemble-open-inference-protocol
+        run: |
+          git config --local user.email "aissemble@bah.com"
+          git config --local user.name "Github Actions"
+          git checkout -b ${{ input.releaseBranch }}
+          mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
