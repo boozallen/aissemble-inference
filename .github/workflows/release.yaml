@@ -81,6 +81,7 @@ jobs:
         run: |
           git config --local user.email "aissemble-noreply@bah.com"
           git config --local user.name "Github Actions"
+          git config pull.rebase true
           git checkout -b 82-release-aissemble-oip
           git pull origin 82-release-aissemble-oip
           mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dgpg.keyname=aissemble@bah.com -DsignTag=true -Dmaven.build.cache.enabled=false
