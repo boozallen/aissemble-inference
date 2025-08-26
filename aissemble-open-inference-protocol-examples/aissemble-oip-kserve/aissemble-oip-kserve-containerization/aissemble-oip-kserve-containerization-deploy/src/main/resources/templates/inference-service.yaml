@@ -6,6 +6,7 @@ spec:
   predictor:
     containers:
       - name: "aissemble-oip-kserve-containerization-docker"
-        image: aissemble-oip-kserve-containerization-docker:1.0.0-SNAPSHOT
-        args:
-          - --http_port=8080
+        image: aissemble-oip-kserve-containerization-docker:1.1.0-SNAPSHOT
+        env:
+          - name: KSERVE_HTTP_PORT
+            value: "8080"

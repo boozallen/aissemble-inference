@@ -174,4 +174,15 @@ if __name__ == "__main__":
         customDataplaneHandler,
     )
     model.load()
-    ModelServer().start([model])
+    ModelServer(
+        http_port=model.config.kserve_http_port,
+        grpc_port=model.config.kserve_grpc_port,
+        workers=model.config.kserve_workers,
+        max_threads=model.config.kserve_max_threads,
+        max_asyncio_workers=model.config.kserve_max_asyncio_workers,
+        enable_grpc=model.config.kserve_enable_grpc,
+        enable_docs_url=model.config.kserve_enable_docs_url,
+        enable_latency_logging=model.config.kserve_enable_latency_logging,
+        access_log_format=model.config.kserve_access_log_format,
+        grace_period=model.config.kserve_grace_period,
+    ).start([model])

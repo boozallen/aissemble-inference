@@ -31,6 +31,12 @@ COPY --from=habushu_builder --chown=1001 --chmod=744 /opt/venv /opt/venv/
 ENV PATH="/opt/venv/bin:$PATH"
 #HABUSHU_FINAL_STAGE - HABUSHU GENERATED CODE (END)
 
+# Copy the krausening properties from the builder stage
+COPY --from=habushu_builder /work-dir/containerize-support/aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-inference/src/resources /opt/app/resources
+
+# Set KRAUSENING_BASE to point to the copied properties
+ENV KRAUSENING_BASE="/opt/app/resources/krausening/base"
+
 COPY resources/model /model
 
 ENTRYPOINT ["/opt/venv/bin/python3.12", "-m", "aissemble_oip_kserve_inference.main"]
