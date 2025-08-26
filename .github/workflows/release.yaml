@@ -43,7 +43,7 @@ jobs:
           echo "Next Development version: ${{ env.NEXT_DEVELOPMENT_VERSION }}"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.releaseBranch }}
+          ref: 82-release-aissemble-oip
       - name: Install Python
         uses: actions/setup-python@v5
         with:
@@ -86,7 +86,7 @@ jobs:
         run: |
           git config --local user.email "aissemble@bah.com"
           git config --local user.name "Github Actions"
-          git checkout -b ${{ inputs.releaseBranch }}
+          git checkout -b 82-release-aissemble-oip
           mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
