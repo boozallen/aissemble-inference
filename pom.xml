@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>aissemble-open-inference-protocol</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
 
     <name>aiSSEMBLE::Open Inference Protocol</name>
     <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>

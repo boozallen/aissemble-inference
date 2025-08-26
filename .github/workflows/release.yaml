@@ -9,10 +9,15 @@ on:
 
   workflow_dispatch:
     inputs:
+      releaseBranch:
+        description: "Release Branch"
+        required: true
+        type: string
+        default: "82-release-aissemble-oip"
       releaseVersion:
         description: "Release Version (X.Y.Z)"
         required: true
-        default: 'dev'
+        default: '1.0.1'
         type: string
       developmentVersion:
         description: "Next Dev Version"
@@ -38,7 +43,7 @@ jobs:
           echo "Next Development version: ${{ env.NEXT_DEVELOPMENT_VERSION }}"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.branch || github.ref }}
+          ref: ${{ inputs.releaseBranch }}
       - name: Install Python
         uses: actions/setup-python@v5
         with:
@@ -79,11 +84,9 @@ jobs:
 
       - name: Release aissemble-open-inference-protocol
         run: |
-          git config --local user.email "aissemble-noreply@bah.com"
+          git config --local user.email "aissemble@bah.com"
           git config --local user.name "Github Actions"
-          git config pull.rebase true
-          git checkout -b 82-release-aissemble-oip
-          git pull origin 82-release-aissemble-oip
+          git checkout -b ${{ input.releaseBranch }}
           mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
