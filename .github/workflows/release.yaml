@@ -10,7 +10,7 @@ name: Release aissemble-open-inference-protocol
 
 on:
   pull_request:
-    branches: [ release-test ]
+    branches: [ release-test , dev]
   workflow_dispatch:
     inputs:
       releaseBranch:
