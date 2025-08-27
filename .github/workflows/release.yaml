@@ -9,15 +9,12 @@
 name: Release aissemble-open-inference-protocol
 
 on:
-  pull_request:
-    branches: [ release-test , dev]
   workflow_dispatch:
     inputs:
       releaseBranch:
-        description: "Release Branch"
-        required: true
+        description: "Release Branch (default: release-{releaseVersion})"
+        required: false
         type: string
-        default: "release-RELEASE_VERSION"
       releaseVersion:
         description: "Release Version (X.Y.Z)"
         required: true
@@ -34,56 +31,29 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      RELEASE_VERSION: 1.0.0
-      NEXT_DEVELOPMENT_VERSION: 1.1.0-SNAPSHOT
     steps:
+      - name: Create default release branch if none specified
+        id: branch
+        run: |
+          echo "release-branch=$( [ "${{ inputs.releaseBranch }}" != "" ] && echo "${{ inputs.releaseBranch }}" || echo "release-${{ inputs.releaseVersion }}")" >> $GITHUB_OUTPUT
       - name: Print release parameters
         run: |
           echo "Releasing with the following parameters"
-          echo "Release version: ${{ env.RELEASE_VERSION }}"
-          echo "Next Development version: ${{ env.NEXT_DEVELOPMENT_VERSION }}"
+          echo "Release Branch:  ${{ steps.branch.outputs.release-branch }}"
+          echo "Release version: ${{ inputs.releaseVersion }}"
+          echo "Next Development version:  ${{ inputs.developmentVersion }}"
       - uses: actions/checkout@v4
         with:
-          ref: release-test
-      - name: Install Python
-        uses: actions/setup-python@v5
+          ref: ${{ steps.branch.outputs.release-branch }}
+      - name: Install dependencies
+        uses: ./.github/actions/install_dependencies
         with:
-          python-version: '3.11.4'
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Create settings.xml
-        id: create-settings-xml
-        run: |
-          cat > $HOME/.m2/settings.xml << EOF
-          <settings>
-            <servers>
-              <server>
-                <id>central</id>
-                <username>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_USER }}</username>
-                <password>${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_KEY }}</password>
-              </server>
-              <server>
-                <id>ghcr.io</id>
-                <username>\${env.GITHUB_ACTOR}</username>
-                <password>\${env.GITHUB_TOKEN}</password>
-              </server>
-              <server>
-                <id>pypi</id>
-                <username>${{ secrets.PYPI_USERNAME }}</username>
-                <password>${{ secrets.PYPI_TOKEN }}</password>
-              </server>
-            </servers>
-          </settings>
-          EOF
-
+          sonatype-central-user: ${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_USER }}
+          sonatype-central-key: ${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_KEY }}
+          github-actor: ${env.GITHUB_ACTOR}
+          github-token: ${env.GITHUB_TOKEN}
+          pypi-username: ${{ secrets.PYPI_USERNAME }}
+          pypi-token: ${{ secrets.PYPI_TOKEN }}
       - name: Release aissemble-open-inference-protocol
         run: |
           git config --local user.email "aissemble@bah.com"
