@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RELEASE_VERSION: 1.0.0
-      NEXT_DEVELOPMENT_VERSION: 1.1.0
+      NEXT_DEVELOPMENT_VERSION: 1.1.0-SNAPSHOT
     steps:
       - name: Print release parameters
         run: |
