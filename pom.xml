@@ -7,24 +7,17 @@
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
         <artifactId>aissemble-parent</artifactId>
-        <version>6</version>
+        <version>7</version>
         <relativePath />
     </parent>
 
     <artifactId>aissemble-open-inference-protocol</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <name>aiSSEMBLE::Open Inference Protocol</name>
     <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>
     <packaging>pom</packaging>
     <url>https://github.com/boozallen/aissemble-open-inference-protocol</url>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ghcr.io</id>
-            <url>https://maven.pkg.github.com/boozallen/aissemble-open-inference-protocol</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <scm>
         <connection>scm:git:https://github.com/boozallen/aissemble-open-inference-protocol.git</connection>
@@ -55,53 +48,30 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
-    <!--
-        NOTE: There is re-definition of list of modules in release maven profile, as we omit  aissemble-open-inference-protocol-examples during release.
-        Please make sure to also change list of modules in release maven profile accordingly when making changes to below modules.
-    -->
-    <modules>
-        <module>aissemble-open-inference-protocol-fastapi</module>
-        <module>aissemble-open-inference-protocol-grpc</module>
-        <module>aissemble-open-inference-protocol-shared</module>
-        <module>aissemble-open-inference-protocol-examples</module>
-        <module>aissemble-open-inference-protocol-kserve</module>
-    </modules>
-
+    
     <properties>
         <version.habushu.plugin>3.0.0</version.habushu.plugin>
         <version.python>3.11.4</version.python>
     </properties>
 
-    <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.technologybrewery.habushu</groupId>
-                    <artifactId>habushu-maven-plugin</artifactId>
-                    <version>${version.habushu.plugin}</version>
-                    <extensions>true</extensions>
-                    <configuration>
-                        <cacheWheels>true</cacheWheels>
-                        <pythonVersion>${version.python}</pythonVersion>
-                        <behaveTestEnvironmentVariables>
-                            <TESTCONTAINERS_RYUK_DISABLED>${TESTCONTAINERS_RYUK_DISABLED}</TESTCONTAINERS_RYUK_DISABLED>
-                        </behaveTestEnvironmentVariables>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
-        <plugins>
-            <!-- Apply licenses automatically -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
+        <profile>
+            <id>default-build</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <!--
+                NOTE: There is re-definition of list of modules in release maven profile, as we omit  aissemble-open-inference-protocol-examples during release.
+                Please make sure to also change list of modules in release maven profile accordingly when making changes to below modules.
+            -->
+            <modules>
+                <module>aissemble-open-inference-protocol-fastapi</module>
+                <module>aissemble-open-inference-protocol-grpc</module>
+                <module>aissemble-open-inference-protocol-shared</module>
+                <module>aissemble-open-inference-protocol-examples</module>
+                <module>aissemble-open-inference-protocol-kserve</module>
+            </modules>
+        </profile>
         <profile>
             <id>ci</id>
             <build>
@@ -153,4 +123,32 @@
             </build>
         </profile>
     </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.technologybrewery.habushu</groupId>
+                    <artifactId>habushu-maven-plugin</artifactId>
+                    <version>${version.habushu.plugin}</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <cacheWheels>true</cacheWheels>
+                        <pythonVersion>${version.python}</pythonVersion>
+                        <behaveTestEnvironmentVariables>
+                            <TESTCONTAINERS_RYUK_DISABLED>${TESTCONTAINERS_RYUK_DISABLED}</TESTCONTAINERS_RYUK_DISABLED>
+                        </behaveTestEnvironmentVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- Apply licenses automatically -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

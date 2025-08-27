@@ -1,6 +1,6 @@
 [project]
 name = "aissemble-open-inference-protocol-grpc"
-version = "1.0.0.dev"
+version = "1.0.1.dev"
 description = "A gRPC implementation of the Open Inference Protocol"
 authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}

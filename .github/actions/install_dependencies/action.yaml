@@ -44,11 +44,6 @@ runs:
               <password>${{ inputs.sonatype-central-key}}</password>
             </server>
             <server>
-              <id>ghcr.io</id>
-              <username>${{ inputs.github-actor }}</username>
-              <password>${{ inputs.github-token }}</password>
-            </server>
-            <server>
               <id>${{ inputs.package-index }}</id>
               <username>${{ inputs.pypi-username }}</username>
               <password>${{ inputs.pypi-token }}</password>

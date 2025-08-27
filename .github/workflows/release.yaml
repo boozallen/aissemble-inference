@@ -42,6 +42,11 @@ jobs:
           echo "Release Branch:  ${{ steps.branch.outputs.release-branch }}"
           echo "Release version: ${{ inputs.releaseVersion }}"
           echo "Next Development version:  ${{ inputs.developmentVersion }}"
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.GPG_PRIVATE_KEY_PASSPHRASE }}
       - uses: actions/checkout@v4
         with:
           ref: ${{ steps.branch.outputs.release-branch }}
@@ -50,8 +55,6 @@ jobs:
         with:
           sonatype-central-user: ${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_USER }}
           sonatype-central-key: ${{ secrets.SONATYPE_CENTRAL_REPO_TOKEN_KEY }}
-          github-actor: \${env.GITHUB_ACTOR}
-          github-token: \${env.GITHUB_TOKEN}
           package-index: pypi
           pypi-username: ${{ secrets.PYPI_USERNAME }}
           pypi-token: ${{ secrets.PYPI_TOKEN }}

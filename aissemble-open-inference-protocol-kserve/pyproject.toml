@@ -1,6 +1,6 @@
 [project]
 name = "aissemble-open-inference-protocol-kserve"
-version = "1.0.0.dev"
+version = "1.0.1.dev"
 description = "A KServe implementation of the Open Inference Protocol"
 authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
