@@ -86,7 +86,6 @@ jobs:
         run: |
           git config --local user.email "aissemble@bah.com"
           git config --local user.name "Github Actions"
-          git checkout -b ${{ input.releaseBranch }}
-          mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
+          mvn -B release:clean release:prepare -Pci,release -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
