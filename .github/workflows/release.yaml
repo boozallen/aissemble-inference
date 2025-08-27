@@ -9,6 +9,8 @@
 name: Release aissemble-open-inference-protocol
 
 on:
+  pull_request:
+    branches: [ release-test ]
   workflow_dispatch:
     inputs:
       releaseBranch:
@@ -33,8 +35,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      RELEASE_VERSION: ${{ inputs.releaseVersion }}
-      NEXT_DEVELOPMENT_VERSION: ${{ inputs.developmentVersion }}
+      RELEASE_VERSION: 1.0.0
+      NEXT_DEVELOPMENT_VERSION: 1.1.0
     steps:
       - name: Print release parameters
         run: |
@@ -43,7 +45,7 @@ jobs:
           echo "Next Development version: ${{ env.NEXT_DEVELOPMENT_VERSION }}"
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.releaseBranch }}
+          ref: release-test
       - name: Install Python
         uses: actions/setup-python@v5
         with:
