@@ -83,7 +83,7 @@ jobs:
           EOF
 
       - name: Release aissemble-open-inference-protocol
-        run: |
+        run: | 
           git config --local user.email "aissemble@bah.com"
           git config --local user.name "Github Actions"
           mvn -B release:clean release:prepare -Prelease-ci -DreleaseVersion=${{ env.RELEASE_VERSION }} -DdevelopmentVersion=${{ env.NEXT_DEVELOPMENT_VERSION }} -Dmaven.build.cache.enabled=false
