@@ -1,0 +1,58 @@
+name: 'Install Dependencies'
+description: 'Install the dependencies needed to build aissemble-open-inference-protocol'
+inputs:
+  sonatype-central-user:
+    required: true
+  sonatype-central-key:
+    required: true
+  github-actor:
+    required: true
+  github-token:
+    required: true
+  pypi-username:
+    required: true
+  pypi-token:
+    required: true
+  package-index:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11.4'
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Create settings.xml
+      id: create-settings-xml
+      shell: bash
+      run: |
+        cat > $HOME/.m2/settings.xml << EOF
+        <settings>
+          <servers>
+            <server>
+              <id>central</id>
+              <username>${{ inputs.sonatype-central-user }}</username>
+              <password>${{ inputs.sonatype-central-key}}</password>
+            </server>
+            <server>
+              <id>ghcr.io</id>
+              <username>${{ inputs.github-actor }}</username>
+              <password>${{ inputs.github-token }}</password>
+            </server>
+            <server>
+              <id>${{ inputs.package-index }}</id>
+              <username>${{ inputs.pypi-username }}</username>
+              <password>${{ inputs.pypi-token }}</password>
+            </server>
+          </servers>
+        </settings>
+        EOF
