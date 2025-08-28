@@ -38,6 +38,6 @@ jobs:
 
       # Run build and deploy test artifacts
       - name: Build aissemble-open-inference-protocol
-        run: mvn clean deploy -B -U -Pci
+        run: mvn clean deploy -B -U -Pbuild,ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

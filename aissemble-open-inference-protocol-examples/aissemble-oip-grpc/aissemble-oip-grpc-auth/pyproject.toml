@@ -3,7 +3,7 @@ packages = [{include = "aissemble_oip_grpc_auth", from = "src"}]
 
 [project]
 name = "aissemble-oip-grpc-auth"
-version = "1.0.0.dev"
+version = "1.1.0.dev"
 description = "A gRPC Example of the Open Inference Protocol with authorization"
 authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}

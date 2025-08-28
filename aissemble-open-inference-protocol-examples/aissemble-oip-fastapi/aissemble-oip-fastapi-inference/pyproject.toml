@@ -3,7 +3,7 @@ packages = [{include = "aissemble_oip_fastapi_inference", from = "src"}]
 
 [project]
 name = "aissemble-oip-fastapi-inference"
-version = "1.0.0.dev"
+version = "1.1.0.dev"
 description = "A FastAPI Example of the Open Inference Protocol"
 authors = [
     {name = "aiSSEMBLE Solutions Community", email = "aissemble@bah.com"}
