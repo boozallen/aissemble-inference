@@ -32,6 +32,15 @@
                         <skipDeploy>true</skipDeploy>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <configuration>
+                        <!-- We don't want to publish this module to central but want to keep upversioning during release:prepare goal is executed whenever release is done.
+                             TODO: This configuration is not fully tested and shall be tested to make sure publishing example module is skipped.-->
+                        <skipPublishing>true</skipPublishing>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
