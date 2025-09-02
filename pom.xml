@@ -54,26 +54,20 @@
         <version.python>3.11.4</version.python>
     </properties>
 
+    <modules>
+        <module>aissemble-open-inference-protocol-fastapi</module>
+        <module>aissemble-open-inference-protocol-grpc</module>
+        <module>aissemble-open-inference-protocol-shared</module>
+        <module>aissemble-open-inference-protocol-examples</module>
+        <module>aissemble-open-inference-protocol-kserve</module>
+    </modules>
+
     <profiles>
         <profile>
             <id>default-build</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <!--
-                NOTE: There is re-definition of list of modules in release maven profile, as we omit  aissemble-open-inference-protocol-examples during release.
-                Please make sure to also change list of modules in release maven profile accordingly when making changes to below modules.
-            -->
-            <modules>
-                <module>aissemble-open-inference-protocol-fastapi</module>
-                <module>aissemble-open-inference-protocol-grpc</module>
-                <module>aissemble-open-inference-protocol-shared</module>
-                <module>aissemble-open-inference-protocol-examples</module>
-                <module>aissemble-open-inference-protocol-kserve</module>
-            </modules>
-        </profile>
-        <profile>
-            <id>build</id>
             <distributionManagement>
                 <snapshotRepository>
                     <id>ghcr.io</id>
@@ -106,12 +100,6 @@
         </profile>
         <profile>
             <id>release</id>
-            <modules>
-                <module>aissemble-open-inference-protocol-kserve</module>
-                <module>aissemble-open-inference-protocol-grpc</module>
-                <module>aissemble-open-inference-protocol-fastapi</module>
-                <module>aissemble-open-inference-protocol-shared</module>
-            </modules>
             <build>
                 <pluginManagement>
                     <plugins>
