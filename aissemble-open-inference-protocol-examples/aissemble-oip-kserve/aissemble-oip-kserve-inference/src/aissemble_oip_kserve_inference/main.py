@@ -40,7 +40,7 @@ In this case, only load is overridden and predict method will be used from Aisse
 """
 
 
-class customFastAPIHandler(DataplaneHandler):
+class customDataplaneHandler(DataplaneHandler):
     def __init__(self):
         super().__init__()
 
@@ -171,7 +171,7 @@ if __name__ == "__main__":
     model = KserveCustomModel(
         "convert_celsius_to_fahrenheit",
         "convert_celsius_to_fahrenheit",
-        customFastAPIHandler,
+        customDataplaneHandler,
     )
     model.load()
     ModelServer().start([model])

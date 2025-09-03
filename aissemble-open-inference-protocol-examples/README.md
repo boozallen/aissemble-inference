@@ -15,6 +15,7 @@ To see examples of how aiSSEMBLE Open Inference Protocol can be used, follow the
 
 ### KServe
 - [Inference](./aissemble-oip-kserve/aissemble-oip-kserve-inference/README.md#aissemble-open-inference-protocol-kserve-inference-example) - Implement custom handler with KServe.
+- [Containerization](./aissemble-oip-kserve/aissemble-oip-kserve-containerization/README.md) - Guide to containerize Open Inference Protocol and deploy it on KServe
 
 ### Shared
 - [Content Type](./aissemble-oip-shared/README.md#content-type-decodingencoding) - Guide to using the `content_type` parameter for data handling in OIP-compliant requests, and defining custom codecs for advanced encoding and decoding.
