@@ -6,7 +6,7 @@ This example provides simple guideline on how to hook model into aiSSEMBLE Open 
 
 ## Getting Started
 * This is intended for users who have already set up the base infrastructure (CRD, KServe, ingress, cert-manager) and want to hook up a model using aiSSEMBLE Open Inference Protocol Handler for KServe.
-* KServe Infrastructure setup should be completed per KServe [Documentation](https://kserve.github.io/website/master/admin/kubernetes_deployment/)
+* KServe Infrastructure setup should be completed per KServe [Documentation](https://kserve.github.io/website/docs/admin-guide/kubernetes-deployment)
 
 ## Implementation of Custom Predictor for KServe
 - The example will employ simple keras tensorflow model file as a model. 

@@ -8,12 +8,12 @@ This example demonstrates how to containerize the aiSSEMBLE Open Interface Proto
 
 ## Getting Started
 * This example will make use of [KServe Inference Example](../aissemble-oip-kserve-inference/README.md) to containerize and deploy aiSSEMBLE Open Interface Protocol to KServe 
-* This example will only be showing REST based API calls and will be deployed locally for demonstration purpose.
+* This example will cover REST and gRPC based API calls and will be deployed locally for demonstration purpose.
 * This Example Consists of 2 Modules:
   * `aissemble-oip-kserve-containerization-deploy`
     * This module contains list of helm template files needed to deploy custom model to KServe.
     * inference-service.yaml will take docker image created from aissemble-oip-kserve-containerization-docker and deploy on KServe.
-    * Kserve can specify arguments to configure any deployment options. More information on Configuration option for inference service can be found [here](https://kserve.github.io/website/master/modelserving/v1beta1/custom/custom_model/#arguments).
+    * Kserve can specify arguments to configure any deployment options. More information on Configuration option for inference service can be found [here](https://kserve.github.io/website/docs/model-serving/predictive-inference/frameworks/custom-predictor#arguments).
   * `aissemble-oip-kserve-containerization-docker`
     * This module contains docker file that can be built and run custom model for KServe.
     * Dockerfile is used to package inference code and model into docker image that kubernetes can deploy on KServe.
