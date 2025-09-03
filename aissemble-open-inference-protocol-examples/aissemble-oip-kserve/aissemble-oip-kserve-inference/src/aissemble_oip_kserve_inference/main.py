@@ -8,14 +8,9 @@
 # #L%
 ###
 import numpy as np
-import math
-from typing import Optional, Union, Dict
+from typing import Optional
 
 from tensorflow.keras.models import load_model
-
-from kserve import InferRequest, InferResponse, ModelServer
-
-from krausening.logging import LogManager
 
 from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
     AissembleOIPKServe,
@@ -33,16 +28,17 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 )
 
 """"
-AissembleOIPKServe is base class for Kserve Handler that implements predict method. (Other methods will be implemented soon) 
-If user wants to use what AissembleOIPKServe offers there is no need to create custom class and we can just make AissembleOIPKServe instance. 
-If user somehow wants to implement custom logic for prediction or load, user can extend AissembleOIPKServe with custom logic to override it.
-In this case, only load is overridden and predict method will be used from AissembleOIPKServe class
+This example demonstrates how to use AissembleOIPKServe to create a Kserve model that is compatible with the 
+aiSSEMBLE OIP handler. Define the handler the same as how it is for the other aiSSEMBLE OIP solutions, then pass it 
+to the AissembleOIPKServe constructor along with the model name. In this example we then load the model and start the server
 """
 
 
-class customDataplaneHandler(DataplaneHandler):
+class CustomFastAPIHandler(DataplaneHandler):
     def __init__(self):
         super().__init__()
+        self.model_ready = False
+        self.model = None
 
     def infer(
         self,
@@ -74,23 +70,21 @@ class customDataplaneHandler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        model = load_model("model/" + model_name + ".keras")
-
         input_tensors = []
-        for input in model.inputs:
+        for input in self.model.inputs:
             datatype = None
             if input.dtype == "float32":
-                datatype = "FP32"
+                datatype = Datatype.FP32
             inputmtensor = MetadataTensor(
                 name="input", datatype=datatype, shape=[input.shape[1]]
             )
             input_tensors.append(inputmtensor)
 
         output_tensors = []
-        for output in model.outputs:
+        for output in self.model.outputs:
             datatype = None
             if output.dtype == "float32":
-                datatype = "FP32"
+                datatype = Datatype.FP32
             outputmtensor = MetadataTensor(
                 name="output", datatype=datatype, shape=[output.shape[1]]
             )
@@ -109,80 +103,16 @@ class customDataplaneHandler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        try:
-            load_model("model/" + model_name + ".keras")
-            return ModelReadyResponse(name=model_name, ready=True)
-        except ValueError:
-            return ModelReadyResponse(name=model_name, ready=False)
+        return ModelReadyResponse(name=model_name, ready=self.model_ready)
 
-
-class KserveCustomModel(AissembleOIPKServe):
-    """
-    Implements Custom predictor of AissembleOIPKServe for requesting model.
-    """
-
-    logger = LogManager.get_instance().get_logger("KserveCustomModel")
-
-    def __init__(self, name: str, model_path: str, handler=None):
-        super().__init__(name, handler)
-        self.model = None
-        self.name = name
-        self.model_path = model_path
-        self.handler = handler
-
-    def preprocess(
-        self, payload: Union[Dict, InferRequest], headers: Dict[str, str] = None
-    ) -> Union[Dict, InferRequest]:
-        # During preprocess, if input has format 2d float array  i.e.[ [30.1], [50.2] ... ] then flatten input data into list of floats i.e. [30.1,50.2 ...]
-        for input_val in payload.inputs:
-            preprocessed_data = []
-            for data_val in input_val.data:
-                if isinstance(data_val, list):
-                    for data in data_val:
-                        preprocessed_data.append(data)
-                else:
-                    preprocessed_data.append(data_val)
-            input_val.data = preprocessed_data
-        return payload
-
-    def postprocess(
-        self,
-        result: Union[Dict, InferResponse],
-        headers: Dict[str, str] = None,
-        response_headers: Dict[str, str] = None,
-    ) -> Union[Dict, InferResponse]:
-        # During postprocess, if output has format of list of floats with long decimal numbers,  i.e.[100.24564563, 180.289683..] then convert output to round up nearest whole number i.e. [ 101, 181...]
-        for infer_output in result.outputs:
-            postprocessed_data = []
-            for infer_data in infer_output.data:
-                rounded = math.ceil(infer_data)
-                postprocessed_data.append(rounded)
-            infer_output.data = postprocessed_data
-        return result
-
-    def load(self):
-        self.model = load_model("model/" + self.model_path + ".keras")
-        self.ready = True
-        self.logger.info("Kserve Custom Model Loaded Successfully.")
+    def model_load(self, model_name) -> bool:
+        self.model = load_model("model/" + model_name + ".keras")
+        self.model_ready = True
+        return True
 
 
 if __name__ == "__main__":
-    # DataplaneHandler is abstract base class, user should be extending this class for their implementation based on preferred API calls (REST or GRPC)
-    model = KserveCustomModel(
-        "convert_celsius_to_fahrenheit",
-        "convert_celsius_to_fahrenheit",
-        customDataplaneHandler,
-    )
-    model.load()
-    ModelServer(
-        http_port=model.config.kserve_http_port,
-        grpc_port=model.config.kserve_grpc_port,
-        workers=model.config.kserve_workers,
-        max_threads=model.config.kserve_max_threads,
-        max_asyncio_workers=model.config.kserve_max_asyncio_workers,
-        enable_grpc=model.config.kserve_enable_grpc,
-        enable_docs_url=model.config.kserve_enable_docs_url,
-        enable_latency_logging=model.config.kserve_enable_latency_logging,
-        access_log_format=model.config.kserve_access_log_format,
-        grace_period=model.config.kserve_grace_period,
-    ).start([model])
+    model_name = "convert_celsius_to_fahrenheit"
+    oip_kserve = AissembleOIPKServe(name=model_name, handler=CustomFastAPIHandler())
+    oip_kserve.load()
+    oip_kserve.start()

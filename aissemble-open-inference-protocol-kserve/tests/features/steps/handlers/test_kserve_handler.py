@@ -16,7 +16,8 @@ class KserveCustomHandler(AissembleOIPKServe):
         self.name = name
         self.model_path = model_path
         self.handler = handler
+        self.ready = False
 
-    def load(self):
+    def model_load(self, model_name: str = None):
         self.model = load_model("tests/resources/" + self.model_path + ".keras")
         self.ready = True

@@ -80,3 +80,6 @@ class AuthHandler(DataplaneHandler):
         """
         Check if the server is ready."""
         return ServerReadyResponse(live=True)
+
+    def model_load(self, model_name) -> bool:
+        return True

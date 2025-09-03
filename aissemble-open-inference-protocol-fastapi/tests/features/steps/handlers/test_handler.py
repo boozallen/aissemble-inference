@@ -60,3 +60,6 @@ class TestHandler(DataplaneHandler):
     ) -> ModelReadyResponse:
         # No test currently using method
         pass
+
+    def model_load(self, model_name) -> bool:
+        return True

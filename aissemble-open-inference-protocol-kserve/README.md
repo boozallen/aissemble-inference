@@ -14,32 +14,26 @@ In order to stand up KServe Using aiSSEMBLE Open Inference Protocol, user should
 Once KServe environment is set up, user can proceed with implementing custom handler for KServe using aiSSEMBLE Open Inference Protocol.
 
 ### Implementing a Handler
-To make a custom handler to integrate with KServe, create your handler class and extend the [AissembleOIPKServe](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-kserve/src/aissemble_open_inference_protocol_kserve/aissemble_oip_kserve.py).
-Then, implement methods based on the model's need such as load() for loading a model, and optional transformer such as preprocess() and/or postprocess() that transform input or output data for client and prediction model.
-predict method will call infer method of DataplaneHandler in which you need to implement.
+To make a custom handler to integrate with Kserve, create your class and extend the [DataplaneHandler](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/handlers/dataplane.py).
+Then, implement methods based on the model such as load and infer.
 
 ### Example of Usage with a Handler
 Create your custom handler class with:
 ```python
-from kserve import ModelServer
 from typing import Optional
-from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
-    AissembleOIPKServe,
-)
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
-    ModelReadyResponse,
     MetadataTensor,
-    ResponseOutput,
     Datatype,
 )
 
-
-class CustomDataplaneHandler(DataplaneHandler):
+class MyHandler(DataplaneHandler):
     def __init__(self):
         super().__init__()
 
@@ -49,20 +43,8 @@ class CustomDataplaneHandler(DataplaneHandler):
             model_name: str,
             model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        # your dataplane prediction logic goes here
-        output_list = []
         return InferenceResponse(
-            model_name=model_name,
-            model_version=model_version,
-            id=payload.id,
-            outputs=[
-                ResponseOutput(
-                    name=model_name,
-                    shape=payload.inputs[0].shape,
-                    datatype=Datatype.FP32,
-                    data=output_list,
-                )
-            ],
+            model_name=model_name, model_version=model_version, id="id", outputs=[]
         )
 
     def model_metadata(
@@ -70,72 +52,36 @@ class CustomDataplaneHandler(DataplaneHandler):
             model_name: str,
             model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        # your model metadata logic goes here. 
-        your_input_tensor = []
-        your_output_tensor = []
+        # Return a stub ModelMetadataResponse
         return ModelMetadataResponse(
             name=model_name,
             versions=[model_version] if model_version else None,
             platform="python",
-            inputs=your_input_tensor,
-            outputs=your_output_tensor,
+            inputs=[MetadataTensor(name="input", datatype=Datatype.FP32, shape=[1])],
+            outputs=[
+                MetadataTensor(name="output", datatype=Datatype.FP32, shape=[1])
+            ],
         )
 
-    def model_ready(
-            self,
-            model_name: str,
-            model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        try:
-            # your model ready logic goes here.
-            return ModelReadyResponse(name=model_name, ready=True)
-        except ValueError:
-            return ModelReadyResponse(name=model_name, ready=False)
-
-
-
-class KserveCustomHandler(AissembleOIPKServe):
-    """
-    Implements Custom predictor of AissembleOIPKServe for requesting model.
-    handler refers to custom DataplaneHandler
-    """
-    def __init__(self, name: str, model_path: str, handler=None):
-        super().__init__(name, handler)
-        self.model = None
-        self.name = name
-        self.model_path = model_path
-        self.handler = handler
-
-    def preprocess(self):
-        """As preprocess is optional API in KServe, it is up to user to implement preprocess based on their use case to transform raw input to the format expected for model serve if applicable."""
-    pass
-    
-    def postprocess(self):
-        """As postprocess is optional API in KServe, it is up to user to implement preprocess based on their use case to transform prediction output to the format expected for client if applicable."""
-        pass
-
-    def load(self):
-        """As loading model is different for each client, it is up to user to implement load based on their use case. 
-        NOTE: setting self.ready to True will make sure KServe Model is ready to serve."""
-        self.ready = True
-        return self.ready
-
-    async def start(self):
-        self.load()
-        ModelServer().start([self])
+    def model_load(self, model_name: str) -> bool:
+        # Do some model loading
+        return True
+```
+You can now use this handler to create the AissembleOIPKServe class to be loaded into the Kserve inferencing server
+Example Kserve inferencing server
+```python
+from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
+    AissembleOIPKServe,
+)
 
 if __name__ == "__main__":
-    """ CustomDataPlaneHandler is extending from DataplaneHandler abstract base class, user should be extending this DataplaneHandler for their implementation of model prediction as you can see from CustomDataPlaneHandler.
-    """
-    model = KserveCustomHandler( name= "sample_model",
-        model_path="sample_model_path",
-        handler=CustomDataplaneHandler,
-    )
-    model.load()
-    model.start()
+    model_name = "my_model"
+    oip_kserve = AissembleOIPKServe(name=model_name, handler=MyHandler())
+    oip_kserve.model_load(model_name=model_name)
+    oip_kserve.start()
 ```
 
-Once you built your custom image for python application for KServe and KServe setup is complete, then you can run prediction based on preferred API.
+You are now ready to containerize the app and pass it to the Kserve Kubernetes resources.
 
 ## Configurations
 There are several configurations available that affect the server. These can be implemented via [Krausening](https://github.com/TechnologyBrewery/krausening/blob/dev/README.md) properties file `oip.properties` or environment variables.
