@@ -12,7 +12,7 @@ This example provides simple guideline on how to hook model into aiSSEMBLE Open 
 - The example will employ simple keras tensorflow model file as a model. 
 - This only covers how handler can interact with KServe
 - [main.py](src/aissemble_oip_kserve_inference/main.py) describes how to pull `AissembleOIPKServe` handler and start the KServe Model Server.
-- `AissembleOIPKServe` is KserveHandler class for aiSSEMBLE Open Inference Protocol, in which user can instantiate and start the model server.
+- `AissembleOIPKServe` is KServeHandler class for aiSSEMBLE Open Inference Protocol, in which user can instantiate and start the model server.
 - preprocess() and postprocess() are also implemented to demonstrate user have option to override those two methods and 
 - If user wants to create Custom Predictor for their need, user can also extend `AissembleOIPKServe` handler class and implement custom logic.
 - For `DataplaneHandler`, user should be implementing their own implementation of OIP handler based on `DataplaneHandler` abstract base class.
