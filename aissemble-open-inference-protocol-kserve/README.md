@@ -14,9 +14,9 @@ In order to stand up KServe Using aiSSEMBLE Open Inference Protocol, user should
 Once KServe environment is set up, user can proceed with implementing custom handler for KServe using aiSSEMBLE Open Inference Protocol.
 
 ### Implementing a Handler
-To make a custom handler to integrate with kserve, create your handler class and extend the [AissembleOIPKServe](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-kserve/src/aissemble_open_inference_protocol_kserve/aissemble_oip_kserve.py).
+To make a custom handler to integrate with KServe, create your handler class and extend the [AissembleOIPKServe](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-kserve/src/aissemble_open_inference_protocol_kserve/aissemble_oip_kserve.py).
 Then, implement methods based on the model's need such as load() for loading a model, and optional transformer such as preprocess() and/or postprocess() that transform input or output data for client and prediction model.
-predict method will call infer method of dataplaneHandler in which you need to implement either with [REST](../aissemble-open-inference-protocol-fastapi/README.md) or [gRPC](../aissemble-open-inference-protocol-grpc/README.md)
+predict method will call infer method of DataplaneHandler in which you need to implement.
 
 ### Example of Usage with a Handler
 Create your custom handler class with:
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     model.start()
 ```
 
-Once you built your custom image for python application for KServe and KServe setup is complete, then you can run prediction based on preferred API calls (REST or gRPC)
+Once you built your custom image for python application for KServe and KServe setup is complete, then you can run prediction based on preferred API.
 
 ## Examples
 For working examples, refer to the [Examples](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/README.md#kserve) documentation.

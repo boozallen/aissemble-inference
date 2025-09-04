@@ -9,7 +9,7 @@ This example demonstrates how to containerize the aiSSEMBLE Open Interface Proto
 ## Getting Started
 * This example will make use of [KServe Inference Example](../aissemble-oip-kserve-inference/README.md) to containerize and deploy aiSSEMBLE Open Interface Protocol to KServe 
 * This example will cover REST and gRPC based API calls and will be deployed locally for demonstration purpose.
-* This Example Consists of 2 Modules:
+* This example consists of 2 modules:
   * `aissemble-oip-kserve-containerization-deploy`
     * This module contains list of helm template files needed to deploy custom model to KServe.
     * inference-service.yaml will take docker image created from aissemble-oip-kserve-containerization-docker and deploy on KServe.
@@ -22,7 +22,7 @@ This example demonstrates how to containerize the aiSSEMBLE Open Interface Proto
 ## Running REST Based Example
 1. Run ```mvn clean install``` to make sure docker image can be generated to your docker daemon.
 2. Create new namespace for testing purpose ```kubectl create namespace kserve-test```
-3. cd into kserve deployment charts ```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization/aissemble-oip-kserve-containerization-deploy/src/main/resources/templates```
+3. cd into KServe deployment charts ```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization/aissemble-oip-kserve-containerization-deploy/src/main/resources/templates```
 4. Apply Inference service helm chart to kserve-test namespace
    ```kubectl apply -n kserve-test -f ./inference-service.yaml```
 5. Once predictor pod is ready, make sure kserve-model-predictor is port forwarding into 8080
@@ -47,11 +47,11 @@ curl --request POST \
 ## Running gRPC Based Example
 1. Run ```mvn clean install``` to make sure docker image can be generated to your docker daemon.
 2. Create new namespace for testing purpose ```kubectl create namespace kserve-test```
-3. cd into kserve deployment charts ```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization/aissemble-oip-kserve-containerization-deploy/src/main/resources/templates```
+3. cd into KServe deployment charts ```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization/aissemble-oip-kserve-containerization-deploy/src/main/resources/templates```
 4. Apply Inference service helm chart to kserve-test namespace
    ```kubectl apply -n kserve-test -f ./inference-service-grpc.yaml```
 5. Once predictor pod is ready, make sure kserve-model-predictor is port forwarding into 8081
-6. cd into kserve inference example
+6. cd into KServe inference example
 ```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization```
 7. Send an inference request to the gRPC service using grpc_client.py
 ``` python ./grpc_client.py```
