@@ -19,6 +19,23 @@ This example demonstrates how to containerize the aiSSEMBLE Open Interface Proto
     * Dockerfile is used to package inference code and model into docker image that kubernetes can deploy on KServe.
     * Docker containerization was leveraged using [Habushu containerize-dependencies goal](https://github.com/TechnologyBrewery/habushu/blob/dev/docs/HABUSHU_LIFECYCLE_README.md#containerize-dependencies) in which packages all necessary handler OIP files and dependencies into dockerfile.
 
+## Configuration
+This example demonstrates both methods of configuring the KServe server. While the example uses default values, it shows users exactly where and how to customize settings for their deployments.
+
+### Properties File Configuration
+The example includes an [oip.properties](../aissemble-oip-kserve-inference/src/resources/krausening/base/oip.properties) file that explicitly sets default values:
+```properties
+kserve_http_port=8080
+```
+
+### Environment Variable Configuration
+The [inference-service.yaml](aissemble-oip-kserve-containerization-deploy/src/main/resources/templates/inference-service.yaml) shows how to override settings via environment variables:
+```yaml
+env:
+  - name: KSERVE_HTTP_PORT
+    value: "8080"
+```
+
 ## Running REST Based Example
 1. Run ```mvn clean install``` to make sure docker image can be generated to your docker daemon.
 2. Create new namespace for testing purpose ```kubectl create namespace kserve-test```
@@ -52,6 +69,6 @@ curl --request POST \
    ```kubectl apply -n kserve-test -f ./inference-service-grpc.yaml```
 5. Once predictor pod is ready, make sure kserve-model-predictor is port forwarding into 8081
 6. cd into KServe inference example
-```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-containerization```
+```cd aissemble-open-inference-protocol-examples/aissemble-oip-kserve/aissemble-oip-kserve-inference```
 7. Send an inference request to the gRPC service using grpc_client.py
-``` python ./grpc_client.py```
+```poetry run python ../aissemble-oip-kserve-containerization/sample_grpc_client.py```

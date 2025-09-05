@@ -6,10 +6,7 @@ spec:
   predictor:
     containers:
       - name: "aissemble-oip-kserve-containerization-docker"
-        image: aissemble-oip-kserve-containerization-docker:1.0.0-SNAPSHOT
-        args:
-          - --enable_grpc=true
-          - --grpc_port=8081
+        image: aissemble-oip-kserve-containerization-docker:1.1.0-SNAPSHOT
         ports:
           - name: h2c
             containerPort: 8081
