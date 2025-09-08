@@ -10,8 +10,8 @@ Feature: Test FastAPI OIP Implementation
       | method | path                                 | response_code | response                  |
       | GET    | /v2/models/my_model                  | 501           | Not Implemented           |
       | GET    | /v2/models/my_model/versions/1       | 501           | Not Implemented           |
-      | GET    | /v2/models/my_model/ready            | 501           | Not Implemented           |
-      | GET    | /v2/models/my_model/versions/1/ready | 501           | Not Implemented           |
+      | GET    | /v2/models/my_model/ready            | 200           | "ready":true              |
+      | GET    | /v2/models/my_model/versions/1/ready | 200           | "ready":true              |
       | GET    | /v2/health/ready                     | 200           | "live":true               |
       | GET    | /v2/health/live                      | 200           | "live":true               |
       | GET    | /v2                                  | 200           | "name":"Inference Server" |
@@ -48,8 +48,8 @@ Feature: Test FastAPI OIP Implementation
       | method | path                                 | response_code | response                  |
       | GET    | /v2/models/my_model                  | 501           | Not Implemented           |
       | GET    | /v2/models/my_model/versions/1       | 501           | Not Implemented           |
-      | GET    | /v2/models/my_model/ready            | 501           | Not Implemented           |
-      | GET    | /v2/models/my_model/versions/1/ready | 501           | Not Implemented           |
+      | GET    | /v2/models/my_model/ready            | 200           | "ready":true              |
+      | GET    | /v2/models/my_model/versions/1/ready | 200           | "ready":true              |
       | GET    | /v2/health/ready                     | 200           | "live":true               |
       | GET    | /v2/health/live                      | 200           | "live":true               |
       | GET    | /v2                                  | 200           | "name":"Inference Server" |

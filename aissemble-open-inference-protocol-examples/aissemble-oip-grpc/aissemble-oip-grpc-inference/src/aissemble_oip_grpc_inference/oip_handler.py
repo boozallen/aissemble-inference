@@ -8,7 +8,7 @@
 # #L%
 ###
 from typing import Optional
-
+from krausening.logging import LogManager
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
@@ -39,6 +39,8 @@ class OIPHandler(DataplaneHandler):
     - ServerLive: Returns server liveness status
     """
 
+    logger = LogManager.get_instance().get_logger("OIPHandler")
+
     def __init__(self):
         super().__init__()
 
@@ -52,7 +54,7 @@ class OIPHandler(DataplaneHandler):
         Perform inference using the provided input data.
         This example performs simple mathematical operations based on the model name.
         """
-        print(
+        self.logger.info(
             f"Received inference request for model: {model_name}, version: {model_version}"
         )
 
@@ -64,9 +66,9 @@ class OIPHandler(DataplaneHandler):
         # Get the data from the TensorData object
         try:
             data_list = [int(x) for x in input_tensor.data.root]
-            print(f"Processing input data: {data_list}")
+            self.logger.info(f"Processing input data: {data_list}")
         except Exception as e:
-            print(f"Error processing data: {e}")
+            self.logger.error(f"Error processing data: {e}")
             raise ValueError(f"Invalid input data format: {e}")
 
         if model_name == "multiply":
@@ -78,7 +80,7 @@ class OIPHandler(DataplaneHandler):
         else:
             result = data_list
 
-        print(f"Output data: {result}")
+        self.logger.info(f"Output data: {result}")
         # Create response with proper TensorData structure
         response = InferenceResponse(
             model_name=model_name,
@@ -105,7 +107,7 @@ class OIPHandler(DataplaneHandler):
         """
         Return metadata about the model including input/output tensor specifications.
         """
-        print(
+        self.logger.info(
             f"Received model metadata request for model: {model_name}, version: {model_version}"
         )
 
@@ -126,7 +128,7 @@ class OIPHandler(DataplaneHandler):
         Check if the model is ready for inference.
         This example considers specific models as ready.
         """
-        print(
+        self.logger.info(
             f"Received model ready request for model: {model_name}, version: {model_version}"
         )
 
@@ -139,7 +141,7 @@ class OIPHandler(DataplaneHandler):
         """
         Return metadata about the server.
         """
-        print("Received server metadata request")
+        self.logger.info("Received server metadata request")
 
         return ServerMetadataResponse(
             name="aiSSEMBLE OIP gRPC Inference Example",
@@ -151,7 +153,7 @@ class OIPHandler(DataplaneHandler):
         """
         Return server readiness status.
         """
-        print("Received server ready request")
+        self.logger.info("Received server ready request")
 
         return ServerReadyResponse(live=True)
 
@@ -159,6 +161,10 @@ class OIPHandler(DataplaneHandler):
         """
         Return server liveness status.
         """
-        print("Received server live request")
+        self.logger.info("Received server live request")
 
         return ServerLiveResponse(live=True)
+
+    def model_load(self, model_name) -> bool:
+        self.logger.info("Model has been loaded.")
+        return True

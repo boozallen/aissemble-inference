@@ -41,7 +41,6 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceResponse,
     ModelMetadataResponse,
     MetadataTensor,
-    ModelReadyResponse,
     Datatype,
 )
 
@@ -76,13 +75,9 @@ class MyHandler(DataplaneHandler):
             ],
         )
 
-    def model_ready(
-            self,
-            model_name: str,
-            model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        # Testing: always ready
-        return ModelReadyResponse(name=model_name, ready=True)
+    def model_load(self, model_name: str) -> bool:
+        # Do some model loading
+        return True
 ```
 
 Use `aissemble-open-inference-protocol-fastapi` to create a FastAPI app and pass it `MyHandler`

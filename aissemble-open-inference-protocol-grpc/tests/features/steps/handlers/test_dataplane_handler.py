@@ -95,3 +95,6 @@ class TestDataplaneHandler(DataplaneHandler):
     def server_live(self) -> ServerLiveResponse:
         self.server_live_response = ServerLiveResponse(live=True)
         return self.server_live_response
+
+    def model_load(self, model_name) -> bool:
+        return True

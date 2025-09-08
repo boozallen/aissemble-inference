@@ -7,6 +7,8 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
+import asyncio
+
 import numpy as np
 from typing import Optional
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
@@ -36,6 +38,8 @@ class Handler(DataplaneHandler):
 
     def __init__(self):
         super().__init__()
+        self.model = None
+        self.model_ready = self.model_load("convert_celsius_to_fahrenheit")
 
     def infer(
         self,
@@ -43,9 +47,8 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        model = load_model("model/" + model_name + ".keras")
         # Model will take input data from the payload and make prediction to convert celsius to fahrenheit.
-        output = model.predict(np.array(payload.inputs[0].data))
+        output = self.model.predict(np.array(payload.inputs[0].data))
         # Need to convert to list so that we are align with output format.
         output_list = output.tolist()
 
@@ -58,7 +61,7 @@ class Handler(DataplaneHandler):
                     name=model_name,
                     shape=payload.inputs[0].shape,
                     datatype=Datatype.FP32,
-                    data=[output_list],
+                    data=output_list,
                 )
             ],
         )
@@ -68,23 +71,21 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        model = load_model("model/" + model_name + ".keras")
-
         input_tensors = []
-        for input in model.inputs:
+        for input in self.model.inputs:
             datatype = None
             if input.dtype == "float32":
-                datatype = "FP32"
+                datatype = Datatype.FP32
             inputmtensor = MetadataTensor(
                 name="input", datatype=datatype, shape=[input.shape[1]]
             )
             input_tensors.append(inputmtensor)
 
         output_tensors = []
-        for output in model.outputs:
+        for output in self.model.outputs:
             datatype = None
             if output.dtype == "float32":
-                datatype = "FP32"
+                datatype = Datatype.FP32
             outputmtensor = MetadataTensor(
                 name="output", datatype=datatype, shape=[output.shape[1]]
             )
@@ -103,11 +104,18 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        try:
-            load_model("model/" + model_name + ".keras")
-            return ModelReadyResponse(name=model_name, ready=True)
-        except ValueError:
-            return ModelReadyResponse(name=model_name, ready=False)
+        return ModelReadyResponse(name=model_name, ready=self.model_ready)
+
+    def model_load(self, model_name) -> bool:
+        self.model = load_model("model/" + model_name + ".keras")
+        self.model_ready = True
+        return True
 
 
-server = AissembleOIPFastAPI(Handler).server
+async def start():
+    fastapi = AissembleOIPFastAPI(Handler)
+    await fastapi.start()
+
+
+def main():
+    asyncio.run(start())

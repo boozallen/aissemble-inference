@@ -49,3 +49,6 @@ class HandlerNoOptionalImpl(DataplaneHandler):
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
         )
+
+    def model_load(self, model_name) -> bool:
+        pass

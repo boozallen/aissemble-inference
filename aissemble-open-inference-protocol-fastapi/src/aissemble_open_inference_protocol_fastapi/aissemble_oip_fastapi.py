@@ -34,6 +34,9 @@ class AissembleOIPFastAPI(AissembleOIPService):
         if self.adapter is not None:
             self.server.dependency_overrides[DefaultAdapter] = adapter
 
+    def model_load(self, model_name: str) -> bool:
+        return self.handler().model_load(model_name)
+
     async def start(self):
         config = uvicorn.Config(
             app=self.server,
@@ -45,6 +48,3 @@ class AissembleOIPFastAPI(AissembleOIPService):
         server = uvicorn.Server(config=config)
         # Run FastAPI server
         await server.serve()
-
-    def load(self):
-        pass

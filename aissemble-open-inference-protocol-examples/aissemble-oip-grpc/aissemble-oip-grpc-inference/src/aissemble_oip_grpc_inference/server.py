@@ -8,6 +8,7 @@
 # #L%
 ###
 import asyncio
+import os
 
 from aissemble_open_inference_protocol_grpc.aissemble_oip_grpc import AissembleOIPgRPC
 from aissemble_oip_grpc_inference.oip_handler import OIPHandler
@@ -16,6 +17,7 @@ from aissemble_oip_grpc_inference.oip_handler import OIPHandler
 async def _main():
     my_handler = OIPHandler()
     grpc = AissembleOIPgRPC(my_handler)
+    grpc.model_load("Mathematics")
     await grpc.start()
 
 
@@ -32,4 +34,5 @@ def run_server():
     print("Available models: multiply, add, square, default")
     print()
 
+    os.environ["KRAUSENING_BASE"] = "src/resources/krausening/base"
     asyncio.run(_main())

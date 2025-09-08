@@ -54,3 +54,6 @@ class HandlerOverriddenImpl(DataplaneHandler):
     # Overridden server_ready method with custom logic to manually set live to False
     def server_ready(self) -> ServerReadyResponse:
         return ServerReadyResponse(live=False)
+
+    def model_load(self, model_name) -> bool:
+        pass

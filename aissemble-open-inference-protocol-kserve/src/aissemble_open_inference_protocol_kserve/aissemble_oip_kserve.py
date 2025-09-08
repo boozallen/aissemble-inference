@@ -33,7 +33,6 @@ class AissembleOIPKServe(Model, AissembleOIPService):
     ) -> InferResponse:
         inference_request = InferMapper.infer_request_to_inference_request(payload)
         inference_response = self.handler.infer(
-            self,
             payload=inference_request,
             model_name=payload.model_name,
             model_version=payload.model_version,
@@ -44,14 +43,10 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         )
         return infer_response
 
-    def load(self):
-        """As loading model is different for each client, it is up to user to implement load based on their use case.
-        NOTE: setting self.ready to True indicates KServe Model is ready to serve."""
-        self.ready = True
-        return self.ready
+    def load(self) -> bool:
+        return self.handler.model_load(self.name)
 
-    async def start(self):
-        self.load()
+    def start(self):
         ModelServer(
             http_port=self.config.kserve_http_port,
             grpc_port=self.config.kserve_grpc_port,

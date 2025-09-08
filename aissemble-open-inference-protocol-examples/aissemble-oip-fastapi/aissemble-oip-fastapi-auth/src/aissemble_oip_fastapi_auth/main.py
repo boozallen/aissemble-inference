@@ -16,7 +16,6 @@ from pydantic import BaseModel
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
-    ModelReadyResponse,
     ModelMetadataResponse,
 )
 
@@ -55,6 +54,10 @@ class Handler(DataplaneHandler):
     def __init__(self):
         super().__init__()
 
+    def model_load(self, model_name) -> bool:
+        # Stubbing any response because example does not have a model to load
+        return True
+
     def infer(
         self,
         payload: InferenceRequest,
@@ -77,13 +80,6 @@ class Handler(DataplaneHandler):
             inputs=[],
             outputs=[],
         )
-
-    def model_ready(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=False)
 
 
 class LoginRequest(BaseModel):

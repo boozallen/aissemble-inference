@@ -12,7 +12,7 @@ def given_kserve_handler(context):
 
 @when("Load API executed using the KServe custom handler")
 def when_i_send_convert_inference_request(context):
-    context.result = context.handler.load()
+    context.result = context.handler.model_load()
 
 
 @then("load is successful and model server status is set to ready")

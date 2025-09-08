@@ -65,7 +65,6 @@ class MyHandler(DataplaneHandler):
             model_name: str,
             model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        # Return a stub ModelMetadataResponse
         return ModelMetadataResponse(
             name=model_name,
             versions=[model_version] if model_version else None,
@@ -76,13 +75,9 @@ class MyHandler(DataplaneHandler):
             ],
         )
 
-    def model_ready(
-            self,
-            model_name: str,
-            model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        # Testing: always ready
-        return ModelReadyResponse(name=model_name, ready=True)
+    def model_load(self, model_name: str) -> bool:
+        # Do some model loading
+        return True
 ```
 Use `aissemble-open-inference-protocol-grpc` to create a gRPC server and pass it `MyHandler`
 ```python
