@@ -37,7 +37,7 @@ to the AissembleOIPKServe constructor along with the model name. In this example
 class CustomFastAPIHandler(DataplaneHandler):
     def __init__(self):
         super().__init__()
-        self.model_ready = False
+        self.ready = False
         self.model = None
 
     def infer(
@@ -103,11 +103,11 @@ class CustomFastAPIHandler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=self.model_ready)
+        return ModelReadyResponse(name=model_name, ready=self.ready)
 
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
-        self.model_ready = True
+        self.ready = True
         return True
 
 
