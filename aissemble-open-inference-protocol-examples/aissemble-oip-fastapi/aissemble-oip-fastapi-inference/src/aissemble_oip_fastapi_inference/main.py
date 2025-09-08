@@ -39,7 +39,7 @@ class Handler(DataplaneHandler):
     def __init__(self):
         super().__init__()
         self.model = None
-        self.model_ready = self.model_load("convert_celsius_to_fahrenheit")
+        self.ready = self.model_load("convert_celsius_to_fahrenheit")
 
     def infer(
         self,
@@ -104,11 +104,11 @@ class Handler(DataplaneHandler):
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=self.model_ready)
+        return ModelReadyResponse(name=model_name, ready=self.ready)
 
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
-        self.model_ready = True
+        self.ready = True
         return True
 
 
