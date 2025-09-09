@@ -7,51 +7,34 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from kserve import Model, InferRequest, InferResponse, ModelServer
+from kserve import Model, ModelServer
 
-from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import InferMapper
+from aissemble_open_inference_protocol_kserve.kserve_dataplane import (
+    KServeDataplaneHandler,
+)
 from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
-)
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-    DefaultHandler,
 )
 
 
 class AissembleOIPKServe(Model, AissembleOIPService):
-    def __init__(self, name: str, handler: DataplaneHandler = DefaultHandler()):
+    def __init__(
+        self, name: str, handler: KServeDataplaneHandler = KServeDataplaneHandler()
+    ):
         Model.__init__(self, name)
         AissembleOIPService.__init__(self, handler=handler, adapter=None)
         self.model = None
         # initialize model ready false
         self.ready = False
 
-    def predict(
-        self,
-        payload: InferRequest,
-        headers: dict[str, str] = None,
-        response_headers: dict[str, str] = None,
-    ) -> InferResponse:
-        inference_request = InferMapper.infer_request_to_inference_request(payload)
-        inference_response = self.handler.infer(
-            payload=inference_request,
-            model_name=payload.model_name,
-            model_version=payload.model_version,
-        )
-
-        infer_response = InferMapper.inference_response_to_infer_response(
-            inference_response
-        )
-        return infer_response
-
     def load(self) -> bool:
         # update the model ready flag based on model_load() result
         self.ready = self.handler.model_load(self.name)
         return self.ready
 
+
     def start_server(self):
-        ModelServer(
+        model_server = ModelServer(
             http_port=self.config.kserve_http_port,
             grpc_port=self.config.kserve_grpc_port,
             workers=self.config.kserve_workers,
@@ -60,5 +43,6 @@ class AissembleOIPKServe(Model, AissembleOIPService):
             enable_grpc=self.config.kserve_enable_grpc,
             enable_docs_url=self.config.kserve_enable_docs_url,
             enable_latency_logging=self.config.kserve_enable_latency_logging,
-            access_log_format=self.config.kserve_access_log_format,
-        ).start([self])
+            access_log_format=self.config.kserve_access_log_format,)
+        model_server.dataplane = self.handler
+        model_server.start([self])
