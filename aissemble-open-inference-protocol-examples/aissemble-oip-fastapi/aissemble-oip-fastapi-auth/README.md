@@ -5,6 +5,9 @@ This example demonstrates calling inference endpoints with authorization enabled
 authentication is out of scope, we will simulate authentication by generating a jwt token
 that the authorization will then use to PERMIT or DENY an inference endpoint call. 
 
+This example uses an Authzforce adapter we have created. This gives a good jumping off point but if you want to 
+create your own custom auth implementation, you can override the abstract class [auth adapter base](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/auth/auth_adapter_base.py) and pass it to the AissembleOIPFastAPI server.
+
 ## Getting Started
 - Ensure you have the `docker compose` utility installed.  If not, follow the [Docker Compose installation guide](https://docs.docker.com/compose/install/)
 - Ensure you have Poetry installed. If not, follow the [Poetry installation guide](https://python-poetry.org/docs/#installation)

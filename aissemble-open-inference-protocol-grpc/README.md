@@ -96,13 +96,10 @@ There are several configurations available that affect the server. These can be 
 | `grpc_port`                | `GRPC_PORT`                | 8081                      | The port the grpc server will start on                                                                |
 | `grpc_workers`             | `GRPC_WORKERS`             | 3                         | Number of workers to be used by the server to execute non-AsyncIO RPC handlers                        |
 | `auth_enabled`             | `AUTH_ENABLED`             | true                      | Whether authentication is enabled for the server. Strongly recommend enabling for higher environments |
-| `grpc_protected_endpoints` | `GRPC_ORITECTED_ENDPOINTS` | None                      | Comma separated list of endpoints which will require authentication (if auth_enabled is true)         |
 | `auth_secret`              | `AUTH_SECRET`              | None                      | The secret key used to decode jwt token                                                               |
 | `auth_algorithm`           | `AUTH_ALGORITHM`           | HS256                     | The algorithm used to decode jwt tokens                                                               |
 | `pdp_url`                  | `OIP_PDP_URL`              | http://localhost:8080/pdp | The URL of the Policy Decision Point (PDP) used for authorization checks                              |
 
-> [!NOTE]  
-> If `auth_enabled = true` and no `protected_endpoints` are provided, all endpoints will be protected by default.
 
 ## Examples
 For working examples, refer to the [Examples](https://github.com/boozallen/aissemble-open-inference-protocol/blob/dev/aissemble-open-inference-protocol-examples/README.md#grpc) documentation.

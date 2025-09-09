@@ -23,7 +23,12 @@ class AuthzforceAdapter(AuthAdapterBase):
         self.pdp_url = self.config.pdp_url()
 
     def _authorize_impl(
-        self, user: str, resource: str, action: str, role: Optional[str] = None
+        self,
+        user: str,
+        resource: str,
+        action: str,
+        request_url: str,
+        role: Optional[str] = None,
     ) -> bool:
         """
         This method composes a XACML 3.0 request using the provided parameters and sends

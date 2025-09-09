@@ -86,12 +86,7 @@ class AissembleOIPgRPC(AissembleOIPService):
     def _get_interceptors(self):
         interceptors = []
         if self.config.auth_enabled:
-            interceptors.append(
-                AuthInterceptor(
-                    auth_adapter=self.adapter,
-                    protected_endpoints=self.config.grpc_protected_endpoints,
-                )
-            )
+            interceptors.append(AuthInterceptor(auth_adapter=self.adapter))
         return interceptors
 
     async def stop(self):
