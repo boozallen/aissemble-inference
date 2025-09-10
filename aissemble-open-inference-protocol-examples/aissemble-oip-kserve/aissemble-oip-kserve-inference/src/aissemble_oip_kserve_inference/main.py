@@ -8,23 +8,22 @@
 # #L%
 ###
 import numpy as np
-from typing import Optional
+from typing import Optional, Union, Dict, Tuple
 
 from tensorflow.keras.models import load_model
+
+from kserve import InferRequest, InferResponse, InferOutput, ModelServer
 
 from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
     AissembleOIPKServe,
 )
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
-    InferenceRequest,
-    InferenceResponse,
-    ModelMetadataResponse,
-    ModelReadyResponse,
-    MetadataTensor,
-    ResponseOutput,
     Datatype,
+)
+
+from aissemble_open_inference_protocol_kserve.kserve_dataplane import (
+    KServeDataplaneHandler,
 )
 
 """"
@@ -34,76 +33,76 @@ to the AissembleOIPKServe constructor along with the model name. In this example
 """
 
 
-class CustomFastAPIHandler(DataplaneHandler):
+class CustomKServeDataplaneHandler(KServeDataplaneHandler):
     def __init__(self):
         super().__init__()
         self.ready = False
         self.model = None
 
-    def infer(
+    async def infer(
         self,
-        payload: InferenceRequest,
         model_name: str,
-        model_version: Optional[str] = None,
-    ) -> InferenceResponse:
+        request: Union[Dict, InferRequest],
+        headers: Optional[Dict[str, str]] = None,
+    ) -> Tuple[Union[Dict, InferResponse], Dict[str, str]]:
+        keras_model = load_model("model/" + model_name + ".keras")
         # Model will take input data from the payload and make prediction to convert Celsius to Fahrenheit.
-        output = self.model.predict(np.array(payload.inputs[0].data))
+        output = keras_model.predict(np.array(request.inputs[0].data))
         # Need to convert to list so that we are align with output format.
         output_list = output.tolist()
-
-        return InferenceResponse(
+        response_headers = {}
+        return InferResponse(
+            response_id=request.id,
             model_name=model_name,
-            model_version=model_version,
-            id=payload.id,
-            outputs=[
-                ResponseOutput(
+            infer_outputs=[
+                InferOutput(
                     name=model_name,
-                    shape=payload.inputs[0].shape,
+                    shape=request.inputs[0].shape,
                     datatype=Datatype.FP32,
                     data=output_list,
                 )
             ],
-        )
+        ), response_headers
 
-    def model_metadata(
+    async def model_metadata(
         self,
         model_name: str,
         model_version: Optional[str] = None,
-    ) -> ModelMetadataResponse:
+    ) -> Dict:
+        load_model("model/" + model_name + ".keras")
         input_tensors = []
         for input in self.model.inputs:
             datatype = None
             if input.dtype == "float32":
-                datatype = Datatype.FP32
-            inputmtensor = MetadataTensor(
-                name="input", datatype=datatype, shape=[input.shape[1]]
-            )
-            input_tensors.append(inputmtensor)
-
+                datatype = "FP32"
+            input_dict = {
+                "name": "input",
+                "datatype": datatype,
+                "shape": [input.shape[1]],
+            }
+            input_tensors.append(input_dict)
         output_tensors = []
         for output in self.model.outputs:
             datatype = None
             if output.dtype == "float32":
-                datatype = Datatype.FP32
-            outputmtensor = MetadataTensor(
-                name="output", datatype=datatype, shape=[output.shape[1]]
-            )
-            output_tensors.append(outputmtensor)
+                datatype = "FP32"
+            output_dict = {
+                "name": "output",
+                "datatype": datatype,
+                "shape": [output.shape[1]],
+            }
+            output_tensors.append(output_dict)
+        return {
+            "name": model_name,
+            "platform": "python",
+            "inputs": input_tensors,
+            "outputs": output_tensors,
+        }
 
-        return ModelMetadataResponse(
-            name=model_name,
-            versions=[model_version] if model_version else None,
-            platform="python",
-            inputs=input_tensors,
-            outputs=output_tensors,
-        )
-
-    def model_ready(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=self.ready)
+    async def model_ready(
+        self, model_name: str, disable_predictor_health_check: bool = False
+    ) -> bool:
+        return True
 
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
@@ -113,6 +112,22 @@ class CustomFastAPIHandler(DataplaneHandler):
 
 if __name__ == "__main__":
     model_name = "convert_celsius_to_fahrenheit"
-    oip_kserve = AissembleOIPKServe(name=model_name, handler=CustomFastAPIHandler())
+    oip_kserve = AissembleOIPKServe(
+        name=model_name,
+        handler=CustomKServeDataplaneHandler(),
+    )
     oip_kserve.load()
-    oip_kserve.start()
+    model_server = ModelServer(
+        http_port=oip_kserve.config.kserve_http_port,
+        grpc_port=oip_kserve.config.kserve_grpc_port,
+        workers=oip_kserve.config.kserve_workers,
+        max_threads=oip_kserve.config.kserve_max_threads,
+        max_asyncio_workers=oip_kserve.config.kserve_max_asyncio_workers,
+        enable_grpc=oip_kserve.config.kserve_enable_grpc,
+        enable_docs_url=oip_kserve.config.kserve_enable_docs_url,
+        enable_latency_logging=oip_kserve.config.kserve_enable_latency_logging,
+        access_log_format=oip_kserve.config.kserve_access_log_format,
+        grace_period=oip_kserve.config.kserve_grace_period,
+    )
+    model_server.dataplane = oip_kserve.handler
+    model_server.start([oip_kserve])
