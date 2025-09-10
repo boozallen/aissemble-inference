@@ -77,8 +77,10 @@ from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
 if __name__ == "__main__":
     model_name = "my_model"
     oip_kserve = AissembleOIPKServe(name=model_name, handler=MyHandler())
-    oip_kserve.model_load(model_name=model_name)
-    oip_kserve.start()
+    # load() should be called before start server.
+    # which will call the handler's model_load() to ensure model is loaded
+    oip_kserve.load()
+    oip_kserve.start_server()
 ```
 
 You are now ready to containerize the app and pass it to the Kserve Kubernetes resources.

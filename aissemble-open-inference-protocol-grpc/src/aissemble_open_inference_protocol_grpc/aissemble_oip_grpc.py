@@ -45,7 +45,7 @@ class AissembleOIPgRPC(AissembleOIPService):
         super().__init__(handler, adapter)
         self.server = self.create_server()
 
-    async def start(self):
+    async def start_server(self):
         # Add signal handlers to shut down gracefully
         self._add_terminate_signal_handlers()
 

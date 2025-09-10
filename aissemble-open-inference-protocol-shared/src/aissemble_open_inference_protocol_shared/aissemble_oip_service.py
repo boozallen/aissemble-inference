@@ -39,5 +39,5 @@ class AissembleOIPService(ABC):
         return self.handler.model_load(model_name)
 
     @abstractmethod
-    async def start(self):
+    async def start_server(self):
         pass

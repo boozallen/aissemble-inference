@@ -37,7 +37,7 @@ class AissembleOIPFastAPI(AissembleOIPService):
     def model_load(self, model_name: str) -> bool:
         return self.handler().model_load(model_name)
 
-    async def start(self):
+    async def start_server(self):
         config = uvicorn.Config(
             app=self.server,
             reload=self.config.fastapi_reload,

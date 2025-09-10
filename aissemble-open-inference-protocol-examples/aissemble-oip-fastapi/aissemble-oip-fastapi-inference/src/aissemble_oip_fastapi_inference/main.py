@@ -114,7 +114,7 @@ class Handler(DataplaneHandler):
 
 async def start():
     fastapi = AissembleOIPFastAPI(Handler)
-    await fastapi.start()
+    await fastapi.start_server()
 
 
 def main():
