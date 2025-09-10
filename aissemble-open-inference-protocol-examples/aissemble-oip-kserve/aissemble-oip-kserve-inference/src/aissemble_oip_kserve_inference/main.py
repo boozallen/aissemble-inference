@@ -114,6 +114,5 @@ class CustomFastAPIHandler(DataplaneHandler):
 if __name__ == "__main__":
     model_name = "convert_celsius_to_fahrenheit"
     oip_kserve = AissembleOIPKServe(name=model_name, handler=CustomFastAPIHandler())
-    # model needs to be loaded before start model server
     oip_kserve.load()
-    oip_kserve.start_model_server()
+    oip_kserve.start()
