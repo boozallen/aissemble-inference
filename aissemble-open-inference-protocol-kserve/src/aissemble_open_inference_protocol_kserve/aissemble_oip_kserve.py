@@ -26,7 +26,8 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         self.model = None
 
     def load(self) -> bool:
-        return self.handler.model_load(self.name)
+        self.ready = self.handler.model_load(self.name)
+        return self.ready
 
     async def start(self):
         model_server = ModelServer(

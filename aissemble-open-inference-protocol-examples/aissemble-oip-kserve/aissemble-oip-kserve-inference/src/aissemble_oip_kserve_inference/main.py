@@ -36,7 +36,6 @@ to the AissembleOIPKServe constructor along with the model name. In this example
 class CustomKServeDataplaneHandler(KServeDataplaneHandler):
     def __init__(self):
         super().__init__()
-        self.ready = False
         self.model = None
 
     async def infer(
@@ -106,7 +105,6 @@ class CustomKServeDataplaneHandler(KServeDataplaneHandler):
 
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
-        self.ready = True
         return True
 
 
