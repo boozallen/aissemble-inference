@@ -8,9 +8,13 @@
 # #L%
 ###
 import os
-from typing import Optional
+from typing import Optional, Union
 
 from krausening.properties import PropertyManager
+
+from aissemble_open_inference_protocol_shared.config.kserve_args_parser import (
+    KServeArgsParser,
+)
 
 
 class OIPConfig:
@@ -39,12 +43,12 @@ class OIPConfig:
     DEFAULT_KSERVE_ENABLE_DOCS_URL = "False"
     DEFAULT_KSERVE_ENABLE_LATENCY_LOGGING = "True"
     DEFAULT_KSERVE_ACCESS_LOG_FORMAT = ""  # Represents None
-    DEFAULT_KSERVE_GRACE_PERIOD = "30"
 
     def __init__(self):
         self.properties = PropertyManager.get_instance().get_properties(
             "oip.properties"
         )
+        self._parsed_args = KServeArgsParser.parse_kserve_args()
 
     #########################
     # Authorization
@@ -135,117 +139,162 @@ class OIPConfig:
     # Kserve
     #########################
 
+    def _get_config_value(
+        self,
+        arg_key: str,
+        env_key: str,
+        prop_key: str,
+        default_value: str,
+        target_type: type,
+    ) -> Union[str, int, bool, None]:
+        """
+        Get configuration value following precedence: args > env > properties > default value
+
+        Args:
+            arg_key: Key in parsed arguments dict
+            env_key: Environment variable name
+            prop_key: Krausening property name
+            default_value: Default value as string
+            target_type: Type to convert string values to
+        """
+
+        # Check args
+        if arg_key in self._parsed_args:
+            return self._parsed_args[arg_key]
+
+        # Check Environment variables. If None, check properties.
+        value = os.getenv(env_key)
+        if value is None:
+            value = self.properties.getProperty(prop_key, default_value)
+
+        if value == "" and default_value == "":
+            return None
+
+        if target_type is bool:
+            return value.lower() == "true"
+        elif target_type is int:
+            try:
+                return int(value)
+            except ValueError as e:
+                raise ValueError(f"Invalid integer value '{value}': {e}")
+        elif target_type is str:
+            return value
+        else:
+            raise ValueError(f"Unsupported conversion type: {target_type}")
+
     @property
     def kserve_http_port(self) -> int:
         """
         The HTTP Port listened to by the model server.
         """
-        value = self.properties.getProperty(
-            "kserve_http_port", self.DEFAULT_KSERVE_HTTP_PORT
+        return self._get_config_value(
+            arg_key="http_port",
+            env_key="KSERVE_HTTP_PORT",
+            prop_key="kserve_http_port",
+            default_value=self.DEFAULT_KSERVE_HTTP_PORT,
+            target_type=int,
         )
-        environ_override = os.getenv("KSERVE_HTTP_PORT")
-        return int(environ_override if environ_override else value)
 
     @property
     def kserve_grpc_port(self) -> int:
         """
-        The GRPC Port listened to by the model server.
+        The gRPC Port listened to by the model server.
         """
-        value = self.properties.getProperty(
-            "kserve_grpc_port", self.DEFAULT_KSERVE_GRPC_PORT
+        return self._get_config_value(
+            arg_key="grpc_port",
+            env_key="KSERVE_GRPC_PORT",
+            prop_key="kserve_grpc_port",
+            default_value=self.DEFAULT_KSERVE_GRPC_PORT,
+            target_type=int,
         )
-        environ_override = os.getenv("KSERVE_GRPC_PORT")
-        return int(environ_override if environ_override else value)
 
     @property
     def kserve_workers(self) -> int:
         """
         Number of uvicorn workers for multiprocessing.
         """
-        value = self.properties.getProperty(
-            "kserve_workers", self.DEFAULT_KSERVE_WORKERS
+        return self._get_config_value(
+            arg_key="workers",
+            env_key="KSERVE_WORKERS",
+            prop_key="kserve_workers",
+            default_value=self.DEFAULT_KSERVE_WORKERS,
+            target_type=int,
         )
-        environ_override = os.getenv("KSERVE_WORKERS")
-        return int(environ_override if environ_override else value)
 
     @property
     def kserve_max_threads(self) -> int:
         """
         Max number of gRPC processing threads.
         """
-        value = self.properties.getProperty(
-            "kserve_max_threads", self.DEFAULT_KSERVE_MAX_THREADS
+        return self._get_config_value(
+            arg_key="max_threads",
+            env_key="KSERVE_MAX_THREADS",
+            prop_key="kserve_max_threads",
+            default_value=self.DEFAULT_KSERVE_MAX_THREADS,
+            target_type=int,
         )
-        environ_override = os.getenv("KSERVE_MAX_THREADS")
-        return int(environ_override if environ_override else value)
 
     @property
     def kserve_max_asyncio_workers(self) -> Optional[int]:
         """
         Max number of AsyncIO threads. Default returns `None`.
         """
-        value = self.properties.getProperty(
-            "kserve_max_asyncio_workers", self.DEFAULT_KSERVE_MAX_ASYNCIO_WORKERS
+        return self._get_config_value(
+            arg_key="max_asyncio_workers",
+            env_key="KSERVE_MAX_ASYNCIO_WORKERS",
+            prop_key="kserve_max_asyncio_workers",
+            default_value=self.DEFAULT_KSERVE_MAX_ASYNCIO_WORKERS,
+            target_type=int,
         )
-        environ_override = os.getenv("KSERVE_MAX_ASYNCIO_WORKERS")
-        final_value = environ_override or value
-        return int(final_value) if final_value else None
 
     @property
     def kserve_enable_grpc(self) -> bool:
         """
         Whether to enable gRPC for the model server.
         """
-        value = self.properties.getProperty(
-            "kserve_enable_grpc", self.DEFAULT_KSERVE_ENABLE_GRPC
+        return self._get_config_value(
+            arg_key="enable_grpc",
+            env_key="KSERVE_ENABLE_GRPC",
+            prop_key="kserve_enable_grpc",
+            default_value=self.DEFAULT_KSERVE_ENABLE_GRPC,
+            target_type=bool,
         )
-        environ_override = os.getenv("KSERVE_ENABLE_GRPC")
-        enable_grpc = environ_override if environ_override else value
-        return str(enable_grpc).lower() == "true"
 
     @property
     def kserve_enable_docs_url(self) -> bool:
         """
         Whether to enable docs url '/docs' to display Swagger UI.
         """
-        value = self.properties.getProperty(
-            "kserve_enable_docs_url", self.DEFAULT_KSERVE_ENABLE_DOCS_URL
+        return self._get_config_value(
+            arg_key="enable_docs_url",
+            env_key="KSERVE_ENABLE_DOCS_URL",
+            prop_key="kserve_enable_docs_url",
+            default_value=self.DEFAULT_KSERVE_ENABLE_DOCS_URL,
+            target_type=bool,
         )
-        environ_override = os.getenv("KSERVE_ENABLE_DOCS_URL")
-        enable_docs = environ_override if environ_override else value
-        return str(enable_docs).lower() == "true"
 
     @property
     def kserve_enable_latency_logging(self) -> bool:
         """
         Whether to enable latency logging for requests.
         """
-        value = self.properties.getProperty(
-            "kserve_enable_latency_logging", self.DEFAULT_KSERVE_ENABLE_LATENCY_LOGGING
+        return self._get_config_value(
+            arg_key="enable_latency_logging",
+            env_key="KSERVE_ENABLE_LATENCY_LOGGING",
+            prop_key="kserve_enable_latency_logging",
+            default_value=self.DEFAULT_KSERVE_ENABLE_LATENCY_LOGGING,
+            target_type=bool,
         )
-        environ_override = os.getenv("KSERVE_ENABLE_LATENCY_LOGGING")
-        enable_logging = environ_override if environ_override else value
-        return str(enable_logging).lower() == "true"
 
     @property
     def kserve_access_log_format(self) -> Optional[str]:
         """
         Format to set for the access log (provided by asgi-logger). Default returns `None`.
         """
-        value = self.properties.getProperty(
-            "kserve_access_log_format", self.DEFAULT_KSERVE_ACCESS_LOG_FORMAT
+        return self._get_config_value(
+            arg_key="access_log_format",
+            env_key="KSERVE_ACCESS_LOG_FORMAT",
+            prop_key="kserve_access_log_format",
+            default_value=self.DEFAULT_KSERVE_ACCESS_LOG_FORMAT,
+            target_type=str,
         )
-        environ_override = os.getenv("KSERVE_ACCESS_LOG_FORMAT")
-        final_value = environ_override or value
-        return final_value if final_value else None
-
-    @property
-    def kserve_grace_period(self) -> int:
-        """
-        The grace period in seconds to wait for the server to stop.
-        """
-        value = self.properties.getProperty(
-            "kserve_grace_period", self.DEFAULT_KSERVE_GRACE_PERIOD
-        )
-        environ_override = os.getenv("KSERVE_GRACE_PERIOD")
-        return int(environ_override if environ_override else value)

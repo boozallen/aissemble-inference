@@ -61,5 +61,4 @@ class AissembleOIPKServe(Model, AissembleOIPService):
             enable_docs_url=self.config.kserve_enable_docs_url,
             enable_latency_logging=self.config.kserve_enable_latency_logging,
             access_log_format=self.config.kserve_access_log_format,
-            grace_period=self.config.kserve_grace_period,
         ).start([self])
