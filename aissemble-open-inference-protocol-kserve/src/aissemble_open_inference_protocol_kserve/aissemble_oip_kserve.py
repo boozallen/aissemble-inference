@@ -24,6 +24,8 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         Model.__init__(self, name)
         AissembleOIPService.__init__(self, handler=handler, adapter=None)
         self.model = None
+        # initialize model ready false
+        self.ready = False
 
     def predict(
         self,
@@ -44,9 +46,11 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         return infer_response
 
     def load(self) -> bool:
-        return self.handler.model_load(self.name)
+        # update the model ready flag based on model_load() result
+        self.ready = self.handler.model_load(self.name)
+        return self.ready
 
-    def start(self):
+    def start_server(self):
         ModelServer(
             http_port=self.config.kserve_http_port,
             grpc_port=self.config.kserve_grpc_port,

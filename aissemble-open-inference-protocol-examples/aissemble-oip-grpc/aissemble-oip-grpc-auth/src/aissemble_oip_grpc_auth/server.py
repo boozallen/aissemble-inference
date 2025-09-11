@@ -28,4 +28,4 @@ def run_server():
         adapter=AuthAdapter(),
         grpc_properties="oip.properties",
     )
-    asyncio.run(grpc_server.start())
+    asyncio.run(grpc_server.start_server())

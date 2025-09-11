@@ -18,7 +18,7 @@ async def _main():
     my_handler = OIPHandler()
     grpc = AissembleOIPgRPC(my_handler)
     grpc.model_load("Mathematics")
-    await grpc.start()
+    await grpc.start_server()
 
 
 def run_server():
