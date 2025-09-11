@@ -107,19 +107,6 @@ class OIPConfig:
         worker_count = environ_override if environ_override else value
         return int(worker_count)
 
-    @property
-    def grpc_protected_endpoints(self) -> set[str]:
-        """
-        Returns a set of protected endpoint strings.
-        """
-        environ_override = os.getenv("GRPC_PROTECTED_ENDPOINTS")
-        if environ_override:
-            endpoints = [ep.strip() for ep in environ_override.split(",") if ep.strip()]
-        else:
-            value = self.properties.getProperty("grpc_protected_endpoints", "")
-            endpoints = [ep.strip() for ep in value.split(",") if ep.strip()]
-        return set(endpoints)
-
     #########################
     # FastAPI
     #########################

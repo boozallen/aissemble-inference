@@ -41,30 +41,14 @@ class AuthAdapter(AuthAdapterBase):
             },
         }
 
-    def authorize(
+    def _authorize_impl(
         self,
         user: dict,
         resource: str,
         action: str,
-        user_ip: str,
         request_url: str,
         role: Optional[str] = None,
     ) -> bool:
-        """
-        Override the base authorize method to implement endpoint-specific authorization.
-        This method receives the actual request URL from the gRPC interceptor.
-        """
-
-        # Call the base method for logging
-        self.log_authorize(
-            user=user,
-            resource=resource,
-            action=action,
-            user_ip=user_ip,
-            request_url=request_url,
-            role=role,
-        )
-
         # Extract user information for logging
         username = user if isinstance(user, str) else user.get("sub", "unknown")
 
@@ -97,17 +81,6 @@ class AuthAdapter(AuthAdapterBase):
                     f"Access denied for user '{username}': No valid roles for endpoint '{request_url}'"
                 )
         return decision
-
-    def _authorize_impl(
-        self, user: dict, resource: str, action: str, role: Optional[str] = None
-    ) -> bool:
-        """
-        This method is called by the base class but we override the main authorize method above
-        to get access to the request_url parameter to do endpoint-specific authorization.
-
-        Maybe we want to modify the base _authorize_impl method to accept request_url as well?
-        """
-        pass
 
     def check_endpoint_access(self, user_roles: list, endpoint: str) -> bool:
         """

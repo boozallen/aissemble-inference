@@ -23,7 +23,12 @@ class AuthAdapterBase(ABC):
 
     @abstractmethod
     def _authorize_impl(
-        self, user: dict, resource: str, action: str, role: Optional[str] = None
+        self,
+        user: dict,
+        resource: str,
+        action: str,
+        request_url: str,
+        role: Optional[str] = None,
     ) -> bool:
         pass
 
@@ -49,6 +54,7 @@ class AuthAdapterBase(ABC):
             user=user,
             resource=resource,
             action=action,
+            request_url=request_url,
             role=role,
         )
 

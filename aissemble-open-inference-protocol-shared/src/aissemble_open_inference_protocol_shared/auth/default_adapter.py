@@ -18,6 +18,11 @@ class DefaultAdapter(AuthAdapterBase):
         self.service_url = "http://localhost:<some port>/<some path>"
 
     def _authorize_impl(
-        self, user: dict, resource: str, action: str, role: Optional[str] = None
+        self,
+        user: dict,
+        resource: str,
+        action: str,
+        request_url: str,
+        role: Optional[str] = None,
     ) -> bool:
         return True

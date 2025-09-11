@@ -14,6 +14,11 @@ from aissemble_oip_grpc_auth.auth_handler import AuthHandler
 import os
 
 
+async def _main():
+    grpc = AissembleOIPgRPC(handler=AuthHandler(), adapter=AuthAdapter())
+    await grpc.start_server()
+
+
 def run_server():
     print("Starting aiSSEMBLE OIP gRPC Auth Example...")
     print("Using AuthAdapter with role-based access control:")
@@ -22,10 +27,8 @@ def run_server():
     print("  - No role or unknown role: Denied access")
     print()
 
-    os.environ["KRAUSENING_BASE"] = "src/resources/krausening/base"
-    grpc_server = AissembleOIPgRPC(
-        handler=AuthHandler(),
-        adapter=AuthAdapter(),
-        grpc_properties="oip.properties",
-    )
-    asyncio.run(grpc_server.start_server())
+    # Set the Krausening configuration path so the properties will be picked up. This is assuming the script is being run
+    # locally and would fail for dockerized deployments. This is only to ease running the example
+    os.environ["KRAUSENING_BASE"] = os.getcwd() + "/src/resources/krausening/base/"
+
+    asyncio.run(_main())

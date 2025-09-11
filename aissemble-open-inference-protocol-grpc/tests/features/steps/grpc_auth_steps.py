@@ -6,7 +6,7 @@ import nose.tools as nt
 from aissemble_open_inference_protocol_shared.config.oip_config import OIPConfig
 from aissemble_open_inference_protocol_grpc.auth.auth_interceptor import AuthInterceptor
 from aissemble_open_inference_protocol_shared.auth.default_adapter import DefaultAdapter
-from steps.utils.auth_test_utils import AuthTestHelper, METHOD_NAME
+from steps.utils.auth_test_utils import AuthTestHelper
 
 SERVER_ADDRESS = "localhost:8080"
 SECRET_KEY = OIPConfig().auth_secret()
@@ -15,10 +15,7 @@ ALGORITHM = OIPConfig().auth_algorithm()
 
 @given("an AuthInterceptor protecting the endpoint")
 def step_impl(context):
-    context.protected_method = METHOD_NAME
-    context.interceptor = AuthInterceptor(
-        DefaultAdapter(), protected_endpoints={context.protected_method}
-    )
+    context.interceptor = AuthInterceptor(DefaultAdapter())
     context.servicer, context.handler = (
         AuthTestHelper.create_test_servicer_and_handler()
     )
