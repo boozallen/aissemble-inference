@@ -1,4 +1,9 @@
-# aiSSEMBLE Open Inference Protocol&trade; gRPC
+# aiSSEMBLE&trade; Open Inference Protocol gRPC
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-grpc)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-grpc)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-grpc)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-grpc)
+[![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 
 The [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to create a gRPC server that is compatible with the Open Inference Protocol. It handles standing up and tearing down the server so you only need to worry about the inferencing functionality.
 

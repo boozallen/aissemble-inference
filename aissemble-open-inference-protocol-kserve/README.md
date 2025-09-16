@@ -1,4 +1,9 @@
-# aiSSEMBLE Open Inference Protocol&trade; KServe
+# aiSSEMBLE&trade; Open Inference Protocol KServe
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-kserve)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-kserve)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-kserve)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-kserve)
+[![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 
 The [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to deploy KServe that are compatible with the Open Inference Protocol.
 

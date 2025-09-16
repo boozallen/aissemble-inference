@@ -1,4 +1,10 @@
-# aiSSEMBLE Open Inference Protocol&trade;
+# aiSSEMBLE&trade; Open Inference Protocol
+
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-shared)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-shared)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-shared)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-shared)
+[![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 
 This repository provides a reference implementation of the [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) — a standard designed 
 to promote interoperability across diverse inference runtimes and platforms. By adhering to a consistent API 

@@ -1,4 +1,10 @@
-# aiSSEMBLE Open Inference Protocol&trade; Shared Utils
+# aiSSEMBLE&trade; Open Inference Protocol Shared Utils
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-shared)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-shared)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-shared)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-shared)
+[![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
+
 Contains common functionality shared across multiple interfaces
 
 ## Content Type Precedence
