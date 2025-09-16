@@ -18,7 +18,7 @@ classifiers = [
     "Framework :: FastAPI",
     "Intended Audience :: Developers"
 ]
-license = { text = "Booz Allen Public License v1.0" }
+license = "Booz Allen Public License v1.0"
 license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
 
@@ -33,5 +33,5 @@ behave = "^1.2.6"
 kappa-maki = "^1.0.2"
 
 [build-system]
-requires = ["poetry-core>=2.0.0"]
+requires = ["poetry-core>=2.0.0,<=2.1.4"]
 build-backend = "poetry.core.masonry.api"
