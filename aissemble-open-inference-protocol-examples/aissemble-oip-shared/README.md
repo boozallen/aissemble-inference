@@ -72,4 +72,7 @@ Content types are listed in order of precedence.
 
 Once registered, any request or response tagged with `"content_type":"<your-type>"` will use your codec automatically.
 
-For a complete example implementation, see the [`StringCodec`](../../aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/codecs/string.py) included in this project.
+For complete example implementations, see:
+
+- [`StringCodec`](../../aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/codecs/string.py) (`content_type: "str"`)
+- [`NumpyArrayCodec`](../../aissemble-open-inference-protocol-shared/src/aissemble_open_inference_protocol_shared/codecs/numpy.py) (`content_type: "numpy"`)
