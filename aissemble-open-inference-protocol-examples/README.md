@@ -1,6 +1,6 @@
 [[Return to Main Documentation]](../README.md#examples)
 
-# aiSSEMBLE Open Inference Protocol&trade; Examples
+# aiSSEMBLE&trade; Open Inference Protocol Examples
 To see examples of how aiSSEMBLE Open Inference Protocol can be used, follow the links below.
 
 ## Examples

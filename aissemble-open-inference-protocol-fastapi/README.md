@@ -1,4 +1,9 @@
-# aiSSEMBLE Open Inference Protocol&trade; FastAPI
+# aiSSEMBLE&trade; Open Inference Protocol FastAPI
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-fastapi)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-fastapi)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-fastapi)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-fastapi)
+[![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 
 The [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) specification defines a standard protocol for performing machine learning model inference across serving runtimes for different ML frameworks. This Python application can be leveraged to create FastAPI routes that are compatible with the Open Inference Protocol.
 

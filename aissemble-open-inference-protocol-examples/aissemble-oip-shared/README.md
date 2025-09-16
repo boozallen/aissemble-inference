@@ -1,6 +1,6 @@
 [[Return to Examples Documentation]](../README.md)
 
-# aiSSEMBLE Open Inference Protocol&trade; Shared Examples
+# aiSSEMBLE&trade; Open Inference Protocol Shared Examples
 This directory contains examples demonstrating aiSSEMBLE Open Inference Protocol features that are shared across implementations.
 
 ## Getting Started
