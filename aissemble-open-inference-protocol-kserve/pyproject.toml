@@ -14,7 +14,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Intended Audience :: Developers"
 ]
-license = { text = "Booz Allen Public License v1.0" }
+license = "Booz Allen Public License v1.0"
 license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
 
@@ -40,5 +40,5 @@ kserve = "^0.15.2"
 
 
 [build-system]
-requires = ["poetry-core>=2.0.0"]
+requires = ["poetry-core>=2.0.0,<=2.1.4"]
 build-backend = "poetry.core.masonry.api"

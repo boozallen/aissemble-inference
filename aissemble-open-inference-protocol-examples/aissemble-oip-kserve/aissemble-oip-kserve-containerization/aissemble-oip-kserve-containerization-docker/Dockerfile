@@ -11,6 +11,9 @@ RUN $HOME/.local/bin/pipx install poetry==2.0.1 && \
 
 WORKDIR /work-dir
 COPY --chown=1001 /target/containerize-support ./containerize-support/
+COPY /target/generated-sources/license ./containerize-support/aissemble-open-inference-protocol-shared/
+COPY /target/generated-sources/license ./containerize-support/aissemble-open-inference-protocol-kserve/
+COPY /target/generated-sources/license ./containerize-support/aissemble-open-inference-protocol-examples/
 RUN find . -type f -name pyproject.toml -exec sed -i 's|develop[[:blank:]]*=[[:blank:]]*true|develop = false|g' {} \;
 
 USER root
