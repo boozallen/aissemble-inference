@@ -11,25 +11,40 @@ from typing import Dict, Union, Optional, Tuple
 
 from kserve import InferRequest, InferResponse, ModelRepository
 from kserve.protocol.dataplane import DataPlane
+from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import InferMapper
+
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+    DefaultHandler,
+)
 
 
-class KServeDataplaneHandler(DataPlane):
-    """KServe Custom DataPlane Handler"""
+class KServeDataplaneAdapter(DataPlane):
+    """
+        KServe DataPlane Adapter
+        This class will convert aissemble-open-inference-protocol's DataplaneHandler to KServe's Dataplane Interface.
+    """
 
-    def __init__(self):
+    def __init__(self, handler: DataplaneHandler = DefaultHandler()):
         super().__init__(model_registry=ModelRepository())
+        self.handler = handler
 
     async def live(self) -> Dict[str, str]:
         """Server live
         Should return ``{"status": "alive"}`` on successful Server Live Check.
         """
-        return {"status": "alive"}
+
+        response = self.handler.server_live()
+        if response.live:
+            return {"status": "alive"}
+        return {"status": "down"}
 
     async def ready(self) -> bool:
         """Server ready
         Should return True on successful Server Ready Check.
         """
-        return True
+        response = self.handler.server_ready()
+        return response.live
 
     def metadata(self) -> Dict:
         """Server Metadata
@@ -38,10 +53,11 @@ class KServeDataplaneHandler(DataPlane):
            - version (str): server version number.
            - extension (list[str]): list of extensions supported by this server
         """
+        response = self.handler.server_metadata()
         return {
-            "name": self._server_name,
-            "version": self._server_version,
-            "extensions": ["extensions"],
+            "name": response.name,
+            "version": response.version,
+            "extensions": response.extensions,
         }
 
     async def model_metadata(self, model_name: str) -> Dict:
@@ -57,24 +73,28 @@ class KServeDataplaneHandler(DataPlane):
                 - outputs: Same as inputs described above.
         NOTE: Model Version is not supported yet in KServe.
         """
+        response = self.handler.model_metadata(model_name=model_name)
+
+        model_input = []
+        model_output = []
+        for input in response.inputs:
+            model_input.append(
+                {"name": input.name, "datatype": input.datatype, "shape": input.shape}
+            )
+        for output in response.outputs:
+            model_output.append(
+                {
+                    "name": output.name,
+                    "datatype": output.datatype,
+                    "shape": output.shape,
+                }
+            )
 
         return {
-            "name": model_name,
-            "platform": "",
-            "inputs": [
-                {
-                    "name": "input",
-                    "datatype": "INT32",
-                    "shape": [1],
-                }
-            ],
-            "outputs": [
-                {
-                    "name": "output",
-                    "datatype": "INT32",
-                    "shape": [1],
-                }
-            ],
+            "name": response.name,
+            "platform": response.platform,
+            "inputs": model_input,
+            "outputs": model_output,
         }
 
     async def model_ready(
@@ -83,7 +103,8 @@ class KServeDataplaneHandler(DataPlane):
         """Model Ready
         Should return True on successful Model Ready Check.
         """
-        return True
+        response = self.handler.model_ready(model_name=model_name)
+        return response.ready
 
     async def infer(
         self,
@@ -105,11 +126,13 @@ class KServeDataplaneHandler(DataPlane):
                 - response_headers: Headers to construct the HTTP response.
 
         """
-        infer_response = InferResponse(
-            response_id="", model_name=model_name, infer_outputs=[]
+        inference_request = InferMapper.infer_request_to_inference_request(
+            request=request
         )
+        response = self.handler.infer(payload=inference_request, model_name=model_name)
+        infer_response = InferMapper.inference_response_to_infer_response(
+            response=response
+        )
+
         response_headers = {}
         return infer_response, response_headers
-
-    def model_load(self, model_name: str) -> bool:
-        pass

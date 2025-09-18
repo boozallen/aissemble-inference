@@ -1,6 +1,17 @@
 Feature: Test KServe Custom Handler Implementation
 
-  Scenario: Handler implementation loads model correctly.
-    Given KServe custom handler with ability to load keras model
-    When Load API executed using the KServe custom handler
-    Then load is successful and model server status is set to ready
+  Scenario Outline: KServeDataplaneHandler calls CustomDataplaneHandler to process OIP endpoints logics correctly.
+    Given KServeDataplaneHandler and CustomDataplaneHandler
+    When <method> is executed using the KServeDataplaneHandler
+    Then CustomDataplaneHandler gets called to handle <method>
+    And <method> is successful
+
+
+    Examples:
+      | method            |
+      | model_ready       |
+      | model_metadata    |
+      | infer             |
+      | server_ready      |
+      | server_live       |
+      | server_metadata   |

@@ -10,18 +10,25 @@
 from kserve import Model, ModelServer
 
 from aissemble_open_inference_protocol_kserve.kserve_dataplane import (
-    KServeDataplaneHandler,
+    KServeDataplaneAdapter,
 )
 from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
 )
 
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
+
 
 class AissembleOIPKServe(Model, AissembleOIPService):
     def __init__(
-        self, name: str, handler: KServeDataplaneHandler = KServeDataplaneHandler()
+        self,
+        name: str,
+        handler: DataplaneHandler,
     ):
         Model.__init__(self, name)
+        self.kserve_dataplane_adapter = KServeDataplaneAdapter(handler=handler)
         AissembleOIPService.__init__(self, handler=handler, adapter=None)
         self.model = None
         # initialize model ready false
@@ -31,7 +38,6 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         # update the model ready flag based on model_load() result
         self.ready = self.handler.model_load(self.name)
         return self.ready
-
 
     def start_server(self):
         model_server = ModelServer(
@@ -43,6 +49,7 @@ class AissembleOIPKServe(Model, AissembleOIPService):
             enable_grpc=self.config.kserve_enable_grpc,
             enable_docs_url=self.config.kserve_enable_docs_url,
             enable_latency_logging=self.config.kserve_enable_latency_logging,
-            access_log_format=self.config.kserve_access_log_format,)
-        model_server.dataplane = self.handler
+            access_log_format=self.config.kserve_access_log_format,
+        )
+        model_server.dataplane = self.kserve_dataplane_adapter
         model_server.start([self])
