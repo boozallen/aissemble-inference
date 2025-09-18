@@ -20,7 +20,13 @@ This example demonstrates how to containerize the aiSSEMBLE Open Interface Proto
     * Docker containerization was leveraged using [Habushu containerize-dependencies goal](https://github.com/TechnologyBrewery/habushu/blob/dev/docs/HABUSHU_LIFECYCLE_README.md#containerize-dependencies) in which packages all necessary handler OIP files and dependencies into dockerfile.
 
 ## Configuration
-This example demonstrates both methods of configuring the KServe server. While the example uses default values, it shows users exactly where and how to customize settings for their deployments.
+This example demonstrates methods of configuring the KServe server. While the example uses default values, it shows users exactly where and how to customize settings for their deployments.
+
+Configuration values are resolved in the following order of precedence (highest to lowest):
+1. **Container arguments** (highest precedence)
+2. **Environment variables**
+3. **Krausening properties** 
+4. **Default values** (lowest precedence)
 
 ### Properties File Configuration
 The example includes an [oip.properties](../aissemble-oip-kserve-inference/src/resources/krausening/base/oip.properties) file that explicitly sets default values:
@@ -34,6 +40,20 @@ The [inference-service.yaml](aissemble-oip-kserve-containerization-deploy/src/ma
 env:
   - name: KSERVE_HTTP_PORT
     value: "8080"
+```
+
+### Container Arguments Configuration
+You can also configure settings via container arguments in the InferenceService YAML, which take the highest precedence:
+```yaml
+spec:
+  predictor:
+    containers:
+      - name: "aissemble-oip-kserve-containerization-docker"
+        image: aissemble-oip-kserve-containerization-docker:1.1.0-SNAPSHOT
+        args:
+          - --http_port=8080
+          - --enable_grpc=true
+          - --workers=2
 ```
 
 ## Running REST Based Example
