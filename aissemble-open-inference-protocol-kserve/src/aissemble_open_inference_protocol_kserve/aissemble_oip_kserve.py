@@ -16,12 +16,19 @@ from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
 )
 
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
+
 
 class AissembleOIPKServe(Model, AissembleOIPService):
     def __init__(
-        self, name: str, handler: KServeDataplaneHandler = KServeDataplaneHandler()
+        self,
+        name: str,
+        handler: DataplaneHandler,
     ):
         Model.__init__(self, name)
+        self.kserve_handler = KServeDataplaneHandler(handler=handler)
         AissembleOIPService.__init__(self, handler=handler, adapter=None)
         self.model = None
         # initialize model ready false
@@ -31,7 +38,6 @@ class AissembleOIPKServe(Model, AissembleOIPService):
         # update the model ready flag based on model_load() result
         self.ready = self.handler.model_load(self.name)
         return self.ready
-
 
     def start_server(self):
         model_server = ModelServer(
@@ -46,5 +52,5 @@ class AissembleOIPKServe(Model, AissembleOIPService):
             access_log_format=self.config.kserve_access_log_format,
             grace_period=self.config.kserve_grace_period,
         )
-        model_server.dataplane = self.handler
+        model_server.dataplane = self.kserve_handler
         model_server.start([self])
