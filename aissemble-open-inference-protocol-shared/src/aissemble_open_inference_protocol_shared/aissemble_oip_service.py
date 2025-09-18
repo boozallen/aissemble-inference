@@ -8,7 +8,6 @@
 # #L%
 ###
 from abc import ABC, abstractmethod
-from typing import Optional, Type, Union
 
 from aissemble_open_inference_protocol_shared.auth.auth_adapter_base import (
     AuthAdapterBase,
@@ -26,8 +25,8 @@ class AissembleOIPService(ABC):
 
     def __init__(
         self,
-        handler: Union[DataplaneHandler, Type[DataplaneHandler]],
-        adapter: Optional[Union[AuthAdapterBase, Type[AuthAdapterBase]]],
+        handler: DataplaneHandler,
+        adapter: AuthAdapterBase,
     ):
         super(AissembleOIPService, self).__init__()
         self.config = OIPConfig()

@@ -5,9 +5,6 @@ from fastapi.testclient import TestClient
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
     AissembleOIPFastAPI,
 )
-from steps.handler_without_required_impl import (
-    HandlerNoImpl,
-)
 
 from steps.handler_without_optional_impl import (
     HandlerNoOptionalImpl,
@@ -19,18 +16,10 @@ from steps.handler_with_overridden_impl import (
 
 
 @given(
-    "custom implementation of dataplane handler that doesn't implement required methods"
-)
-def given_custom_handler_without_required_methods(context):
-    api = AissembleOIPFastAPI(HandlerNoImpl)
-    context.client = TestClient(api.server)
-
-
-@given(
     "custom implementation of dataplane handler that doesn't implement server methods"
 )
 def given_custom_handler_without_optional_methods(context):
-    api = AissembleOIPFastAPI(HandlerNoOptionalImpl)
+    api = AissembleOIPFastAPI(HandlerNoOptionalImpl())
     context.client = TestClient(api.server)
 
 
@@ -38,7 +27,7 @@ def given_custom_handler_without_optional_methods(context):
     "custom implementation of dataplane handler that override implement server methods"
 )
 def given_custom_handler_overridden_methods(context):
-    api = AissembleOIPFastAPI(HandlerOverriddenImpl)
+    api = AissembleOIPFastAPI(HandlerOverriddenImpl())
     context.client = TestClient(api.server)
 
 
@@ -85,11 +74,6 @@ def send_method_request_with_exception_handle(context, method, path):
             context.schema = context.response.json()
     except Exception as ex:
         context.exception = ex
-
-
-@then("Error is raised")
-def status_code_is_error(context):
-    assert isinstance(context.exception, TypeError)
 
 
 @then("affirmative is responded")

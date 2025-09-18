@@ -13,8 +13,12 @@ from fastapi import FastAPI
 from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
 )
+from aissemble_open_inference_protocol_shared.auth.auth_adapter_base import (
+    AuthAdapterBase,
+)
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DefaultHandler,
+    DataplaneHandler,
 )
 
 from aissemble_open_inference_protocol_shared.auth.default_adapter import (
@@ -25,17 +29,25 @@ import uvicorn
 
 
 class AissembleOIPFastAPI(AissembleOIPService):
-    def __init__(self, handler=None, adapter=None):
+    def __init__(
+        self, handler: DataplaneHandler = None, adapter: AuthAdapterBase = None
+    ):
         super().__init__(handler, adapter)
         self.server = FastAPI()
         self.server.include_router(endpoints.router)
         if self.handler is not None:
-            self.server.dependency_overrides[DefaultHandler] = handler
+            self.server.dependency_overrides[DefaultHandler] = self._get_handler
         if self.adapter is not None:
-            self.server.dependency_overrides[DefaultAdapter] = adapter
+            self.server.dependency_overrides[DefaultAdapter] = self._get_adapter
+
+    def _get_handler(self):
+        return self.handler
+
+    def _get_adapter(self):
+        return self.adapter
 
     def model_load(self, model_name: str) -> bool:
-        return self.handler().model_load(model_name)
+        return self.handler.model_load(model_name)
 
     async def start_server(self):
         config = uvicorn.Config(
