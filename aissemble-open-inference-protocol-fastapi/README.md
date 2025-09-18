@@ -89,7 +89,7 @@ Use `aissemble-open-inference-protocol-fastapi` to create a FastAPI app and pass
 ```python
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import AissembleOIPFastAPI
 
-fastapi_server = AissembleOIPFastAPI(MyHandler).server
+fastapi_server = AissembleOIPFastAPI(MyHandler()).server
 ```
 
 Now when starting the FastAPI server, the inference request will route to `MyHandler.infer()`

@@ -26,7 +26,7 @@ def given_i_have_fastapi_app(context):
 
 @given("I have a handler that returns outputs data")
 def i_have_a_handler_that_returns_outputs_data(context):
-    context.handler = TestHandler
+    context.handler = TestHandler()
 
 
 @given("I have an OIP FastAPI app with the handler")

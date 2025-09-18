@@ -18,7 +18,7 @@ This example demonstrates how to implement custom handlers for all Open Inferenc
     ```sh
     poetry run run_server
     ```
-    The server will start on `grpc://0.0.0.0:8080`
+    The server will start on `grpc://0.0.0.0:8081`
 
 
 2. Run the following `grpcurl` commands to test the different endpoints:

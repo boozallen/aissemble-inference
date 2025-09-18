@@ -11,6 +11,7 @@ import asyncio
 
 import numpy as np
 from typing import Optional
+from krausening.logging import LogManager
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
     AissembleOIPFastAPI,
 )
@@ -36,10 +37,12 @@ class Handler(DataplaneHandler):
     If this handlers doesn't implement one of Open Inferencing Protocol endpoints it would default to DataplaneHandler
     """
 
+    logger = LogManager.get_instance().get_logger("Handler")
+
     def __init__(self):
         super().__init__()
         self.model = None
-        self.ready = self.model_load("convert_celsius_to_fahrenheit")
+        self.ready = False
 
     def infer(
         self,
@@ -109,11 +112,13 @@ class Handler(DataplaneHandler):
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
         self.ready = True
+        self.logger.info("Model loaded successfully")
         return True
 
 
 async def start():
-    fastapi = AissembleOIPFastAPI(Handler)
+    fastapi = AissembleOIPFastAPI(Handler())
+    fastapi.model_load("convert_celsius_to_fahrenheit")
     await fastapi.start_server()
 
 

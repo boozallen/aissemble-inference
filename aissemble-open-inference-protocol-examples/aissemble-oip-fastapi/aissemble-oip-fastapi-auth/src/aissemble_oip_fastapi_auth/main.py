@@ -109,5 +109,5 @@ os.environ["KRAUSENING_BASE"] = os.getcwd() + "/src/resources/krausening/base/"
 
 # To enable authorization in your own project you need to inject AuthzforceAdapter
 # into your app like the example below
-server = AissembleOIPFastAPI(Handler, AuthzforceAdapter).server
+server = AissembleOIPFastAPI(Handler(), AuthzforceAdapter()).server
 server.include_router(routerWithSecurity)
