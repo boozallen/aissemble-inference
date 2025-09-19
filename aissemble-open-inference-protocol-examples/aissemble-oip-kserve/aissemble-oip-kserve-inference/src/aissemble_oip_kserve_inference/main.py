@@ -16,15 +16,18 @@ from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
     AissembleOIPKServe,
 )
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import DataplaneHandler
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
+
 from aissemble_open_inference_protocol_shared.types.dataplane import (
+    Datatype,
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
     ModelReadyResponse,
     MetadataTensor,
     ResponseOutput,
-    Datatype,
 )
 
 """"
@@ -34,7 +37,7 @@ to the AissembleOIPKServe constructor along with the model name. In this example
 """
 
 
-class CustomFastAPIHandler(DataplaneHandler):
+class CustomKServeHandler(DataplaneHandler):
     def __init__(self):
         super().__init__()
         self.ready = False
@@ -113,7 +116,10 @@ class CustomFastAPIHandler(DataplaneHandler):
 
 if __name__ == "__main__":
     model_name = "convert_celsius_to_fahrenheit"
-    oip_kserve = AissembleOIPKServe(name=model_name, handler=CustomFastAPIHandler())
+    oip_kserve = AissembleOIPKServe(
+        name=model_name,
+        handler=CustomKServeHandler(),
+    )
     # model needs to be loaded before server start
     oip_kserve.load()
     oip_kserve.start_server()
