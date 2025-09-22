@@ -3,19 +3,6 @@
 # aiSSEMBLE&trade; Open Inference Protocol Shared Examples
 This directory contains examples demonstrating aiSSEMBLE Open Inference Protocol features that are shared across implementations.
 
-## Getting Started
-Add the `aissemble-open-inference-protocol-shared` module as a Poetry dependency
-
-```
-poetry add -e ../aissemble-open-inference-protocol-shared
-```
-The following dependency specification will be added to the pipeline's `pyproject.toml` configuration:
-
-```
-[tool.poetry.dependencies]
-aissemble-open-inference-protocol-shared = {path = "../aissemble-open-inference-protocol-shared", develop = true}
-```
-
 ## Features
 
 ### Content Type Decoding/Encoding

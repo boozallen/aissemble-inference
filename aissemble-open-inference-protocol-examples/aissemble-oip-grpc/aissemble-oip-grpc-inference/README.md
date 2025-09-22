@@ -1,8 +1,8 @@
 [[Return to Examples Documentation]](../../README.md)
 
-# aiSSEMBLE Open Inference Protocol&trade; gRPC Inference Example
+# aiSSEMBLE&trade; Open Inference Protocol gRPC Getting Started Example
 
-This example demonstrates how to implement custom handlers for all Open Inference Protocol gRPC endpoints. The example shows how to create a gRPC server that supports mathematical operations on input data.
+This example demonstrates how to integrate basic model inference functionality with the aiSSEMBLE gRPC Open Interface Protocol to create an OIP compliant gRPC server. The example will create a server that supports mathematical operations on input data.
 
 ## Getting Started
 - Ensure you have `grpcurl` installed. If not, follow the [grpcurl installation instructions](https://github.com/fullstorydev/grpcurl?tab=readme-ov-file#installation)
@@ -19,7 +19,6 @@ This example demonstrates how to implement custom handlers for all Open Inferenc
     poetry run run_server
     ```
     The server will start on `grpc://0.0.0.0:8081`
-
 
 2. Run the following `grpcurl` commands to test the different endpoints:
     

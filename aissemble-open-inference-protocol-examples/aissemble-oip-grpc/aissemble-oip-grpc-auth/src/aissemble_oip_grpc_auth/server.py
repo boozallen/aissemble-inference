@@ -15,7 +15,7 @@ import os
 
 
 async def _main():
-    grpc = AissembleOIPgRPC(handler=AuthHandler(), adapter=AuthAdapter())
+    grpc = AissembleOIPgRPC(model_handler=AuthHandler(), adapter=AuthAdapter())
     await grpc.start_server()
 
 

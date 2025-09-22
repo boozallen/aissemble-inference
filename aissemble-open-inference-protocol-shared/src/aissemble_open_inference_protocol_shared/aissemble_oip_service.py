@@ -16,6 +16,10 @@ from aissemble_open_inference_protocol_shared.config.oip_config import OIPConfig
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
 )
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    ModelHandler,
+    DefaultModelHandler,
+)
 
 
 class AissembleOIPService(ABC):
@@ -25,17 +29,18 @@ class AissembleOIPService(ABC):
 
     def __init__(
         self,
-        handler: DataplaneHandler,
-        adapter: AuthAdapterBase,
+        adapter: AuthAdapterBase | None,
+        model_handler: ModelHandler = DefaultModelHandler(),
     ):
         super(AissembleOIPService, self).__init__()
         self.config = OIPConfig()
-        self.handler = handler
+        self.model_handler = model_handler
+        self.dataplane_handler = DataplaneHandler(self.model_handler)
         self.adapter = adapter
         self.server = None
 
     def model_load(self, model_name: str) -> bool:
-        return self.handler.model_load(model_name)
+        return self.model_handler.model_load(model_name)
 
     @abstractmethod
     async def start_server(self):

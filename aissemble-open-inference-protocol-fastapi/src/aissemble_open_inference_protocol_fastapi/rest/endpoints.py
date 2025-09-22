@@ -7,37 +7,43 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
+
+from functools import partial
+from typing import Optional
+
 from fastapi import APIRouter, status, Depends, Request, HTTPException
 from fastapi.security import HTTPBearer
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DefaultHandler,
+from krausening.logging import LogManager
+
+from aissemble_open_inference_protocol_shared.auth.auth_context import (
+    AuthContext,
 )
 from aissemble_open_inference_protocol_shared.auth.default_adapter import (
     DefaultAdapter,
 )
-from aissemble_open_inference_protocol_shared.types.dataplane import (
-    InferenceRequest,
-    InferenceResponse,
-    ModelMetadataResponse,
-    ModelMetadataErrorResponse,
-    ModelReadyResponse,
-    ServerReadyResponse,
-    ServerLiveResponse,
-    ServerMetadataResponse,
-    ServerMetadataErrorResponse,
-)
 from aissemble_open_inference_protocol_shared.auth.jwt_auth import (
     authenticate_and_authorize,
-)
-from aissemble_open_inference_protocol_shared.auth.auth_context import (
-    AuthContext,
 )
 from aissemble_open_inference_protocol_shared.codecs.utils import (
     decode_inference_request,
     build_inference_response,
 )
-from krausening.logging import LogManager
-from functools import partial
+from aissemble_open_inference_protocol_shared.handlers.dataplane import (
+    DataplaneHandler,
+)
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    DefaultModelHandler,
+    ModelHandler,
+)
+from aissemble_open_inference_protocol_shared.types.dataplane import (
+    InferenceRequest,
+    InferenceResponse,
+    ModelMetadataResponse,
+    ModelReadyResponse,
+    ServerReadyResponse,
+    ServerLiveResponse,
+    ServerMetadataResponse,
+)
 
 security = HTTPBearer(auto_error=False)
 AUTH_ACTION_READ = "read"
@@ -69,7 +75,7 @@ def infer_model(
     model_name,
     payload: InferenceRequest,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> InferenceResponse:
@@ -85,16 +91,12 @@ def infer_model(
 
     authenticate_and_authorize(auth_context)
 
-    raw_request_payload = payload
-
-    validate_oip(raw_request_payload)
-    decoded_payload = decode_inference_request(payload)
-    result = handler.infer(model_name=model_name, payload=decoded_payload)
-    inference_response = build_inference_response(
-        model_name=model_name, request=raw_request_payload, result=result
+    return infer(
+        model_name=model_name,
+        model_version=None,
+        payload=payload,
+        model_handler=model_handler,
     )
-    validate_oip(inference_response)
-    return inference_response
 
 
 @router.post(
@@ -109,7 +111,7 @@ async def infer_model_version(
     model_version,
     payload: InferenceRequest,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> InferenceResponse:
@@ -122,22 +124,39 @@ async def infer_model_version(
         user_ip=_get_user_ip_from_request(request),
         request_url=str(request.url),
     )
-
     authenticate_and_authorize(auth_context)
 
-    raw_request_payload = payload
-    validate_oip(raw_request_payload)
-    decoded_payload = decode_inference_request(payload)
-    result = handler.infer(model_name=model_name, payload=decoded_payload)
-
-    inference_response = build_inference_response(
+    return infer(
         model_name=model_name,
-        request=raw_request_payload,
+        model_version=model_version,
+        payload=payload,
+        model_handler=model_handler,
+    )
+
+
+def infer(
+    model_name,
+    model_version: Optional[str],
+    payload: InferenceRequest,
+    model_handler: ModelHandler,
+) -> InferenceResponse:
+    decoded_payload = decode_inference_request(payload)
+    dataplane_handler = DataplaneHandler(model_handler)
+    try:
+        result = dataplane_handler.infer(
+            model_name=model_name, model_version=model_version, payload=decoded_payload
+        )
+    except (ValueError, TypeError) as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Failed to validate InferenceResponse {e}",
+        )
+    return build_inference_response(
+        model_name=model_name,
+        request=payload,
         result=result,
         model_version=model_version,
     )
-    validate_oip(inference_response)
-    return inference_response
 
 
 @router.get(
@@ -146,21 +165,11 @@ async def infer_model_version(
     response_description="Return HTTP Status Code 200 (OK)",
     status_code=status.HTTP_200_OK,
     response_model=ModelMetadataResponse,
-    responses={
-        400: {
-            "model": ModelMetadataErrorResponse,
-            "description": "Returned if the model metadata request is invalid or fails.",
-        },
-        404: {
-            "model": ModelMetadataErrorResponse,
-            "description": "Returned if the model or model version is not found.",
-        },
-    },
 )
 def model_metadata(
     model_name: str,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ModelMetadataResponse:
@@ -176,7 +185,8 @@ def model_metadata(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.model_metadata(model_name=model_name)
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.model_metadata(model_name=model_name)
 
 
 @router.get(
@@ -185,22 +195,12 @@ def model_metadata(
     response_description="Return HTTP Status Code 200 (OK)",
     status_code=status.HTTP_200_OK,
     response_model=ModelMetadataResponse,
-    responses={
-        400: {
-            "model": ModelMetadataErrorResponse,
-            "description": "Returned if the model metadata request is invalid or fails.",
-        },
-        404: {
-            "model": ModelMetadataErrorResponse,
-            "description": "Returned if the model or model version is not found.",
-        },
-    },
 )
 def model_version_metadata(
     model_name: str,
     model_version: str,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ModelMetadataResponse:
@@ -216,7 +216,10 @@ def model_version_metadata(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.model_metadata(model_name=model_name, model_version=model_version)
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.model_metadata(
+        model_name=model_name, model_version=model_version
+    )
 
 
 @router.get(
@@ -229,7 +232,7 @@ def model_version_metadata(
 def model_ready(
     model_name: str,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ModelReadyResponse:
@@ -245,7 +248,8 @@ def model_ready(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.model_ready(model_name=model_name)
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.model_ready(model_name=model_name)
 
 
 @router.get(
@@ -259,7 +263,7 @@ def model_version_ready(
     model_name: str,
     model_version: str,
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ModelReadyResponse:
@@ -275,7 +279,10 @@ def model_version_ready(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.model_ready(model_name=model_name, model_version=model_version)
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.model_ready(
+        model_name=model_name, model_version=model_version
+    )
 
 
 @router.get(
@@ -287,7 +294,7 @@ def model_version_ready(
 )
 def server_ready(
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ServerReadyResponse:
@@ -303,7 +310,8 @@ def server_ready(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.server_ready()
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.server_ready()
 
 
 @router.get(
@@ -315,7 +323,7 @@ def server_ready(
 )
 def server_live(
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ServerLiveResponse:
@@ -331,7 +339,8 @@ def server_live(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.server_live()
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.server_live()
 
 
 @router.get(
@@ -340,16 +349,10 @@ def server_live(
     response_description="Return HTTP Status Code 200 (OK)",
     status_code=status.HTTP_200_OK,
     response_model=ServerMetadataResponse,
-    responses={
-        400: {
-            "model": ServerMetadataErrorResponse,
-            "description": "Returned if the server metadata request is invalid or fails.",
-        },
-    },
 )
 def server_metadata(
     request: Request,
-    handler: DefaultHandler = Depends(DefaultHandler),
+    model_handler: DefaultModelHandler = Depends(DefaultModelHandler),
     authz_adapter: DefaultAdapter = Depends(DefaultAdapter),
     bearer_token: str = Depends(security),
 ) -> ServerMetadataResponse:
@@ -365,7 +368,8 @@ def server_metadata(
 
     authenticate_and_authorize(auth_context)
 
-    return handler.server_metadata()
+    dataplane_handler = DataplaneHandler(model_handler)
+    return dataplane_handler.server_metadata()
 
 
 def _get_user_ip_from_request(request: Request):
@@ -389,17 +393,3 @@ def _get_user_ip_from_request(request: Request):
             )
 
     return ip
-
-
-def validate_oip(data: InferenceRequest | InferenceResponse):
-    """
-    Validate InferenceRequest or InferenceResponse data against shape and datatype
-    :param data: inference resquest or inference response
-    """
-    try:
-        data.validate_oip()
-    except (ValueError, TypeError) as e:
-        raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"Failed to validate InferenceResponse {e}",
-        )

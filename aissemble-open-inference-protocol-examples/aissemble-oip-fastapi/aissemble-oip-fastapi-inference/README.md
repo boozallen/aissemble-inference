@@ -1,7 +1,7 @@
 [[Return to Examples Documentation]](../../README.md)
 
-# aiSSEMBLE Open Inference Protocol&trade; FastAPI Inference Example
-This example demonstrates how to integrate a model with the Open Interface Protocol using FastAPI to implement an inference endpoint.
+# aiSSEMBLE&trade; Open Inference Protocol FastAPI Getting Started Example
+This example demonstrates how to integrate basic model inference functionality with the aiSSEMBLE FastAPI Open Interface Protocol to create an OIP compliant server.
 The example model takes Celsius as input and returns the corresponding Fahrenheit value as output.
 
 ## Getting Started

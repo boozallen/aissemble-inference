@@ -5,6 +5,11 @@ To give more structure and guidance to the inference process, `model_load` has b
 
 # Breaking Changes
 
+## Model Handler Implementation
+We have moved the required model logic off to a ModelHandler. This seperated the Dataplane and Model handler objectives. The dataplane will be handled by our solutions and will move the request data through validation and transformation to the model layer. This also alleviates some of the required dataplane logic.
+
+To upgrade, update your Dataplane handler to instead extend the Model handler and remove any Dataplane specific functions (e.g. server_ready, server_live, and server_metadata). 
+
 ## AissembleOIPFastAPI Initialization
 The AissembleOIPFastAPI class is now initialized with the handler and adapter instance and not the class' themselves. This was done to keep consistency across solutions.
 

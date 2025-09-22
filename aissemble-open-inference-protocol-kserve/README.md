@@ -27,8 +27,8 @@ Create your custom handler class with:
 ```python
 from typing import Optional
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    ModelHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
@@ -38,7 +38,7 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     Datatype,
 )
 
-class MyHandler(DataplaneHandler):
+class MyHandler(ModelHandler):
     def __init__(self):
         super().__init__()
 
@@ -81,7 +81,7 @@ from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
 
 if __name__ == "__main__":
     model_name = "my_model"
-    oip_kserve = AissembleOIPKServe(name=model_name, handler=MyHandler())
+    oip_kserve = AissembleOIPKServe(name=model_name, model_handler=MyHandler())
     # load() should be called before start server.
     # which will call the handler's model_load() to ensure model is loaded
     oip_kserve.load()

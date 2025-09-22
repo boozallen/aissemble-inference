@@ -8,29 +8,27 @@
 # #L%
 ###
 import asyncio
-import inspect
 import signal
 from concurrent.futures import ThreadPoolExecutor
 
 from grpc import aio
 from krausening.logging import LogManager
 
+from aissemble_open_inference_protocol_grpc.auth.auth_interceptor import AuthInterceptor
 from aissemble_open_inference_protocol_grpc.grpc_inference_service_pb2_grpc import (
     add_GrpcInferenceServiceServicer_to_server,
 )
 from aissemble_open_inference_protocol_grpc.inference_servicer import InferenceServicer
-from aissemble_open_inference_protocol_grpc.auth.auth_interceptor import AuthInterceptor
-
 from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
 )
-from aissemble_open_inference_protocol_shared.auth.default_adapter import DefaultAdapter
 from aissemble_open_inference_protocol_shared.auth.auth_adapter_base import (
     AuthAdapterBase,
 )
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-    DefaultHandler,
+from aissemble_open_inference_protocol_shared.auth.default_adapter import DefaultAdapter
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    ModelHandler,
+    DefaultModelHandler,
 )
 
 
@@ -39,10 +37,10 @@ class AissembleOIPgRPC(AissembleOIPService):
 
     def __init__(
         self,
-        handler: DataplaneHandler = DefaultHandler(),
+        model_handler: ModelHandler = DefaultModelHandler(),
         adapter: AuthAdapterBase = DefaultAdapter(),
     ):
-        super().__init__(handler, adapter)
+        super().__init__(adapter, model_handler)
         self.server = self.create_server()
 
     async def start_server(self):
@@ -65,7 +63,7 @@ class AissembleOIPgRPC(AissembleOIPService):
         await self.server.wait_for_termination()
 
     def create_server(self):
-        inference_servicer = InferenceServicer(self.handler)
+        inference_servicer = InferenceServicer(self.dataplane_handler)
         self.server = aio.server(
             ThreadPoolExecutor(max_workers=self.config.grpc_workers),
             interceptors=self._get_interceptors(),

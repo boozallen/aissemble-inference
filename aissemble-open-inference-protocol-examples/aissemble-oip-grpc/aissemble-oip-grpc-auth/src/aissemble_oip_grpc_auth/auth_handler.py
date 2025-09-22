@@ -8,21 +8,18 @@
 # #L%
 ###
 from typing import Optional
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
+
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
-    ModelReadyResponse,
     MetadataTensor,
     Datatype,
-    ServerReadyResponse,
 )
 
 
-class AuthHandler(DataplaneHandler):
+class AuthHandler(ModelHandler):
     """
     Custom handler for auth example which implements simple functions for each endpoint.
     """
@@ -65,21 +62,6 @@ class AuthHandler(DataplaneHandler):
             inputs=input_tensors,
             outputs=output_tensors,
         )
-
-    def model_ready(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        """
-        Check if the model is ready for inference.
-        """
-        return ModelReadyResponse(name=model_name, ready=True)
-
-    def server_ready(self) -> ServerReadyResponse:
-        """
-        Check if the server is ready."""
-        return ServerReadyResponse(live=True)
 
     def model_load(self, model_name) -> bool:
         return True
