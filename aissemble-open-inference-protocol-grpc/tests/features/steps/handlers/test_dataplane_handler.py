@@ -19,6 +19,7 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 
 class TestDataplaneHandler(DataplaneHandler):
     def __init__(self):
+        super().__init__()
         self.model_version = None
         self.model_name = None
         self.request_payload = None

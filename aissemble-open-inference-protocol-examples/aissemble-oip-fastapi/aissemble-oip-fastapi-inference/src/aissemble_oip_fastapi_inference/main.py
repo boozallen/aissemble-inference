@@ -8,33 +8,30 @@
 # #L%
 ###
 import asyncio
+from typing import Optional
 
 import numpy as np
-from typing import Optional
 from krausening.logging import LogManager
+from tensorflow.keras.models import load_model
+
 from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
     AissembleOIPFastAPI,
 )
-from tensorflow.keras.models import load_model
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
     ModelMetadataResponse,
-    ModelReadyResponse,
     MetadataTensor,
     ResponseOutput,
     Datatype,
 )
 
 
-class Handler(DataplaneHandler):
+class Handler(ModelHandler):
     """
-    Implements Open Inferencing Protocol of FastAPI for requesting model.
+    Implements Open Inferencing Protocol of FastAPI for requesting model inference.
     This example will load model called convert celsius to fahrenheit and kick off inferencing endpoint defined below.
-    If this handlers doesn't implement one of Open Inferencing Protocol endpoints it would default to DataplaneHandler
     """
 
     logger = LogManager.get_instance().get_logger("Handler")
@@ -42,7 +39,6 @@ class Handler(DataplaneHandler):
     def __init__(self):
         super().__init__()
         self.model = None
-        self.ready = False
 
     def infer(
         self,
@@ -102,16 +98,8 @@ class Handler(DataplaneHandler):
             outputs=output_tensors,
         )
 
-    def model_ready(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=self.ready)
-
     def model_load(self, model_name) -> bool:
         self.model = load_model("model/" + model_name + ".keras")
-        self.ready = True
         self.logger.info("Model loaded successfully")
         return True
 

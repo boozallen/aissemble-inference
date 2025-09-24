@@ -58,6 +58,8 @@ class InferenceServicer(GrpcInferenceServiceServicer):
         indicates success and other codes indicate failure.
         """
         self.logger.info("Received Model Inference request")
+        inference_request = None
+        handler_response = None
         try:
             model_inference_request_mapper = ModelInferenceRequestMapper()
             inference_request = model_inference_request_mapper.to_inference_request(
@@ -70,14 +72,6 @@ class InferenceServicer(GrpcInferenceServiceServicer):
             )
 
         try:
-            inference_request.validate_oip()
-        except (ValueError, TypeError) as e:
-            context.abort(
-                grpc.StatusCode.INVALID_ARGUMENT,
-                f"Failed to validate InferenceRequest {e}",
-            )
-
-        try:
             self.logger.info("Sending model inference request to the handler")
             # Send request to handler
             handler_response = self.handler.infer(
@@ -85,15 +79,13 @@ class InferenceServicer(GrpcInferenceServiceServicer):
                 model_name=request.model_name,
                 model_version=request.model_version,
             )
-        except Exception as e:
-            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
-
-        try:
-            handler_response.validate_oip()
         except (ValueError, TypeError) as e:
             context.abort(
-                grpc.StatusCode.INTERNAL, f"Failed to validate InferenceResponse {e}"
+                grpc.StatusCode.INVALID_ARGUMENT,
+                f"Failed to validate Inference! {e}",
             )
+        except Exception as e:
+            context.abort(grpc.StatusCode.INTERNAL, f"Internal Server Error! {e}")
 
         try:
             encoded_response = build_inference_response(

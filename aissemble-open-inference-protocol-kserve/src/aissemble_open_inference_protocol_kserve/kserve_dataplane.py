@@ -15,17 +15,16 @@ from aissemble_open_inference_protocol_kserve.mappers.infer_mapper import InferM
 
 from aissemble_open_inference_protocol_shared.handlers.dataplane import (
     DataplaneHandler,
-    DefaultHandler,
 )
 
 
 class KServeDataplaneAdapter(DataPlane):
     """
-        KServe DataPlane Adapter
-        This class will convert aissemble-open-inference-protocol's DataplaneHandler to KServe's Dataplane Interface.
+    KServe DataPlane Adapter
+    This class will convert aissemble-open-inference-protocol's DataplaneHandler to KServe's Dataplane Interface.
     """
 
-    def __init__(self, handler: DataplaneHandler = DefaultHandler()):
+    def __init__(self, handler: DataplaneHandler = DataplaneHandler()):
         super().__init__(model_registry=ModelRepository())
         self.handler = handler
 

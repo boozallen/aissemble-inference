@@ -7,19 +7,15 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-import numpy as np
 from typing import Optional
 
+import numpy as np
 from tensorflow.keras.models import load_model
 
 from aissemble_open_inference_protocol_kserve.aissemble_oip_kserve import (
     AissembleOIPKServe,
 )
-
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
-
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     Datatype,
     InferenceRequest,
@@ -37,7 +33,7 @@ to the AissembleOIPKServe constructor along with the model name. In this example
 """
 
 
-class CustomKServeHandler(DataplaneHandler):
+class KServeModelHandler(ModelHandler):
     def __init__(self):
         super().__init__()
         self.ready = False
@@ -118,7 +114,7 @@ if __name__ == "__main__":
     model_name = "convert_celsius_to_fahrenheit"
     oip_kserve = AissembleOIPKServe(
         name=model_name,
-        handler=CustomKServeHandler(),
+        model_handler=KServeModelHandler(),
     )
     # model needs to be loaded before server start
     oip_kserve.load()

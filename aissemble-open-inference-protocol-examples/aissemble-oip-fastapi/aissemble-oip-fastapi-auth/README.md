@@ -1,6 +1,6 @@
 [[Return to Examples Documentation]](../../README.md)
 
-# aiSSEMBLE Open Inference Protocol&trade; FastAPI Authorization Example
+# aiSSEMBLE&trade; Open Inference Protocol FastAPI Authorization Example
 This example demonstrates calling inference endpoints with authorization enabled. While full 
 authentication is out of scope, we will simulate authentication by generating a jwt token
 that the authorization will then use to PERMIT or DENY an inference endpoint call. 

@@ -7,11 +7,12 @@
 # This software package is licensed under the Booz Allen Public License. All Rights Reserved.
 # #L%
 ###
-from abc import ABC, abstractmethod
 from typing import Optional
 
-from fastapi import status, HTTPException
-
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    ModelHandler,
+    DefaultModelHandler,
+)
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
@@ -23,34 +24,43 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
 )
 
 
-class DataplaneHandler(ABC):
-    @abstractmethod
+class DataplaneHandler:
+    def __init__(self, model_handler: ModelHandler = DefaultModelHandler()):
+        self.model_handler = model_handler
+
     def infer(
         self,
         payload: InferenceRequest,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> InferenceResponse:
-        pass
+        # TODO we need to move the codec logic calls here so it is not one solution specific
 
-    @abstractmethod
+        # Validate request
+        payload.validate_oip()
+
+        infer_response = self.model_handler.infer(payload, model_name, model_version)
+
+        # Validate response
+        infer_response.validate_oip()
+        return infer_response
+
     def model_metadata(
         self,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelMetadataResponse:
-        pass
+        return self.model_handler.model_metadata(model_name, model_version)
 
-    @abstractmethod
     def model_load(self, model_name: str) -> bool:
-        pass
+        return self.model_handler.model_load(model_name)
 
     def model_ready(
         self,
         model_name: str,
         model_version: Optional[str] = None,
     ) -> ModelReadyResponse:
-        return ModelReadyResponse(name=model_name, ready=True)
+        return self.model_handler.model_ready(model_name, model_version)
 
     def server_ready(self) -> ServerReadyResponse:
         return ServerReadyResponse(live=True)
@@ -62,27 +72,3 @@ class DataplaneHandler(ABC):
         return ServerMetadataResponse(
             name="Inference Server", version="1.0", extensions=[]
         )
-
-
-class DefaultHandler(DataplaneHandler):
-    def infer(
-        self,
-        payload: InferenceRequest,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> InferenceResponse:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        )
-
-    def model_metadata(
-        self,
-        model_name: str,
-        model_version: Optional[str] = None,
-    ) -> ModelMetadataResponse:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        )
-
-    def model_load(self, model_name) -> bool:
-        raise NotImplementedError

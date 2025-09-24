@@ -1,6 +1,6 @@
 [[Return to Examples Documentation]](../../README.md)
 
-# aiSSEMBLE Open Inference Protocol&trade; gRPC Authorization Example
+# aiSSEMBLE&trade; Open Inference Protocol gRPC Authorization Example
 
 This example demonstrates how to implement JWT-based authorization for Open Inference Protocol gRPC endpoints role-based access using a custom `AuthAdapter`. The example shows how to create a secure gRPC server that requires valid JWT tokens for all inference requests.
 

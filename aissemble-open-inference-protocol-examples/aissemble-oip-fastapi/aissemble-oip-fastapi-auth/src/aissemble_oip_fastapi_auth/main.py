@@ -8,29 +8,28 @@
 # #L%
 ###
 import os
+from typing import Optional
 
 from fastapi import APIRouter, status
-from typing import Optional
 from fastapi.security import HTTPBearer
 from pydantic import BaseModel
-from aissemble_open_inference_protocol_shared.types.dataplane import (
-    InferenceRequest,
-    InferenceResponse,
-    ModelMetadataResponse,
+
+from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
+    AissembleOIPFastAPI,
 )
 
 # To enable authorization in your own project you should import AuthzforceAdapter
 from aissemble_open_inference_protocol_shared.auth.authzforce_adapter import (
     AuthzforceAdapter,
 )
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
+from aissemble_open_inference_protocol_shared.types.dataplane import (
+    InferenceRequest,
+    InferenceResponse,
+    ModelMetadataResponse,
+)
 from .generate_simple_jwt import (
     create_simple_jwt_token,
-)
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
-from aissemble_open_inference_protocol_fastapi.aissemble_oip_fastapi import (
-    AissembleOIPFastAPI,
 )
 
 security = HTTPBearer(auto_error=False)
@@ -50,13 +49,9 @@ which is the local url.
 """
 
 
-class Handler(DataplaneHandler):
+class Handler(ModelHandler):
     def __init__(self):
         super().__init__()
-
-    def model_load(self, model_name) -> bool:
-        # Stubbing any response because example does not have a model to load
-        return True
 
     def infer(
         self,
@@ -80,6 +75,10 @@ class Handler(DataplaneHandler):
             inputs=[],
             outputs=[],
         )
+
+    def model_load(self, model_name: str) -> bool:
+        # Stubbing any response because example does not have a model to load
+        return True
 
 
 class LoginRequest(BaseModel):

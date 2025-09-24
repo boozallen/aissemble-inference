@@ -8,10 +8,10 @@
 # #L%
 ###
 from typing import Optional
+
 from krausening.logging import LogManager
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
+
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceRequest,
     InferenceResponse,
@@ -20,14 +20,11 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     MetadataTensor,
     ResponseOutput,
     Datatype,
-    ServerMetadataResponse,
-    ServerReadyResponse,
-    ServerLiveResponse,
     TensorData,
 )
 
 
-class OIPHandler(DataplaneHandler):
+class OIPHandler(ModelHandler):
     """
     Custom handler that implements all Open Inference Protocol endpoints.
     This example demonstrates how to implement custom handlers for each endpoint:
@@ -136,34 +133,6 @@ class OIPHandler(DataplaneHandler):
         is_ready = model_name in ready_models
 
         return ModelReadyResponse(name=model_name, ready=is_ready)
-
-    def server_metadata(self) -> ServerMetadataResponse:
-        """
-        Return metadata about the server.
-        """
-        self.logger.info("Received server metadata request")
-
-        return ServerMetadataResponse(
-            name="aiSSEMBLE OIP gRPC Inference Example",
-            version="1.0.0",
-            extensions=["v2", "aissemble"],
-        )
-
-    def server_ready(self) -> ServerReadyResponse:
-        """
-        Return server readiness status.
-        """
-        self.logger.info("Received server ready request")
-
-        return ServerReadyResponse(live=True)
-
-    def server_live(self) -> ServerLiveResponse:
-        """
-        Return server liveness status.
-        """
-        self.logger.info("Received server live request")
-
-        return ServerLiveResponse(live=True)
 
     def model_load(self, model_name) -> bool:
         self.logger.info("Model has been loaded.")

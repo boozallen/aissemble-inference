@@ -8,22 +8,28 @@
 # #L%
 ###
 from typing import Optional
-from fastapi import status, HTTPException
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     ModelMetadataResponse,
+    InferenceRequest,
+    InferenceResponse,
 )
 
 
-class HandlerNoImpl(DataplaneHandler):
-    def model_metadata(
+class HandlerNoOptionalImpl(ModelHandler):
+    def infer(
         self,
+        payload: InferenceRequest,
         model_name: str,
         model_version: Optional[str] = None,
+    ) -> InferenceResponse:
+        pass
+
+    def model_metadata(
+        self, model_name: str, model_version: Optional[str] = None
     ) -> ModelMetadataResponse:
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        )
+        pass
+
+    def model_load(self, model_name) -> bool:
+        pass

@@ -15,28 +15,31 @@ from aissemble_open_inference_protocol_kserve.kserve_dataplane import (
 from aissemble_open_inference_protocol_shared.aissemble_oip_service import (
     AissembleOIPService,
 )
-
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
-)
+from aissemble_open_inference_protocol_shared.handlers.model_handler import ModelHandler
 
 
 class AissembleOIPKServe(Model, AissembleOIPService):
     def __init__(
         self,
         name: str,
-        handler: DataplaneHandler,
+        model_handler: ModelHandler,
     ):
         Model.__init__(self, name)
-        self.kserve_dataplane_adapter = KServeDataplaneAdapter(handler=handler)
-        AissembleOIPService.__init__(self, handler=handler, adapter=None)
+        AissembleOIPService.__init__(self, adapter=None, model_handler=model_handler)
+
+        # TODO now that we have abstracted the dataplane handler from the user, this model should be used instead of
+        #  overriding Kserve's dph
+        # Create a Kserve dataplane adapter to route requests to users model data.
+        self.kserve_dataplane_adapter = KServeDataplaneAdapter(
+            handler=self.dataplane_handler
+        )
         self.model = None
         # initialize model ready false
         self.ready = False
 
     def load(self) -> bool:
         # update the model ready flag based on model_load() result
-        self.ready = self.handler.model_load(self.name)
+        self.ready = self.dataplane_handler.model_load(self.name)
         return self.ready
 
     def start_server(self):

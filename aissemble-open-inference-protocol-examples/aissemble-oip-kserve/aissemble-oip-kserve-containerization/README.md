@@ -1,4 +1,4 @@
-# aiSSEMBLE Open Inference Protocol&trade; KServe Containerization Example
+# aiSSEMBLE&trade; Open Inference Protocol KServe Containerization Example
 This example demonstrates how to containerize the aiSSEMBLE Open Interface Protocol and deploy it on KServe
 
 

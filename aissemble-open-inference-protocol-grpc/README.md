@@ -38,8 +38,8 @@ Example:
 ```python
 from typing import Optional
 
-from aissemble_open_inference_protocol_shared.handlers.dataplane import (
-    DataplaneHandler,
+from aissemble_open_inference_protocol_shared.handlers.model_handler import (
+    ModelHandler,
 )
 from aissemble_open_inference_protocol_shared.types.dataplane import (
     Datatype,
@@ -47,11 +47,10 @@ from aissemble_open_inference_protocol_shared.types.dataplane import (
     InferenceResponse,
     ModelMetadataResponse,
     MetadataTensor,
-    ModelReadyResponse,
 )
 
 
-class MyHandler(DataplaneHandler):
+class MyHandler(ModelHandler):
     def __init__(self):
         super().__init__()
 
