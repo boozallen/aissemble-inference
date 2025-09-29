@@ -35,8 +35,5 @@ def generate_jwt_tokens():
     user_token = create_jwt_token("regular_user", ["user"])
     print(f"User token (no access to ModelInfer): {user_token}\n")
 
-    basic_token = create_jwt_token("guest_user", [])
-    print(f"Basic token (no access): {basic_token}\n")
-
     print("Use these tokens in your gRPC client metadata:")
     print("metadata = [('authorization', 'Bearer <YOUR_JWT_TOKEN_HERE>')]")
