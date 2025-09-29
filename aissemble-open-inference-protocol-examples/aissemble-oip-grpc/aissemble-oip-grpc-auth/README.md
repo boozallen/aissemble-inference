@@ -58,8 +58,6 @@ The example uses an `oip.properties` file to configure authorization:
     This will output tokens for different user types:
      - Admin token (with "admin" role - full access)
      - User token (with "user" role - access only to ServerReady)
-     - Basic token (access denied to all endpoints)
-
 
 3. Test endpoint access using `grpcurl`:
    - `import-path` will need to be updated with the location of your `aissemble-open-inference-protocol` project
@@ -84,7 +82,7 @@ The example uses an `oip.properties` file to configure authorization:
     
     #### Model Inference endpoint with authorization:
 
-    This should pass with an admin token and fail with a user/basic token.
+    This should pass with an admin token and fail with a user token.
     ```bash
     grpcurl -plaintext \
       -H "authorization: Bearer <YOUR_JWT_TOKEN_HERE>" \
