@@ -43,5 +43,5 @@ kappa-maki = "^1.0.2"
 nose = "^1.3.7"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<=2.1.4"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"

@@ -33,7 +33,7 @@ aissemble-open-inference-protocol-grpc = {path = "../../../aissemble-open-infere
 ruff = "^0.11.12"
 
 [build-system]
-requires = ["poetry-core>=2.0.0,<=2.1.4"]
+requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff.lint]
