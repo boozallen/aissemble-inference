@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
         <artifactId>aissemble-parent</artifactId>
-        <version>7</version>
+        <version>8</version>
         <relativePath />
     </parent>
 
@@ -43,8 +43,8 @@
 
     <licenses>
         <license>
-            <name>Booz Allen Public License v1.0</name>
-            <url>https://github.com/boozallen/Public-License/blob/master/LICENSE.md</url>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
