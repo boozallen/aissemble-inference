@@ -16,7 +16,7 @@ classifiers = [
     "Operating System :: OS Independent",
     "Intended Audience :: Developers"
 ]
-license = "Booz Allen Public License v1.0"
+license = "Apache-2.0"
 license-files = ["LICENSE*"]
 dynamic = ["version", "dependencies"]
 
