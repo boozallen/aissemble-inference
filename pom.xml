@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>aissemble-open-inference-protocol</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
 
     <name>aiSSEMBLE::Open Inference Protocol</name>
     <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>
@@ -48,16 +48,14 @@
     </licenses>
     
     <properties>
-        <version.habushu.plugin>3.0.0</version.habushu.plugin>
+        <version.habushu.plugin>3.3.0</version.habushu.plugin>
         <version.python>3.11.4</version.python>
     </properties>
 
     <modules>
-        <module>aissemble-open-inference-protocol-fastapi</module>
-        <module>aissemble-open-inference-protocol-grpc</module>
-        <module>aissemble-open-inference-protocol-shared</module>
-        <module>aissemble-open-inference-protocol-examples</module>
-        <module>aissemble-open-inference-protocol-kserve</module>
+        <module>aissemble-oip-core</module>
+        <module>aissemble-oip-modules</module>
+        <module>aissemble-oip-examples</module>
     </modules>
 
     <profiles>
@@ -130,9 +128,6 @@
                     <configuration>
                         <cacheWheels>true</cacheWheels>
                         <pythonVersion>${version.python}</pythonVersion>
-                        <behaveTestEnvironmentVariables>
-                            <TESTCONTAINERS_RYUK_DISABLED>${TESTCONTAINERS_RYUK_DISABLED}</TESTCONTAINERS_RYUK_DISABLED>
-                        </behaveTestEnvironmentVariables>
                     </configuration>
                 </plugin>
             </plugins>
