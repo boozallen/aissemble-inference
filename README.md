@@ -7,17 +7,28 @@
 [![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 [![License](https://img.shields.io/github/license/boozallen/aissemble-open-inference-protocol)](https://www.apache.org/licenses/LICENSE-2.0)
 
-This repository provides a reference implementation of the [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) — a standard designed 
-to promote interoperability across diverse inference runtimes and platforms. By adhering to a consistent API 
-specification, OIP simplifies the integration and deployment of machine learning models in both development 
-and production environments.
+**v1.5 – Early Preview**
 
-By integrating with aiSSEMBLE Open Inference Protocol, you get a practical, ready-to-use implementation of the OIP standard that streamlines the process of making your models interoperable. It abstracts away much of the complexity involved in conforming to the protocol, allowing you to easily connect with any OIP-compliant client or server. This enhances portability and ensures your models can run seamlessly across platforms that have adopted the OIP API.
+The aiSSEMBLE [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) project is evolving 
+from a reference implementation of the Open Inference Protocol into a **modular, enterprise-ready Python library** 
+designed to help data science teams move ML models from prototype to secure, scalable production with minimal friction.
 
-## Current Platforms Supported:
-  - [FastAPI](./aissemble-open-inference-protocol-fastapi/README.md#aissemble-open-inference-protocol-fastapi)
-  - [gRPC](./aissemble-open-inference-protocol-grpc/README.md#aissemble-open-inference-protocol-grpc) 
-  - [KServe](./aissemble-open-inference-protocol-kserve/README.md#aissemble-open-inference-protocol-kserve)
+## High-Level Goals for v1.5
 
-## Examples
-aiSSEMBLE Open Inference Protocol provides a wide range of examples across different implementations and configurations. For the full list of examples, see the [Examples](./aissemble-open-inference-protocol-examples/README.md#aissemble-open-inference-protocol-examples) documentation.
+- Remain fully compliant with the Open Inference Protocol (OIP) specification  
+- Provide a lightweight, extensible library built on MLServer as the core inference engine  
+- Serve as production-grade “glue” between existing data science artifacts and enterprise deployment targets  
+- Enable rapid, repeatable deployment to diverse environments (Kubernetes, AWS, on-prem, edge)  
+- Offer pluggable integrations and sensible defaults for:  
+  - Security (authentication, authorization, encryption)  
+  - Observability (centralized logging, Prometheus/Grafana metrics)  
+  - Compliance needs common in regulated settings (FedRAMP, NIST, DoD IL support)  
+- Simplify handoffs across data scientists, software engineers, and DevSecOps teams via standardized, framework-agnostic 
+ abstractions  
+
+This version focuses on establishing the core architecture, extension points, and initial capabilities. Detailed 
+documentation, examples, contribution guides, and full feature specifications will be expanded progressively as part 
+of the v1.5 effort.
+
+**Status:** Active development – not yet feature-complete.  
+Feedback and early adopters welcome.
