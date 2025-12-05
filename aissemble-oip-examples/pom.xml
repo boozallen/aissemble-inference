@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>aissemble-oip-mlserver-iris-classifier</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol::Examples</name>
