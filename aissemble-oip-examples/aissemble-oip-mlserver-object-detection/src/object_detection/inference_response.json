@@ -1,0 +1,47 @@
+{
+  "model_name": "img-detection",
+  "id": "84715324-7f64-4850-a1bc-6f72a27638bb",
+  "parameters": {},
+  "outputs": [
+    {
+      "name": "labels",
+      "shape": [
+        2
+      ],
+      "datatype": "BYTES",
+      "data": [
+        "person",
+        "person"
+      ]
+    },
+    {
+      "name": "scores",
+      "shape": [
+        2
+      ],
+      "datatype": "FP32",
+      "data": [
+        0.994044840335846,
+        0.9743460416793823
+      ]
+    },
+    {
+      "name": "boxes",
+      "shape": [
+        2,
+        4
+      ],
+      "datatype": "FP32",
+      "data": [
+        190,
+        147,
+        502,
+        666,
+        452,
+        6,
+        792,
+        665
+      ]
+    }
+  ]
+}
