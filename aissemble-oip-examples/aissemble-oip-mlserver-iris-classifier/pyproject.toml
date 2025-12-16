@@ -22,9 +22,9 @@ url = "https://pypi.org/simple/"
 publish-url = "https://pypi.org/simple/"
 
 [tool.uv]
-# Exclude perf-analyzer on macOS (no ARM64 wheels available)
+# Exclude perf-analyzer on all platforms
 override-dependencies = [
-    "perf-analyzer ; sys_platform != 'darwin'",
+    "perf-analyzer ; python_version < '0'",
 ]
 
 [tool.hatch.build.targets.wheel]
