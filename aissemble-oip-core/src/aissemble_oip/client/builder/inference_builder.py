@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
-#      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,8 +27,7 @@ from aissemble_oip.client.translator import Translator
 
 
 class InferenceBuilder(ABC, Iterator[Any]):
-    """
-    Abstract base class for building task-specific inference clients.
+    """Abstract base class for building task-specific inference clients.
 
     Rather than exposing a generic ``predict`` method, this class encourages the definition
     of task-oriented inference builders (e.g., object detection, text summarization, translation).
@@ -36,10 +35,10 @@ class InferenceBuilder(ABC, Iterator[Any]):
     sharing common configuration state and behavior.
 
     This design promotes:
-      - Compile-time safety through task-specific method signatures
-      - Reusable shared state (model name, adapter, parameters, etc.)
-      - Consistent access to streaming and iteration capabilities
-      - Alignment with concepts like HuggingFace "tasks"
+    - Compile-time safety through task-specific method signatures
+    - Reusable shared state (model name, adapter, parameters, etc.)
+    - Consistent access to streaming and iteration capabilities
+    - Alignment with concepts like HuggingFace "tasks"
 
     Concrete subclasses should implement ``build_predictor`` to return a fully configured
     :class:`Predictor` instance ready for inference.
@@ -86,68 +85,48 @@ class InferenceBuilder(ABC, Iterator[Any]):
     # -------------------------------------------------------------------------
 
     def with_model(self, model_name: str) -> "InferenceBuilder":
-        """
-        Set the model name/identifier.
+        """Set the model name/identifier.
 
-        Parameters
-        ----------
-        model_name : str
-            The identifier of the model to use.
+        Args:
+            model_name: The identifier of the model to use.
 
-        Returns
-        -------
-        InferenceBuilder
+        Returns:
             Self, for method chaining.
         """
         self._model_name = model_name
         return self
 
     def with_adapter(self, adapter: OipAdapter) -> "InferenceBuilder":
-        """
-        Set the OIP adapter instance.
+        """Set the OIP adapter instance.
 
-        Parameters
-        ----------
-        adapter : OipAdapter
-            The adapter handling protocol communication.
+        Args:
+            adapter: The adapter handling protocol communication.
 
-        Returns
-        -------
-        InferenceBuilder
+        Returns:
             Self, for method chaining.
         """
         self._oip_adapter = adapter
         return self
 
     def with_translator(self, translator: Translator) -> "InferenceBuilder":
-        """
-        Set the data translator instance.
+        """Set the data translator instance.
 
-        Parameters
-        ----------
-        translator : Translator
-            The translator for request/response serialization.
+        Args:
+            translator: The translator for request/response serialization.
 
-        Returns
-        -------
-        InferenceBuilder
+        Returns:
             Self, for method chaining.
         """
         self._translator = translator
         return self
 
     def with_parameters(self, **parameters: Any) -> "InferenceBuilder":
-        """
-        Add or update inference parameters.
+        """Add or update inference parameters.
 
-        Parameters
-        ----------
-        **parameters
-            Arbitrary keyword arguments representing inference parameters.
+        Args:
+            **parameters: Arbitrary keyword arguments representing inference parameters.
 
-        Returns
-        -------
-        InferenceBuilder
+        Returns:
             Self, for method chaining.
         """
         self._parameters.update(parameters)
@@ -159,26 +138,20 @@ class InferenceBuilder(ABC, Iterator[Any]):
 
     @abstractmethod
     def build_predictor(self) -> Predictor:
-        """
-        Construct and return a fully configured :class:`Predictor` instance.
+        """Construct and return a fully configured :class:`Predictor` instance.
 
         Concrete subclasses must implement this method to assemble the predictor
         using the configured model name, adapter, translator, parameters, etc.
 
-        Returns
-        -------
-        Predictor
+        Returns:
             A ready-to-use predictor for the specific task.
         """
         raise NotImplementedError
 
     def stream(self) -> "InferenceBuilder":
-        """
-        Enable streaming mode for subsequent inference calls.
+        """Enable streaming mode for subsequent inference calls.
 
-        Returns
-        -------
-        InferenceBuilder
+        Returns:
             Self, for method chaining.
         """
         self._streaming = True
@@ -189,8 +162,7 @@ class InferenceBuilder(ABC, Iterator[Any]):
     # -------------------------------------------------------------------------
 
     def __iter__(self) -> Generator[Any, None, None]:
-        """
-        Return a generator that yields streaming results.
+        """Return a generator that yields streaming results.
 
         When streaming is enabled, calling ``iter(builder)`` or using the builder
         in a for-loop should yield incremental results from the inference service.
@@ -198,9 +170,7 @@ class InferenceBuilder(ABC, Iterator[Any]):
         The default implementation raises ``NotImplementedError``; concrete
         task-specific builders that support streaming should override this method.
 
-        Yields
-        ------
-        Any
+        Yields:
             Task-specific streaming chunks (e.g., tokens, bounding boxes, etc.).
         """
         raise NotImplementedError("Streaming iteration is not implemented for this task")
