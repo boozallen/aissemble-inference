@@ -21,9 +21,9 @@ from abc import ABC, abstractmethod
 from typing import Dict, Generator, Any
 from collections.abc import Iterator
 
-from aissemble_oip.client.oip_adapter import OipAdapter
-from aissemble_oip.client.predictor import Predictor
-from aissemble_oip.client.translator import Translator
+from aissemble_oip_core.client.oip_adapter import OipAdapter
+from aissemble_oip_core.client.predictor import Predictor
+from aissemble_oip_core.client.translator import Translator
 
 
 class InferenceBuilder(ABC, Iterator[Any]):
@@ -173,4 +173,6 @@ class InferenceBuilder(ABC, Iterator[Any]):
         Yields:
             Task-specific streaming chunks (e.g., tokens, bounding boxes, etc.).
         """
-        raise NotImplementedError("Streaming iteration is not implemented for this task")
+        raise NotImplementedError(
+            "Streaming iteration is not implemented for this task"
+        )

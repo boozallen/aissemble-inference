@@ -19,16 +19,19 @@
 ###
 class OipRequest:
     """Placeholder class for OipRequest. To be implemented later."""
+
     pass
 
 
 class OipResponse:
     """Placeholder class for OipResponse. To be implemented later."""
+
     pass
 
 
 class OipHealthStatus:
     """Placeholder class for OipHealthStatus. To be implemented later."""
+
     pass
 
 

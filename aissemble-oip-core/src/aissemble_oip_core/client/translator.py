@@ -7,9 +7,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #      http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,7 +20,7 @@
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
-from aissemble_oip.client.oip_adapter import OipRequest, OipResponse
+from aissemble_oip_core.client.oip_adapter import OipRequest, OipResponse
 
 I = TypeVar("I")
 O = TypeVar("O")

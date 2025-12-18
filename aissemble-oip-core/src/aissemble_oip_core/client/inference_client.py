@@ -19,8 +19,8 @@
 ###
 from __future__ import annotations
 
-from aissemble_oip.client.builder.raw_inference_builder import RawInferenceBuilder
-from aissemble_oip.client.oip_adapter import OipAdapter
+from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
+from aissemble_oip_core.client.oip_adapter import OipAdapter
 
 
 class InferenceClient:
