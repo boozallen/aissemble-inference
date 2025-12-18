@@ -1,0 +1,18 @@
+[project]
+name = "aissemble-oip-mlserver-object-detection"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "mlserver>=1.6.0",
+    "transformers>=4.30.0",
+    "pillow>=10.0.0",
+    "torch>=2.0.0",
+    "requests>=2.32.5",
+]
+[tool.uv]
+# Exclude perf-analyzer on macOS (no ARM64 wheels available)
+override-dependencies = [
+    "perf-analyzer ; sys_platform != 'darwin'",
+]

@@ -1,0 +1,49 @@
+# kubectl talks to api server and sends config request : entrypoint to cluster
+# request must be in json or yaml format
+# send a request to configure a component called deployment = a template for creating a pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: img-detection-deployment
+  labels:
+    app: img-detection
+spec:
+  replicas: 3 # start w 3 pods
+  selector:
+    matchLabels:
+      app: img-detection
+  template:
+    metadata:
+      labels:
+        app: img-detection
+    spec:
+      containers:
+      - name: img-detection
+        image: img-detection-server:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8081
+          name: grpc
+        - containerPort: 8082
+          name: metrics
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        livenessProbe:
+          httpGet:
+            path: /v2/health/live
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /v2/health/ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
