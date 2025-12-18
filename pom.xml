@@ -80,14 +80,13 @@
                             <groupId>org.technologybrewery.habushu</groupId>
                             <artifactId>habushu-maven-plugin</artifactId>
                             <version>${version.habushu.plugin}</version>
-                            <configuration>
-                                <usePyenv>false</usePyenv>
+                            <configuration>                                
                                 <deleteVirtualEnv>true</deleteVirtualEnv>
                                 <forceSync>true</forceSync>
                                 <decryptPassword>false</decryptPassword>
                                 <rewriteLocalPathDepsInArchives>true</rewriteLocalPathDepsInArchives>
                                 <addPypiRepoAsPackageSources>false</addPypiRepoAsPackageSources>
-                                <useDevRepository>true</useDevRepository>
+                                <useDevRepository>true</useDevRepository>                                
                             </configuration>
                         </plugin>
                     </plugins>
