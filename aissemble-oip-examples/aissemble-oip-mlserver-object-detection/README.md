@@ -62,3 +62,16 @@ curl http://localhost:8080/v2/models/img-detection
 
 #### View metrics
 curl http://localhost:8082/metrics
+
+# Docker
+1. build Docker image
+```bash
+docker build -t img-detection-server:latest .
+```
+
+# K8
+Deploy docker container to kubernetes -> apply deployment & service configurations
+```bash
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+```
