@@ -38,8 +38,8 @@ class InferenceClient:
             endpoint: The endpoint URL for the inference service.
         """
         # TODO: Update to create these from configuration variables
-        self.adapter = adapter
-        self.endpoint = endpoint
+        self.adapter = adapter # or OipAdapter()
+        self.endpoint = endpoint # or os.getenv("OIP_ENDPONIT", localhost:8080)
 
     def raw(self, model_name: str) -> RawInferenceBuilder:
         """Creates a builder for raw inference.
