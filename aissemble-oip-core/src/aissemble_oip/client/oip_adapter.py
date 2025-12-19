@@ -17,14 +17,28 @@
 # limitations under the License.
 # #L%
 ###
+from dataclasses import dataclass
+from typing import Any
+
+@dataclass
+class TensorInput:
+    name: str
+    shape: list[int]
+    datatype: str
+    data: list[Any]
+
+
 class OipRequest:
     """Placeholder class for OipRequest. To be implemented later."""
-    pass
+    inputs_list : list[TensorInput]
 
 
 class OipResponse:
     """Placeholder class for OipResponse. To be implemented later."""
-    pass
+    model_name: str
+    id: str
+    parameters: dict
+    outputs_list: list[TensorInput]
 
 
 class OipHealthStatus:
@@ -37,7 +51,7 @@ class OipAdapter:
     Implements appropriate backoff, authentication, and metrics capturing.
     """
 
-    def infer(self, request: OipRequest) -> OipRequest:
+    def infer(self, request: OipRequest) -> OipResponse:
         """Performs inference using the provided OIP request.
 
         Args:
