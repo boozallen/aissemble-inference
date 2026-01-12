@@ -17,22 +17,119 @@
 # limitations under the License.
 # #L%
 ###
+from dataclasses import dataclass, field
+from typing import Any
+
+
+@dataclass
+class TensorData:
+    """Represents tensor data in OIP format.
+
+    Attributes:
+        name: Name of the tensor input/output
+        shape: Shape of the tensor as a list of integers
+        datatype: Data type string (e.g., "FP32", "UINT8", "BYTES")
+        data: The actual tensor data (nested list structure)
+        parameters: Optional parameters for this tensor
+    """
+
+    name: str
+    shape: list[int]
+    datatype: str
+    data: list[Any]
+    parameters: dict[str, Any] | None = None
+
+
+@dataclass
 class OipRequest:
-    """Placeholder class for OipRequest. To be implemented later."""
+    """Represents an OIP inference request compliant with the Open Inference Protocol specification.
 
-    pass
+    Attributes:
+        inputs: List of input tensors (required)
+        id: Optional request identifier
+        parameters: Optional inference parameters
+        outputs: Optional list of requested output names
+    """
+
+    inputs: list[TensorData]
+    id: str | None = None  # noqa: A003
+    parameters: dict[str, Any] = field(default_factory=dict)
+    outputs: list[dict[str, Any]] | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert the request to a dictionary for JSON serialization."""
+        result: dict[str, Any] = {
+            "inputs": [
+                {
+                    "name": inp.name,
+                    "shape": inp.shape,
+                    "datatype": inp.datatype,
+                    "data": inp.data,
+                    **({"parameters": inp.parameters} if inp.parameters else {}),
+                }
+                for inp in self.inputs
+            ]
+        }
+        if self.id:
+            result["id"] = self.id
+        if self.parameters:
+            result["parameters"] = self.parameters
+        if self.outputs:
+            result["outputs"] = self.outputs
+        return result
 
 
+@dataclass
 class OipResponse:
-    """Placeholder class for OipResponse. To be implemented later."""
+    """Represents an OIP inference response compliant with the Open Inference Protocol specification.
 
-    pass
+    Attributes:
+        model_name: Name of the model that produced this response
+        outputs: List of output tensors
+        model_version: Optional version of the model
+        id: Optional request identifier echo
+        parameters: Optional response parameters
+    """
+
+    model_name: str
+    outputs: list[TensorData]
+    model_version: str | None = None
+    id: str | None = None  # noqa: A003
+    parameters: dict[str, Any] | None = None
+
+    @classmethod
+    def from_dict(cls, data: dict[str, Any]) -> "OipResponse":
+        """Create an OipResponse from a dictionary (JSON deserialization)."""
+        outputs = [
+            TensorData(
+                name=out["name"],
+                shape=out["shape"],
+                datatype=out["datatype"],
+                data=out["data"],
+                parameters=out.get("parameters"),
+            )
+            for out in data["outputs"]
+        ]
+        return cls(
+            model_name=data["model_name"],
+            outputs=outputs,
+            model_version=data.get("model_version"),
+            id=data.get("id"),
+            parameters=data.get("parameters"),
+        )
 
 
+@dataclass
 class OipHealthStatus:
-    """Placeholder class for OipHealthStatus. To be implemented later."""
+    """Represents the health status of an OIP endpoint.
 
-    pass
+    Attributes:
+        isLive: Whether the endpoint is alive
+        isReady: Whether the endpoint is ready to serve requests
+    """
+
+    isLive: bool
+    isReady: bool
 
 
 class OipAdapter:
@@ -40,13 +137,13 @@ class OipAdapter:
     Implements appropriate backoff, authentication, and metrics capturing.
     """
 
-    def infer(self, request: OipRequest) -> OipRequest:
+    def infer(self, request: OipRequest) -> OipResponse:
         """Performs inference using the provided OIP request.
 
         Args:
             request: The OipRequest object containing inference parameters.
 
         Returns:
-            The OipResponse object (placeholder return type).
+            The OipResponse object.
         """
         raise NotImplementedError

@@ -17,10 +17,15 @@
 # limitations under the License.
 # #L%
 ###
-from aissemble_oip_core.client.builder.inference_builder import InferenceBuilder
-from aissemble_oip_core.client.builder.object_detection_builder import (
-    ObjectDetectionBuilder,
-)
-from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
+"""Common step definitions shared across multiple test scenarios.
 
-__all__ = ["InferenceBuilder", "ObjectDetectionBuilder", "RawInferenceBuilder"]
+Place truly reusable step definitions here, such as:
+- Common setup/teardown steps
+- Shared assertion helpers
+- Generic OIP adapter mocking utilities
+
+Task-specific steps belong in their own files:
+- object_detection_steps.py
+- text_summarization_steps.py
+- etc.
+"""

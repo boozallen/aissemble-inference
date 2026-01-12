@@ -19,6 +19,9 @@
 ###
 from __future__ import annotations
 
+from aissemble_oip_core.client.builder.object_detection_builder import (
+    ObjectDetectionBuilder,
+)
 from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
 from aissemble_oip_core.client.oip_adapter import OipAdapter
 
@@ -52,3 +55,21 @@ class InferenceClient:
         """
         # TODO: Implement raw inference builder creation
         pass
+
+    def detect_object(self, model_name: str | None = None) -> ObjectDetectionBuilder:
+        """Creates a builder for object detection inference.
+
+        Args:
+            model_name: Optional name of the model to use
+
+        Returns:
+            An ObjectDetectionBuilder instance configured for this client
+
+        Example:
+            result = client.detect_object("yolov8").image("photo.jpg").confidence(0.6).run()
+        """
+        builder = ObjectDetectionBuilder()
+        builder = builder.with_adapter(self.adapter)
+        if model_name:
+            builder = builder.with_model(model_name)
+        return builder

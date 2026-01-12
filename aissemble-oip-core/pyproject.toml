@@ -25,4 +25,12 @@ publish-url = "https://pypi.org/simple/"
 [dependency-groups]
 dev = [
     "ruff>=0.14.9",
+    "behave>=1.2.6",
+    "pillow>=10.0.0",
+    "kappa-maki>=1.0.2",
+]
+
+test = [
+    "behave>=1.2.6",
+    "pillow>=10.0.0",
 ]

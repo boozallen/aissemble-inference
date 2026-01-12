@@ -17,10 +17,10 @@
 # limitations under the License.
 # #L%
 ###
-from aissemble_oip_core.client.builder.inference_builder import InferenceBuilder
-from aissemble_oip_core.client.builder.object_detection_builder import (
-    ObjectDetectionBuilder,
+from aissemble_oip_core.client.results.object_detection_result import (
+    BoundingBox,
+    Detection,
+    ObjectDetectionResult,
 )
-from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
 
-__all__ = ["InferenceBuilder", "ObjectDetectionBuilder", "RawInferenceBuilder"]
+__all__ = ["BoundingBox", "Detection", "ObjectDetectionResult"]
