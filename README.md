@@ -26,9 +26,46 @@ designed to help data science teams move ML models from prototype to secure, sca
 - Simplify handoffs across data scientists, software engineers, and DevSecOps teams via standardized, framework-agnostic 
  abstractions  
 
-This version focuses on establishing the core architecture, extension points, and initial capabilities. Detailed 
-documentation, examples, contribution guides, and full feature specifications will be expanded progressively as part 
+This version focuses on establishing the core architecture, extension points, and initial capabilities. Detailed
+documentation, examples, contribution guides, and full feature specifications will be expanded progressively as part
 of the v1.5 effort.
 
-**Status:** Active development – not yet feature-complete.  
+## Modular Architecture
+
+The library uses a plugin-based architecture for model-specific implementations:
+
+```
+aissemble-oip-core          # Base abstractions (OipAdapter, Translator, Predictor)
+aissemble-oip-yolo          # YOLO model family (YOLOv5, v8, v11)
+aissemble-oip-<model>       # Future: ResNet, Whisper, LLaMA, etc.
+```
+
+Modules auto-register via Python entry points:
+
+```python
+from aissemble_oip_core.client import InferenceClient, ModuleRegistry
+
+# Discover installed modules
+print(ModuleRegistry.instance().list_available())
+# {'runtimes': ['yolo'], 'translators': ['yolo', 'object_detection'], ...}
+
+# Use object detection with fluent API
+client = InferenceClient(adapter, endpoint)
+result = client.detect_object("yolov8").image("photo.jpg").confidence(0.5).run()
+```
+
+## Quick Start
+
+```bash
+# Install core library and YOLO support
+pip install aissemble-oip-core aissemble-oip-yolo
+
+# Or install from source
+cd aissemble-oip-core && uv sync
+cd ../aissemble-oip-modules/aissemble-oip-yolo && uv sync
+```
+
+See `aissemble-oip-examples/aissemble-object-detection-example/` for a complete working example.
+
+**Status:** Active development – not yet feature-complete.
 Feedback and early adopters welcome.

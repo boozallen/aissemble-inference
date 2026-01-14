@@ -147,3 +147,52 @@ class OipAdapter:
             The OipResponse object.
         """
         raise NotImplementedError
+
+
+class HttpOipAdapter(OipAdapter):
+    """HTTP-based OIP adapter for communicating with OIP-compliant inference servers.
+
+    This adapter sends inference requests to an OIP endpoint using HTTP POST,
+    compatible with MLServer and other OIP-compliant runtimes.
+    """
+
+    def __init__(self, base_url: str, model_name: str, timeout: float = 30.0):
+        """Initialize the HTTP adapter.
+
+        Args:
+            base_url: Base URL of the inference server (e.g., "http://localhost:8080")
+            model_name: Name of the model to invoke
+            timeout: Request timeout in seconds (default: 30.0)
+        """
+        self.base_url = base_url.rstrip("/")
+        self.model_name = model_name
+        self.timeout = timeout
+
+    @property
+    def inference_url(self) -> str:
+        """Get the full inference URL for this model."""
+        return f"{self.base_url}/v2/models/{self.model_name}/infer"
+
+    def infer(self, request: OipRequest) -> OipResponse:
+        """Perform inference using HTTP POST to the inference server.
+
+        Args:
+            request: The OipRequest containing inference inputs
+
+        Returns:
+            OipResponse with model outputs
+
+        Raises:
+            requests.HTTPError: If the server returns an error status
+            requests.Timeout: If the request times out
+        """
+        import requests
+
+        response = requests.post(
+            self.inference_url,
+            json=request.to_dict(),
+            headers={"Content-Type": "application/json"},
+            timeout=self.timeout,
+        )
+        response.raise_for_status()
+        return OipResponse.from_dict(response.json())

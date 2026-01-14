@@ -11,11 +11,12 @@
 *.tgz
 *.rar
 *.jar
+
 # Package lock json
 package-lock.json
 
-# no poetry.lock files for libraries
-poetry.lock
+# no uv.lock files for libraries
+uv.lock
 
 # node modules
 node_modules/
@@ -29,4 +30,10 @@ target/
 __pycache__/
 .python-version
 .vscode/
-/aissemble-oip-core/uv.lock
+
+# claude code items
+settings.local.json
+
+# don't store downloaded modules
+*.pt
+

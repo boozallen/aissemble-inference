@@ -106,7 +106,8 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
         """
         outputs = {out.name: out for out in response.outputs}
 
-        bboxes = self._extract_tensor_data(outputs[self.bbox_output_name])
+        bbox_tensor = outputs[self.bbox_output_name]
+        bboxes = self._extract_bboxes(bbox_tensor)
         labels = self._extract_tensor_data(outputs[self.label_output_name])
         scores = self._extract_tensor_data(outputs[self.score_output_name])
 
@@ -129,6 +130,32 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
             image_width=self._image_width,
             image_height=self._image_height,
         )
+
+    def _extract_bboxes(self, tensor: TensorData) -> list[list[float]]:
+        """Extract bounding boxes from tensor, reshaping if necessary.
+
+        OIP may flatten [N, 4] tensor data into a flat list. This method
+        reconstructs the bounding box structure based on the tensor shape.
+
+        Args:
+            tensor: TensorData with bounding box data
+
+        Returns:
+            List of [x1, y1, x2, y2] coordinate lists
+        """
+        data = self._extract_tensor_data(tensor)
+        if not data:
+            return []
+
+        if isinstance(data[0], list):
+            return data
+
+        shape = tensor.shape
+        if len(shape) == 2 and shape[1] == 4:
+            num_boxes = shape[0]
+            return [data[i * 4 : (i + 1) * 4] for i in range(num_boxes)]
+
+        return data
 
     def _encode_image(self, input_data: Any) -> tuple[str, int, int]:
         """Encode image to base64 string for OIP transport.

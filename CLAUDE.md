@@ -70,19 +70,35 @@ aissemble-open-inference-protocol/
 │   ├── src/aissemble_oip_core/
 │   │   └── client/              # Client abstractions
 │   │       ├── inference_client.py    # Main facade
+│   │       ├── registry.py            # Module discovery registry
 │   │       ├── builder/               # Builder pattern implementations
 │   │       │   ├── inference_builder.py      # Abstract base
+│   │       │   ├── object_detection_builder.py  # Object detection
 │   │       │   └── raw_inference_builder.py  # Low-level API
+│   │       ├── translators/           # Data format translators
+│   │       │   └── object_detection_translator.py
+│   │       ├── results/               # Result value objects
+│   │       │   └── object_detection_result.py
 │   │       ├── oip_adapter.py         # OIP protocol adapter
-│   │       ├── translator.py          # Data format translator
+│   │       ├── translator.py          # Translator base class
 │   │       └── predictor.py           # Prediction execution
 │   ├── pyproject.toml
 │   └── pom.xml
 │
-├── aissemble-oip-modules/       # Future extension modules (empty)
+├── aissemble-oip-modules/       # Model-specific extension modules
+│   └── aissemble-oip-yolo/      # YOLO model family support
+│       ├── src/aissemble_oip_yolo/
+│       │   ├── runtime.py       # YOLORuntime (MLServer compatible)
+│       │   └── translator.py    # YOLO-specific translator
+│       ├── pyproject.toml       # With entry points registration
+│       └── pom.xml
 │
 ├── aissemble-oip-examples/      # Usage examples
-│   └── aissemble-basic-mlserver-test/
+│   └── aissemble-object-detection-example/
+│       ├── src/aissemble_object_detection_example/
+│       │   └── http_adapter.py  # HTTP OipAdapter implementation
+│       ├── models/              # MLServer model configurations
+│       └── tests/features/      # Behave BDD tests
 │
 └── docs/design/                 # Architecture documentation
     └── client-design.md         # Client architecture details
@@ -142,6 +158,54 @@ The OIP client follows a layered architecture inspired by DJL (Deep Java Library
 
 See `docs/design/client-design.md` for class/sequence diagrams.
 
+## Modular Architecture
+
+The project uses a plugin-based modular architecture for model-specific implementations.
+
+### Module Discovery
+
+Modules register themselves via Python entry points, discovered automatically at runtime:
+
+```python
+from aissemble_oip_core.client import ModuleRegistry
+
+registry = ModuleRegistry.instance()
+print(registry.list_available())
+# {'runtimes': ['yolo'], 'translators': ['yolo', 'object_detection'], 'builders': ['object_detection']}
+```
+
+### Entry Point Groups
+
+- `oip.runtimes`: MLServer-compatible model runtimes
+- `oip.translators`: OIP protocol translators
+- `oip.builders`: Task-specific inference builders
+
+### Creating a New Module
+
+1. Create module under `aissemble-oip-modules/` (e.g., `aissemble-oip-resnet/`)
+2. Implement runtime, translator, and/or builder classes
+3. Register entry points in `pyproject.toml`:
+
+```toml
+[project.entry-points."oip.runtimes"]
+resnet = "aissemble_oip_resnet:ResNetRuntime"
+
+[project.entry-points."oip.translators"]
+resnet = "aissemble_oip_resnet:ResNetTranslator"
+```
+
+4. Add module to `aissemble-oip-modules/pom.xml`
+
+### Module Grouping Strategy
+
+- **One module per model family** (not per version)
+- Example: `aissemble-oip-yolo` supports YOLOv5, v8, v11 via configuration
+- Version selection via parameters in `model-settings.json`
+- Split into separate modules only when:
+  - Different underlying frameworks required
+  - Incompatible dependency versions
+  - Vastly different output formats
+
 ## Maven Profiles
 
 - **default-build**: Standard build, deploys snapshots to GitHub Packages
@@ -185,11 +249,14 @@ The project uses **Habushu** (Maven plugin) which wraps **uv** for Python depend
 
 - The project is in **early preview** (v1.5) - not feature-complete
 - Many TODOs exist in the codebase indicating planned functionality
-- Core abstractions are in place but task-specific implementations are minimal
-- The `aissemble-oip-modules` directory is a placeholder for future modules
+- Core abstractions are in place with object detection as the reference implementation
+- The `aissemble-oip-modules` directory contains model-specific modules (e.g., `aissemble-oip-yolo`)
+- New model families should be added as modules, not embedded in examples
+- Modules auto-register via Python entry points for dynamic discovery
 - Examples use MLServer as the reference inference runtime
 - All Python modules use Apache 2.0 license headers (managed by license-maven-plugin)
 - Release notes should be updated in DRAFT_RELEASE_NOTES.md to ensure that they can be versioned
+- No need to add licenses to files or projects - the Maven build will handle this for us
 
 ## CI/CD
 

@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>aissemble-object-detection-example</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol::Examples</name>
