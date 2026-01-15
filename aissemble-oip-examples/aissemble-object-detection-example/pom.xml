@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
-        <artifactId>aissemble-open-inference-protocol</artifactId>
+        <artifactId>aissemble-oip-examples</artifactId>
         <version>1.5.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aissemble-oip-modules</artifactId>
-    <packaging>pom</packaging>
+    <packaging>habushu</packaging>
 
-    <modules>
-        <module>aissemble-oip-yolo</module>
-    </modules>
-
-    <name>aiSSEMBLE::Open Inference Protocol::Modules</name>
+    <artifactId>aissemble-object-detection-example</artifactId>
+    <name>aiSSEMBLE::Open Inference Protocol::Examples::Object Detection</name>
 
     <build>
         <pluginManagement>
@@ -31,20 +28,26 @@
                     <groupId>org.sonatype.central</groupId>
                     <artifactId>central-publishing-maven-plugin</artifactId>
                     <configuration>
-                        <!-- We don't want to publish this module to central but want to keep upversioning during release:prepare goal is executed whenever release is done.
+                        <!-- We don't want to publish this module to central but want to keep up-versioning during release:prepare goal is executed whenever release is done.
                              TODO: This configuration is not fully tested and shall be tested to make sure publishing example module is skipped.-->
                         <skipPublishing>true</skipPublishing>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.technologybrewery.habushu</groupId>
+                <artifactId>habushu-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 
-        <dependencies>
+    <dependencies>
         <!-- Helps the build reactor order the build appropriately: -->
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>aissemble-oip-core</artifactId>
+            <artifactId>aissemble-oip-yolo</artifactId>
             <version>1.5.0-SNAPSHOT</version>
             <type>habushu</type>
         </dependency>

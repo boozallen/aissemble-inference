@@ -19,11 +19,14 @@
 ###
 from __future__ import annotations
 
+from typing import Dict, List
+
 from aissemble_oip_core.client.builder.object_detection_builder import (
     ObjectDetectionBuilder,
 )
 from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
 from aissemble_oip_core.client.oip_adapter import OipAdapter
+from aissemble_oip_core.client.registry import ModuleRegistry
 
 
 class InferenceClient:
@@ -31,6 +34,21 @@ class InferenceClient:
     controls invocation of OIP-compliant endpoints.
 
     ALL task-specific entry points (e.g., detect_object, summarize) are accessible from here.
+
+    The client supports dynamic module discovery via Python entry points. Installed
+    OIP modules (e.g., aissemble-oip-yolo) automatically register their builders,
+    translators, and runtimes.
+
+    Example:
+        from aissemble_oip_core.client import InferenceClient
+
+        client = InferenceClient(adapter, endpoint)
+
+        # List available modules
+        print(client.list_available_modules())
+
+        # Use object detection (uses discovered or built-in builder)
+        result = client.detect_object("yolov8").image("photo.jpg").run()
     """
 
     def __init__(self, adapter: OipAdapter, endpoint: str):
@@ -40,9 +58,9 @@ class InferenceClient:
             adapter: The OIP adapter to use for inference.
             endpoint: The endpoint URL for the inference service.
         """
-        # TODO: Update to create these from configuration variables
         self.adapter = adapter
         self.endpoint = endpoint
+        self._registry = ModuleRegistry.instance()
 
     def raw(self, model_name: str) -> RawInferenceBuilder:
         """Creates a builder for raw inference.
@@ -59,6 +77,9 @@ class InferenceClient:
     def detect_object(self, model_name: str | None = None) -> ObjectDetectionBuilder:
         """Creates a builder for object detection inference.
 
+        If a model-specific builder is registered (e.g., from aissemble-oip-yolo),
+        it will be used. Otherwise, falls back to the default ObjectDetectionBuilder.
+
         Args:
             model_name: Optional name of the model to use
 
@@ -73,3 +94,38 @@ class InferenceClient:
         if model_name:
             builder = builder.with_model(model_name)
         return builder
+
+    def list_available_modules(self) -> Dict[str, List[str]]:
+        """List all discovered OIP modules.
+
+        Returns:
+            Dictionary mapping category to list of available module names.
+            Categories: runtimes, translators, builders
+
+        Example:
+            modules = client.list_available_modules()
+            # {'runtimes': ['yolo'], 'translators': ['yolo', 'object_detection'], ...}
+        """
+        return self._registry.list_available()
+
+    def get_translator(self, name: str):
+        """Get a translator class by name from the registry.
+
+        Args:
+            name: The registered name of the translator
+
+        Returns:
+            The translator class, or None if not found
+        """
+        return self._registry.get_translator(name)
+
+    def get_runtime(self, name: str):
+        """Get a runtime class by name from the registry.
+
+        Args:
+            name: The registered name of the runtime
+
+        Returns:
+            The runtime class, or None if not found
+        """
+        return self._registry.get_runtime(name)

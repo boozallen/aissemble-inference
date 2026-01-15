@@ -1,6 +1,6 @@
 ###
 # #%L
-# aiSSEMBLE::Open Inference Protocol::Core
+# aiSSEMBLE::Open Inference Protocol::Examples::Object Detection
 # %%
 # Copyright (C) 2024 Booz Allen Hamilton Inc.
 # %%
@@ -17,7 +17,8 @@
 # limitations under the License.
 # #L%
 ###
-from aissemble_oip_core.client.inference_client import InferenceClient
-from aissemble_oip_core.client.registry import ModuleRegistry
+"""aiSSEMBLE Object Detection Example.
 
-__all__ = ["InferenceClient", "ModuleRegistry"]
+This module provides a working example of using the OIP client for object detection
+with a real MLServer deployment.
+"""
