@@ -18,7 +18,7 @@ def before_all(context):
     models_dir = os.path.join(example_dir, "models")
 
     context.mlserver_port = 8080
-    context.mlserver_url = f"http://localhost:{context.mlserver_port}"
+    context.mlserver_url = f"http://127.0.0.1:{context.mlserver_port}"
 
     venv_bin = os.path.dirname(sys.executable)
     mlserver_cmd = os.path.join(venv_bin, "mlserver")

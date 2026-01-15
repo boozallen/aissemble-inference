@@ -25,6 +25,9 @@ from aissemble_oip_core.client.builder.object_detection_builder import (
     ObjectDetectionBuilder,
 )
 from aissemble_oip_core.client.builder.raw_inference_builder import RawInferenceBuilder
+from aissemble_oip_core.client.builder.summarization_builder import (
+    SummarizationBuilder,
+)
 from aissemble_oip_core.client.oip_adapter import OipAdapter
 from aissemble_oip_core.client.registry import ModuleRegistry
 
@@ -90,6 +93,28 @@ class InferenceClient:
             result = client.detect_object("yolov8").image("photo.jpg").confidence(0.6).run()
         """
         builder = ObjectDetectionBuilder()
+        builder = builder.with_adapter(self.adapter)
+        if model_name:
+            builder = builder.with_model(model_name)
+        return builder
+
+    def summarize(self, model_name: str | None = None) -> SummarizationBuilder:
+        """Creates a builder for text summarization inference.
+
+        Args:
+            model_name: Optional name of the summarization model to use
+
+        Returns:
+            A SummarizationBuilder instance configured for this client
+
+        Example:
+            result = client.summarize("bart-large") \
+                .text("Long article text here...") \
+                .max_length(100) \
+                .run()
+            print(result.summary)
+        """
+        builder = SummarizationBuilder()
         builder = builder.with_adapter(self.adapter)
         if model_name:
             builder = builder.with_model(model_name)

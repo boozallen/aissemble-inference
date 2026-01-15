@@ -20,5 +20,8 @@
 from aissemble_oip_core.client.translators.object_detection_translator import (
     DefaultObjectDetectionTranslator,
 )
+from aissemble_oip_core.client.translators.summarization_translator import (
+    DefaultSummarizationTranslator,
+)
 
-__all__ = ["DefaultObjectDetectionTranslator"]
+__all__ = ["DefaultObjectDetectionTranslator", "DefaultSummarizationTranslator"]

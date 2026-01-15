@@ -62,7 +62,10 @@ def start_mlserver_with_model(context, model_variant=None):
     yolo_dir = os.path.join(models_dir, "yolo")
     os.makedirs(yolo_dir)
 
-    settings = {"parallel_workers": 0}
+    settings = {
+        "parallel_workers": 0,
+        "host": "127.0.0.1",  # Bind to localhost only
+    }
     _write_json(os.path.join(models_dir, "settings.json"), settings)
 
     model_settings = {
@@ -75,7 +78,7 @@ def start_mlserver_with_model(context, model_variant=None):
     _write_json(os.path.join(yolo_dir, "model-settings.json"), model_settings)
 
     context.mlserver_port = _find_free_port()
-    context.mlserver_url = f"http://localhost:{context.mlserver_port}"
+    context.mlserver_url = f"http://127.0.0.1:{context.mlserver_port}"
 
     venv_bin = os.path.dirname(sys.executable)
     mlserver_cmd = os.path.join(venv_bin, "mlserver")
@@ -111,6 +114,7 @@ def _wait_for_server(url: str, process: subprocess.Popen, timeout: int = 120):
     """Wait for MLServer to become ready."""
     health_url = f"{url}/v2/health/ready"
     start_time = time.time()
+    attempt = 0
 
     while time.time() - start_time < timeout:
         exit_code = process.poll()
@@ -126,10 +130,19 @@ def _wait_for_server(url: str, process: subprocess.Popen, timeout: int = 120):
             response = requests.get(health_url, timeout=2)
             if response.status_code == 200:
                 return
-        except requests.exceptions.ConnectionError:
-            pass
+            # Log non-200 responses
+            if attempt % 10 == 0:  # Log every 10 attempts to reduce verbosity
+                print(f"Health check returned {response.status_code}: {response.text}")
+        except requests.exceptions.ConnectionError as e:
+            if attempt % 10 == 0:
+                print(f"Health check connection failed: {e}")
         except requests.exceptions.Timeout:
-            pass
+            if attempt % 10 == 0:
+                print("Health check timed out")
+        except Exception as e:
+            if attempt % 10 == 0:
+                print(f"Health check error: {e}")
+        attempt += 1
         time.sleep(1)
 
     process.terminate()
