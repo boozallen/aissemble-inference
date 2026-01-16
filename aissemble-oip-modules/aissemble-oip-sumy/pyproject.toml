@@ -1,0 +1,54 @@
+[project]
+name = "aissemble-oip-sumy"
+version = "1.5.0.dev"
+description = "sumy model family support for aiSSEMBLE Open Inference Protocol"
+readme = "README.md"
+authors = [
+    { name = "aiSSEMBLE Team", email = "aissemble@bah.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "aissemble-oip-core",
+    "sumy>=0.11.0",
+    "nltk>=3.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff.lint]
+ignore = ["E741"]
+
+[tool.uv.sources]
+aissemble-oip-core = { path = "../../aissemble-oip-core", editable = true }
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple/"
+publish-url = "https://pypi.org/simple/"
+
+[project.entry-points."oip.runtimes"]
+sumy = "aissemble_oip_sumy:SumyRuntime"
+
+[project.entry-points."oip.translators"]
+sumy = "aissemble_oip_sumy:SumyTranslator"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.14.9",
+    "behave>=1.2.6",
+    "kappa-maki>=1.0.2",
+    "mlserver>=1.6.0",
+    "sumy>=0.11.0",
+    "nltk>=3.8",
+    "requests>=2.31.0",
+]
+
+test = [
+    "behave>=1.2.6",
+    "mlserver>=1.6.0",
+    "sumy>=0.11.0",
+    "nltk>=3.8",
+    "requests>=2.31.0",
+]
