@@ -52,6 +52,9 @@ print(ModuleRegistry.instance().list_available())
 # Use object detection with fluent API
 client = InferenceClient(adapter, endpoint)
 result = client.detect_object("yolov8").image("photo.jpg").confidence(0.5).run()
+
+# Use text summarization
+summary = client.summarize("bart-large").text("Long article...").max_length(100).run()
 ```
 
 ## Quick Start

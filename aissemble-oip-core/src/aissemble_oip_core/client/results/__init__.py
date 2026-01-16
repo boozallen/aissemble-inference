@@ -22,5 +22,6 @@ from aissemble_oip_core.client.results.object_detection_result import (
     Detection,
     ObjectDetectionResult,
 )
+from aissemble_oip_core.client.results.summarization_result import SummarizationResult
 
-__all__ = ["BoundingBox", "Detection", "ObjectDetectionResult"]
+__all__ = ["BoundingBox", "Detection", "ObjectDetectionResult", "SummarizationResult"]

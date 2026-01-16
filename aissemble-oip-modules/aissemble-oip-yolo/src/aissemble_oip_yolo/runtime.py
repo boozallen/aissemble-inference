@@ -71,6 +71,17 @@ class YOLORuntime(MLModel):
         self.ready = True
         return self.ready
 
+    async def health(self) -> dict:
+        """Health check endpoint.
+
+        Returns a lightweight health status without running expensive inference.
+        This is called by MLServer's `/v2/health/ready` endpoint.
+
+        Returns:
+            Health status dict
+        """
+        return {"status": "ok"}
+
     def _get_model_variant(self) -> str:
         """Get the model variant from settings.
 
@@ -103,9 +114,25 @@ class YOLORuntime(MLModel):
 
         Returns:
             OIP response with bboxes, labels, and scores
+
+        Raises:
+            ValueError: If payload is malformed or missing image data
         """
+        if not payload.inputs or len(payload.inputs) == 0:
+            raise ValueError("Payload must contain at least one input tensor")
+
         image_input = payload.inputs[0]
-        image_data = image_input.data[0][0]
+        if not image_input.data or len(image_input.data) == 0:
+            raise ValueError(f"Input '{image_input.name}' must contain data")
+
+        # Handle both nested [0][0] format and flat [0] format
+        if isinstance(image_input.data[0], (list, tuple)):
+            image_data = image_input.data[0][0]
+        else:
+            image_data = image_input.data[0]
+
+        if image_data is None:
+            raise ValueError("Image data cannot be None")
 
         if isinstance(image_data, str):
             image_bytes = base64.b64decode(image_data)

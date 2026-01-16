@@ -6,12 +6,22 @@ Major v1.5 refactoring in progress.
 
 ### Core Library
 - Implemented OIP-compliant request/response structures (`OipRequest`, `OipResponse`, `TensorData`)
-- Added object detection support with `DefaultObjectDetectionTranslator`
+- Added `HttpOipAdapter` for HTTP communication with OIP-compliant inference servers
+- Set up Behave BDD testing infrastructure with configuration and directory structure
+
+**Object Detection Support**
+- Implemented `DefaultObjectDetectionTranslator` for OIP protocol conversion
 - Created `ObjectDetectionBuilder` with fluent API for natural object detection inference
 - Implemented `ObjectDetectionResult` value object with filtering and drawing capabilities
-- Added image auto-encoding (PIL, numpy, file paths, bytes) in `DefaultObjectDetectionTranslator`
-- Added `detect_object()` method to `InferenceClient` for easy object detection access
-- Set up Behave BDD testing infrastructure with configuration and directory structure
+- Added image auto-encoding (PIL, numpy, file paths, bytes) in translator
+- Added `detect_object()` method to `InferenceClient` for easy access
+
+**Text Summarization Support**
+- Implemented `DefaultSummarizationTranslator` for text-to-summary OIP protocol conversion
+- Created `SummarizationBuilder` with fluent API (`.text()`, `.max_length()`, `.min_length()`)
+- Implemented `SummarizationResult` value object with compression ratio calculation
+- Added `summarize()` method to `InferenceClient` for easy access
+- Supports configurable length constraints via OIP request parameters
 
 ### Modular Architecture
 - Implemented `ModuleRegistry` for dynamic plugin discovery via Python entry points
@@ -37,6 +47,8 @@ Major v1.5 refactoring in progress.
 - Dependencies isolated per module (e.g., ultralytics only in yolo module)
 - Modules can be versioned and released independently
 - Clear pattern established for adding new model families
-- Implemented `HttpOipAdapter` for HTTP communication with MLServer
+- `HttpOipAdapter` moved to core (from examples) for reusability across all OIP-compliant servers
+- Established repeatable pattern for task-specific builders (object detection, summarization)
+- Task-oriented API design isolates OIP protocol details in translators only
 
 # What's Changed
