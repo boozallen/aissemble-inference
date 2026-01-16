@@ -36,19 +36,62 @@ Major v1.5 refactoring in progress.
 - Module auto-registers via entry points when installed
 - Supports model variant selection via `model-settings.json` parameters
 
+### Sumy Module (`aissemble-oip-sumy`)
+- Created new module for text summarization via the Sumy library
+- Implemented `SumyRuntime` - MLServer-compatible runtime supporting multiple algorithms:
+  - TextRank (graph-based ranking, default)
+  - LSA (Latent Semantic Analysis)
+  - LexRank (graph-based with cosine similarity)
+- Implemented `SumyTranslator` extending `DefaultSummarizationTranslator`
+- Module auto-registers via entry points when installed
+- Configurable parameters: algorithm, sentences_count, language
+- Multi-language support (English, Spanish, French, German, Italian, Portuguese, Russian, Czech, Slovak, etc.)
+- Comprehensive test suite with unit and OIP integration tests
+- Real MLServer integration tests replacing mock-based tests
+- Test infrastructure with MLServer lifecycle management
+
 ### Object Detection Example
 - Created working end-to-end example with real MLServer deployment
 - Added Behave BDD tests that spin up MLServer automatically
 - Tests verify full inference pipeline without mocking
 - Example now uses `aissemble-oip-yolo` module instead of embedded runtime
 
+### Summarization Example
+- Created `aissemble-summarization-example` demonstrating text summarization end-to-end
+- MLServer configurations for TextRank and LSA algorithms
+- Comprehensive BDD test suite with 6 scenarios covering:
+  - Multiple article lengths (short, medium, long)
+  - Algorithm switching between TextRank and LSA
+  - Parameter configuration validation
+  - Error handling and edge cases
+- Sample article test data for reproducible testing
+- Full integration with InferenceClient fluent API
+- README with comprehensive usage guide and troubleshooting
+
 ## Architecture Improvements
 - Model-specific code now isolated in separate modules under `aissemble-oip-modules/`
-- Dependencies isolated per module (e.g., ultralytics only in yolo module)
+- Dependencies isolated per module (e.g., ultralytics only in yolo module, sumy only in sumy module)
 - Modules can be versioned and released independently
 - Clear pattern established for adding new model families
 - `HttpOipAdapter` moved to core (from examples) for reusability across all OIP-compliant servers
 - Established repeatable pattern for task-specific builders (object detection, summarization)
 - Task-oriented API design isolates OIP protocol details in translators only
+
+## Testing Improvements
+- **Real MLServer integration tests** for aissemble-oip-sumy module
+  - Replaced mock-based tests with actual OIP/HTTP communication
+  - Tests now start real MLServer instances with configured models
+  - Validates complete inference pipeline from HTTP request to response
+  - Dynamic port allocation prevents test conflicts
+  - Automatic cleanup after test scenarios
+- **Reusable test infrastructure** pattern established
+  - `environment.py` with MLServer lifecycle management
+  - `start_mlserver_with_model()` helper for test setup
+  - Temporary model configuration generation
+  - Health check polling with retry logic
+  - Consistent pattern across YOLO and Sumy modules
+- **Integration test tagging** (`@integration`) for selective test execution
+- **Sample test data** fixtures for reproducible results
+- All tests passing with 100% success rate (18 scenarios for sumy, 6 for summarization example)
 
 # What's Changed
