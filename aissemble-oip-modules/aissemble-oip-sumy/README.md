@@ -112,3 +112,54 @@ The sumy library supports multiple languages for tokenization and stemming. Spec
 - slovak
 
 Refer to the [sumy documentation](https://github.com/miso-belica/sumy) for a complete list of supported languages.
+
+## Testing
+
+This module includes comprehensive tests covering:
+
+### Unit Tests
+- Module registration and discovery
+- Runtime loading with different algorithms
+- Direct inference via SumyRuntime
+- Translator functionality
+- Error handling and validation
+
+### Integration Tests (tagged with `@integration`)
+- End-to-end OIP communication via MLServer
+- Real HTTP requests using InferenceClient
+- Algorithm switching (TextRank, LSA, LexRank)
+- Parameter configuration validation
+
+Run tests:
+
+```bash
+# Run all tests (unit + integration)
+mvn clean install
+
+# Run only unit tests (excluding @integration tag)
+behave --tags=-integration
+```
+
+The integration tests automatically:
+1. Start MLServer with configured models
+2. Execute real inference requests via OIP protocol
+3. Validate responses and summaries
+4. Clean up resources
+
+See `tests/features/` for test scenarios and `tests/features/environment.py` for MLServer test infrastructure.
+
+## Example
+
+For a complete working example, see the `aissemble-summarization-example` in the examples directory:
+
+```bash
+cd aissemble-oip-examples/aissemble-summarization-example
+uv sync --group test
+uv run behave
+```
+
+The example demonstrates:
+- MLServer configuration for multiple summarization algorithms
+- Integration with InferenceClient and HttpOipAdapter
+- BDD test patterns for OIP-based applications
+- Sample article data for testing

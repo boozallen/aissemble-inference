@@ -13,6 +13,7 @@
 
     <modules>
         <module>aissemble-object-detection-example</module>
+        <module>aissemble-summarization-example</module>
     </modules>
 
     <name>aiSSEMBLE::Open Inference Protocol::Examples</name>

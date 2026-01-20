@@ -86,19 +86,38 @@ aissemble-open-inference-protocol/
 │   └── pom.xml
 │
 ├── aissemble-oip-modules/       # Model-specific extension modules
-│   └── aissemble-oip-yolo/      # YOLO model family support
-│       ├── src/aissemble_oip_yolo/
-│       │   ├── runtime.py       # YOLORuntime (MLServer compatible)
-│       │   └── translator.py    # YOLO-specific translator
+│   ├── aissemble-oip-yolo/      # YOLO model family support
+│   │   ├── src/aissemble_oip_yolo/
+│   │   │   ├── runtime.py       # YOLORuntime (MLServer compatible)
+│   │   │   └── translator.py    # YOLO-specific translator
+│   │   ├── pyproject.toml       # With entry points registration
+│   │   └── pom.xml
+│   │
+│   └── aissemble-oip-sumy/      # Text summarization support
+│       ├── src/aissemble_oip_sumy/
+│       │   ├── runtime.py       # SumyRuntime (TextRank, LSA, LexRank)
+│       │   └── translator.py    # Sumy-specific translator
+│       ├── tests/
+│       │   ├── features/        # BDD tests with OIP integration
+│       │   └── test-data/       # Sample articles for testing
 │       ├── pyproject.toml       # With entry points registration
 │       └── pom.xml
 │
 ├── aissemble-oip-examples/      # Usage examples
-│   └── aissemble-object-detection-example/
-│       ├── src/aissemble_object_detection_example/
-│       │   └── http_adapter.py  # HTTP OipAdapter implementation
-│       ├── models/              # MLServer model configurations
-│       └── tests/features/      # Behave BDD tests
+│   ├── aissemble-object-detection-example/
+│   │   ├── src/aissemble_object_detection_example/
+│   │   │   └── http_adapter.py  # HTTP OipAdapter implementation
+│   │   ├── models/              # MLServer model configurations
+│   │   └── tests/features/      # Behave BDD tests
+│   │
+│   └── aissemble-summarization-example/
+│       ├── models/              # MLServer configurations (TextRank, LSA)
+│       │   ├── sumy-textrank/   # TextRank model config
+│       │   └── sumy-lsa/        # LSA model config
+│       ├── tests/
+│       │   ├── test_data/       # Sample articles
+│       │   └── features/        # Behave BDD tests
+│       └── README.md            # Comprehensive usage guide
 │
 └── docs/design/                 # Architecture documentation
     └── client-design.md         # Client architecture details

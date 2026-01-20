@@ -1,0 +1,5 @@
+Machine learning has become a fundamental technology in modern software development. It enables computers to learn patterns from data without being explicitly programmed for every scenario. This capability has led to breakthroughs in areas such as image recognition, natural language processing, and predictive analytics.
+
+The two main categories of machine learning are supervised and unsupervised learning. Supervised learning involves training models on labeled datasets where the correct outputs are known. Common applications include spam detection, sentiment analysis, and fraud prevention. The model learns to map inputs to outputs based on the training examples provided.
+
+Unsupervised learning, in contrast, works with unlabeled data to discover hidden patterns and structures. Clustering algorithms group similar data points together, while dimensionality reduction techniques help visualize high-dimensional data. These approaches are particularly useful for exploratory data analysis and feature engineering.

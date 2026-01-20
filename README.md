@@ -37,6 +37,7 @@ The library uses a plugin-based architecture for model-specific implementations:
 ```
 aissemble-oip-core          # Base abstractions (OipAdapter, Translator, Predictor)
 aissemble-oip-yolo          # YOLO model family (YOLOv5, v8, v11)
+aissemble-oip-sumy          # Text summarization (TextRank, LSA, LexRank)
 aissemble-oip-<model>       # Future: ResNet, Whisper, LLaMA, etc.
 ```
 
@@ -47,28 +48,42 @@ from aissemble_oip_core.client import InferenceClient, ModuleRegistry
 
 # Discover installed modules
 print(ModuleRegistry.instance().list_available())
-# {'runtimes': ['yolo'], 'translators': ['yolo', 'object_detection'], ...}
+# {'runtimes': ['yolo', 'sumy'], 'translators': ['yolo', 'sumy', 'object_detection'], ...}
 
 # Use object detection with fluent API
 client = InferenceClient(adapter, endpoint)
-result = client.detect_object("yolov8").image("photo.jpg").confidence(0.5).run()
+result = client.detect_object("yolo").image("photo.jpg").confidence(0.5).run()
 
 # Use text summarization
 summary = client.summarize("bart-large").text("Long article...").max_length(100).run()
+print(summary.summary)
 ```
 
 ## Quick Start
 
 ```bash
-# Install core library and YOLO support
-pip install aissemble-oip-core aissemble-oip-yolo
+# Install core library with model modules
+pip install aissemble-oip-core aissemble-oip-yolo aissemble-oip-sumy
 
 # Or install from source
 cd aissemble-oip-core && uv sync
 cd ../aissemble-oip-modules/aissemble-oip-yolo && uv sync
+cd ../aissemble-oip-sumy && uv sync
 ```
 
-See `aissemble-oip-examples/aissemble-object-detection-example/` for a complete working example.
+### Examples
+
+Complete working examples demonstrating end-to-end usage:
+
+- **Object Detection**: `aissemble-oip-examples/aissemble-object-detection-example/`
+  - YOLO model integration with MLServer
+  - Image-based inference workflows
+  - BDD testing patterns
+
+- **Text Summarization**: `aissemble-oip-examples/aissemble-summarization-example/`
+  - Sumy integration with multiple algorithms (TextRank, LSA, LexRank)
+  - Text-based inference workflows
+  - MLServer configuration examples
 
 **Status:** Active development – not yet feature-complete.
 Feedback and early adopters welcome.
