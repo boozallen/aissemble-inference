@@ -30,6 +30,7 @@ This version focuses on establishing the core architecture, extension points, an
 documentation, examples, contribution guides, and full feature specifications will be expanded progressively as part
 of the v1.5 effort.
 
+
 ## Modular Architecture
 
 The library uses a plugin-based architecture for model-specific implementations:
@@ -84,6 +85,42 @@ Complete working examples demonstrating end-to-end usage:
   - Sumy integration with multiple algorithms (TextRank, LSA, LexRank)
   - Text-based inference workflows
   - MLServer configuration examples
+
+## 🎯 Key Value Proposition: Tensor Abstraction
+
+Traditional OIP implementations force users to deal with low-level tensor details:
+
+- Understanding tensor shapes `[N, 4]` vs `[1, N, 4]`
+- Handling coordinate systems (pixel vs normalized)
+- Parsing different data layouts
+- Mapping class IDs to names
+- Managing different tensor naming conventions across backends
+
+**aiSSEMBLE OIP eliminates all of this complexity:**
+
+```python
+# Same code works with ANY OIP server backend!
+result = client.detect_object().image("dog.jpg").run()
+for detection in result.detections:
+    print(f"{detection.label} at {detection.bbox}")
+```
+
+The **Translator** component handles all tensor complexity behind the scenes, allowing you to swap OIP implementations (MLServer, TensorFlow Serving, KServe, etc.) without changing user code. Users work exclusively with clean, typed domain objects like `ObjectDetectionResult`, `Detection`, and `BoundingBox`.
+
+**Example: Two completely different tensor formats, identical user code:**
+
+```python
+# Backend 1: YOLO format (pixel coords, string labels, unbatched)
+# Backend 2: TensorFlow Serving (normalized coords, integer IDs, batched)
+# User code: IDENTICAL!
+
+result = client.detect_object().image("dog.jpg").run()
+for detection in result.detections:
+    print(f"{detection.label}: {detection.confidence:.2f}")
+```
+
+For a detailed explanation with side-by-side tensor format comparisons, see [TENSOR_ABSTRACTION.md](./aissemble-oip-examples/aissemble-object-detection-example/TENSOR_ABSTRACTION.md).
+
 
 **Status:** Active development – not yet feature-complete.
 Feedback and early adopters welcome.

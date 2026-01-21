@@ -17,8 +17,6 @@
 # limitations under the License.
 # #L%
 ###
-import base64
-from io import BytesIO
 from typing import Any
 
 from aissemble_oip_core.client.oip_adapter import OipRequest, OipResponse, TensorData
@@ -28,6 +26,11 @@ from aissemble_oip_core.client.results import (
     ObjectDetectionResult,
 )
 from aissemble_oip_core.client.translator import Translator
+from aissemble_oip_core.client.translators._image_utils import encode_image_for_oip
+from aissemble_oip_core.client.translators._tensor_utils import (
+    validate_required_tensors,
+    validate_tensor_lengths_match,
+)
 
 
 class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
@@ -43,6 +46,10 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
     - bboxes: [N, 4] tensor with coordinates (x1, y1, x2, y2)
     - labels: [N] tensor with class labels
     - scores: [N] tensor with confidence scores
+
+    Thread Safety:
+    This translator is thread-safe and stateless. Image dimensions are stored in
+    request parameters and retrieved from response parameters.
     """
 
     def __init__(
@@ -64,8 +71,6 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
         self.bbox_output_name = bbox_output_name
         self.label_output_name = label_output_name
         self.score_output_name = score_output_name
-        self._image_width: int = 0
-        self._image_height: int = 0
 
     def preprocess(self, input_data: Any) -> OipRequest:  # noqa: A003
         """Preprocess image input into an OipRequest.
@@ -80,11 +85,9 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
             input_data: Image data in supported format
 
         Returns:
-            OipRequest with encoded image tensor
+            OipRequest with encoded image tensor and dimensions in parameters
         """
-        image_bytes, width, height = self._encode_image(input_data)
-        self._image_width = width
-        self._image_height = height
+        image_bytes, width, height = encode_image_for_oip(input_data)
 
         tensor = TensorData(
             name=self.input_name,
@@ -93,23 +96,54 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
             data=[[image_bytes]],
         )
 
-        return OipRequest(inputs=[tensor])
+        # Store image dimensions in request parameters for stateless operation
+        return OipRequest(
+            inputs=[tensor],
+            parameters={"_image_width": width, "_image_height": height},
+        )
 
     def postprocess(self, response: OipResponse) -> ObjectDetectionResult:
         """Postprocess OipResponse into ObjectDetectionResult.
 
         Args:
-            response: OIP response containing detection outputs
+            response: OIP response containing detection outputs and dimensions
 
         Returns:
             ObjectDetectionResult with parsed detections
+
+        Raises:
+            ValueError: If required tensors are missing or dimensions not available
         """
         outputs = {out.name: out for out in response.outputs}
+
+        # Validate required tensors are present
+        required = [
+            self.bbox_output_name,
+            self.label_output_name,
+            self.score_output_name,
+        ]
+        validate_required_tensors(outputs, required, "Default object detection")
+
+        # Get image dimensions from response parameters
+        params = response.parameters or {}
+        image_width = params.get("_image_width")
+        image_height = params.get("_image_height")
+
+        if image_width is None or image_height is None:
+            raise ValueError(
+                "Image dimensions not found in response parameters. "
+                "Ensure the OIP adapter preserves request parameters in the response."
+            )
 
         bbox_tensor = outputs[self.bbox_output_name]
         bboxes = self._extract_bboxes(bbox_tensor)
         labels = self._extract_tensor_data(outputs[self.label_output_name])
         scores = self._extract_tensor_data(outputs[self.score_output_name])
+
+        # Validate all tensors have same length
+        validate_tensor_lengths_match(
+            bboxes, labels, scores, names=["bboxes", "labels", "scores"]
+        )
 
         detections = []
         for bbox, label, score in zip(bboxes, labels, scores):
@@ -127,8 +161,8 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
 
         return ObjectDetectionResult(
             detections=detections,
-            image_width=self._image_width,
-            image_height=self._image_height,
+            image_width=image_width,
+            image_height=image_height,
         )
 
     def _extract_bboxes(self, tensor: TensorData) -> list[list[float]]:
@@ -156,45 +190,6 @@ class DefaultObjectDetectionTranslator(Translator[Any, ObjectDetectionResult]):
             return [data[i * 4 : (i + 1) * 4] for i in range(num_boxes)]
 
         return data
-
-    def _encode_image(self, input_data: Any) -> tuple[str, int, int]:
-        """Encode image to base64 string for OIP transport.
-
-        Args:
-            input_data: Image in various formats
-
-        Returns:
-            Tuple of (base64_string, width, height)
-        """
-        try:
-            from PIL import Image
-        except ImportError as e:
-            raise ImportError(
-                "PIL (Pillow) is required for image handling. Install with: pip install Pillow"
-            ) from e
-
-        if isinstance(input_data, str):
-            image = Image.open(input_data)
-        elif isinstance(input_data, bytes):
-            image = Image.open(BytesIO(input_data))
-        elif hasattr(input_data, "mode"):
-            image = input_data
-        else:
-            import numpy as np
-
-            if isinstance(input_data, np.ndarray):
-                image = Image.fromarray(input_data)
-            else:
-                raise ValueError(f"Unsupported input type: {type(input_data)}")
-
-        width, height = image.size
-
-        buffer = BytesIO()
-        image.save(buffer, format="PNG")
-        image_bytes = buffer.getvalue()
-        encoded = base64.b64encode(image_bytes).decode("utf-8")
-
-        return encoded, width, height
 
     def _extract_tensor_data(self, tensor: TensorData) -> list[Any]:
         """Extract the actual data from a tensor, flattening if necessary.

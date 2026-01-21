@@ -176,11 +176,13 @@ class HttpOipAdapter(OipAdapter):
     def infer(self, request: OipRequest) -> OipResponse:
         """Perform inference using HTTP POST to the inference server.
 
+        Request parameters are preserved in the response to support stateless translators.
+
         Args:
             request: The OipRequest containing inference inputs
 
         Returns:
-            OipResponse with model outputs
+            OipResponse with model outputs and merged request parameters
 
         Raises:
             requests.HTTPError: If the server returns an error status
@@ -195,4 +197,15 @@ class HttpOipAdapter(OipAdapter):
             timeout=self.timeout,
         )
         response.raise_for_status()
-        return OipResponse.from_dict(response.json())
+
+        oip_response = OipResponse.from_dict(response.json())
+
+        # Merge request parameters into response for stateless translator support
+        # Server parameters take precedence over request parameters
+        if request.parameters:
+            merged_params = dict(request.parameters)
+            if oip_response.parameters:
+                merged_params.update(oip_response.parameters)
+            oip_response.parameters = merged_params
+
+        return oip_response

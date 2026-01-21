@@ -11,6 +11,9 @@ This example shows how to:
 3. Use the OIP client's fluent API for object detection
 4. Run end-to-end tests that spin up MLServer automatically
 5. Leverage the module registry for dynamic module discovery
+6. **Demonstrate tensor abstraction** - how the library hides tensor complexity from end users
+
+> **Note:** For an overview of tensor abstraction in aiSSEMBLE OIP, see the [main project README](../../README.md#-key-value-proposition-tensor-abstraction). For detailed technical examples showing two different tensor formats with identical user code, see [TENSOR_ABSTRACTION.md](./TENSOR_ABSTRACTION.md).
 
 ## Project Structure
 

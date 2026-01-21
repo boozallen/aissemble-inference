@@ -41,33 +41,36 @@ def step_given_image_for_detection(context):
 @when("the image is processed for object detection")
 def step_when_process_image_for_detection(context):
     """Process the image using a mocked OIP endpoint."""
+
+    def mock_infer(request):
+        """Mock infer that preserves request parameters in response."""
+        return OipResponse(
+            model_name="test-object-detection-model",
+            outputs=[
+                TensorData(
+                    name="bboxes",
+                    shape=[1, 4],
+                    datatype="FP32",
+                    data=[[[100.0, 150.0, 300.0, 400.0]]],
+                ),
+                TensorData(
+                    name="labels",
+                    shape=[1],
+                    datatype="BYTES",
+                    data=[["person"]],
+                ),
+                TensorData(
+                    name="scores",
+                    shape=[1],
+                    datatype="FP32",
+                    data=[[0.95]],
+                ),
+            ],
+            parameters=request.parameters,  # Preserve request parameters
+        )
+
     mock_adapter = Mock(spec=OipAdapter)
-
-    mock_response = OipResponse(
-        model_name="test-object-detection-model",
-        outputs=[
-            TensorData(
-                name="bboxes",
-                shape=[1, 4],
-                datatype="FP32",
-                data=[[[100.0, 150.0, 300.0, 400.0]]],
-            ),
-            TensorData(
-                name="labels",
-                shape=[1],
-                datatype="BYTES",
-                data=[["person"]],
-            ),
-            TensorData(
-                name="scores",
-                shape=[1],
-                datatype="FP32",
-                data=[[0.95]],
-            ),
-        ],
-    )
-
-    mock_adapter.infer.return_value = mock_response
+    mock_adapter.infer.side_effect = mock_infer
 
     client = InferenceClient(adapter=mock_adapter, endpoint="http://test:8080")
     context.result = client.detect_object().image(context.test_image).run()
