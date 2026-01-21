@@ -75,10 +75,9 @@ def step_have_oip_response_with_detections(context):
                 data=[0.95, 0.87],
             ),
         ],
+        parameters={"_image_width": 640, "_image_height": 480},
     )
     context.translator = YOLOTranslator()
-    context.translator._image_width = 640
-    context.translator._image_height = 480
 
 
 @given("I have a valid OipResponse with zero detections")
@@ -106,10 +105,9 @@ def step_have_oip_response_no_detections(context):
                 data=[],
             ),
         ],
+        parameters={"_image_width": 640, "_image_height": 480},
     )
     context.translator = YOLOTranslator()
-    context.translator._image_width = 640
-    context.translator._image_height = 480
 
 
 @when("I preprocess it with YOLOTranslator")

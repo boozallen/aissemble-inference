@@ -10,6 +10,37 @@ aiSSEMBLE Open Inference Protocol (OIP) is a modular, enterprise-ready Python li
 **Python Version**: 3.11.4
 **License**: Apache 2.0
 
+### 🎯 Key Value Proposition: Tensor Abstraction
+
+A major goal of this project is to **abstract tensor nuances from end users**. Traditional OIP implementations leak tensor details (shapes, data types, coordinate systems) into application code. aiSSEMBLE OIP uses the **Translator pattern** to completely isolate tensor complexity:
+
+**Without aiSSEMBLE OIP (traditional approach):**
+```python
+# ❌ User must manually parse raw tensor responses
+response = requests.post(url, json={"inputs": [...]})
+outputs = response.json()["outputs"]
+bbox_tensor = next(o for o in outputs if o["name"] == "bboxes")
+# User must understand: Is this [N,4] or [1,N,4]? Pixel or normalized?
+# What coordinate order? Need class ID mapping?
+bboxes = bbox_tensor["data"]  # Tensor details leak into app code!
+```
+
+**With aiSSEMBLE OIP:**
+```python
+# ✅ User works with clean domain objects, zero tensor knowledge required
+result = client.detect_object().image("dog.jpg").run()
+for detection in result.detections:  # Strongly-typed domain objects
+    print(f"{detection.label} at {detection.bbox}")
+```
+
+**Benefits:**
+- Same user code works with different OIP backends (MLServer, TensorFlow Serving, KServe, custom)
+- Translators handle all tensor complexity: shapes, coordinate systems, data layouts, label mappings
+- Pluggable implementations without user code changes
+- Type-safe domain objects instead of raw tensors
+
+See `aissemble-oip-examples/aissemble-object-detection-example/TENSOR_ABSTRACTION.md` for detailed examples showing how multiple completely different tensor formats work with identical client code.
+
 ## Build System
 
 This project uses a **hybrid Maven/Python build system** via the Habushu Maven plugin, which bridges Maven's lifecycle with Python's packaging tools (uv/Poetry).

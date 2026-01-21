@@ -23,5 +23,12 @@ from aissemble_oip_core.client.translators.object_detection_translator import (
 from aissemble_oip_core.client.translators.summarization_translator import (
     DefaultSummarizationTranslator,
 )
+from aissemble_oip_core.client.translators.tensorflow_object_detection_translator import (
+    TensorFlowObjectDetectionTranslator,
+)
 
-__all__ = ["DefaultObjectDetectionTranslator", "DefaultSummarizationTranslator"]
+__all__ = [
+    "DefaultObjectDetectionTranslator",
+    "DefaultSummarizationTranslator",
+    "TensorFlowObjectDetectionTranslator",
+]
