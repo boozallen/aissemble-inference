@@ -24,6 +24,7 @@ ignore = ["E741"]
 [tool.uv.sources]
 aissemble-oip-core = { path = "../../aissemble-oip-core", editable = true }
 aissemble-oip-yolo = { path = "../../aissemble-oip-modules/aissemble-oip-yolo", editable = true }
+aissemble-oip-common-test = { path = "../../aissemble-oip-modules/aissemble-oip-common-test", editable = true }
 
 [[tool.uv.index]]
 name = "pypi"
@@ -37,10 +38,12 @@ dev = [
     "kappa-maki>=1.0.2",
     "mlserver>=1.6.0",
     "ultralytics>=8.0.0",
+    "aissemble-oip-common-test",
 ]
 
 test = [
     "behave>=1.2.6",
     "mlserver>=1.6.0",
     "ultralytics>=8.0.0",
+    "aissemble-oip-common-test",
 ]

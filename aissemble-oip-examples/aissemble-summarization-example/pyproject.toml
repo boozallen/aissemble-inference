@@ -23,6 +23,7 @@ ignore = ["E741"]
 [tool.uv.sources]
 aissemble-oip-core = { path = "../../aissemble-oip-core", editable = true }
 aissemble-oip-sumy = { path = "../../aissemble-oip-modules/aissemble-oip-sumy", editable = true }
+aissemble-oip-common-test = { path = "../../aissemble-oip-modules/aissemble-oip-common-test", editable = true }
 
 [[tool.uv.index]]
 name = "pypi"
@@ -36,6 +37,7 @@ dev = [
     "sumy>=0.11.0",
     "nltk>=3.8",
     "kappa-maki>=1.0.2",
+    "aissemble-oip-common-test",
 ]
 
 test = [
@@ -43,4 +45,5 @@ test = [
     "mlserver>=1.6.0",
     "sumy>=0.11.0",
     "nltk>=3.8",
+    "aissemble-oip-common-test",
 ]

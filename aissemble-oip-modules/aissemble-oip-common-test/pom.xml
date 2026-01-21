@@ -9,30 +9,22 @@
         <version>1.5.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>aissemble-oip-sumy</artifactId>
+    <artifactId>aissemble-oip-common-test</artifactId>
     <packaging>habushu</packaging>
 
-    <name>aiSSEMBLE::Open Inference Protocol::Modules::sumy</name>
-    <description>sumy model family support for aiSSEMBLE OIP</description>
+    <name>aiSSEMBLE::Open Inference Protocol::Common Test Utilities</name>
+    <description>Reusable MLServer test utilities for aiSSEMBLE OIP modules and examples</description>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.technologybrewery.habushu</groupId>
                 <artifactId>habushu-maven-plugin</artifactId>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <!-- Helps the build reactor order the build appropriately: -->
-        <dependency>
-            <groupId>com.boozallen.aissemble</groupId>
-            <artifactId>aissemble-oip-common-test</artifactId>
-            <version>1.5.0-SNAPSHOT</version>
-            <type>habushu</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
 </project>
