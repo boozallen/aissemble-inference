@@ -12,6 +12,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>aissemble-oip-common-test</module>
         <module>aissemble-oip-sumy</module>
         <module>aissemble-oip-yolo</module>
     </modules>

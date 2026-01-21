@@ -24,4 +24,16 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <!-- Helps the build reactor order the build appropriately: -->
+        <dependency>
+            <groupId>com.boozallen.aissemble</groupId>
+            <artifactId>aissemble-oip-common-test</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
+            <type>habushu</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
 </project>

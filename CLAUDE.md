@@ -86,6 +86,15 @@ aissemble-open-inference-protocol/
 │   └── pom.xml
 │
 ├── aissemble-oip-modules/       # Model-specific extension modules
+│   ├── aissemble-oip-common-test/  # Reusable test utilities (build first!)
+│   │   ├── src/aissemble_oip_common_test/
+│   │   │   ├── mlserver_fixture.py     # MLServer lifecycle management
+│   │   │   ├── behave_helpers.py       # Behave integration utilities
+│   │   │   └── config_builder.py       # MLServer config generation
+│   │   ├── README.md            # Usage guide with examples
+│   │   ├── pyproject.toml       # Test-only dependencies
+│   │   └── pom.xml              # Maven build config
+│   │
 │   ├── aissemble-oip-yolo/      # YOLO model family support
 │   │   ├── src/aissemble_oip_yolo/
 │   │   │   ├── runtime.py       # YOLORuntime (MLServer compatible)
@@ -214,6 +223,7 @@ resnet = "aissemble_oip_resnet:ResNetTranslator"
 ```
 
 4. Add module to `aissemble-oip-modules/pom.xml`
+5. **Use `aissemble-oip-common-test` for MLServer test fixtures** (see Testing section below)
 
 ### Module Grouping Strategy
 
@@ -327,3 +337,81 @@ aissemble-oip-core/tests/
 Configuration is in `aissemble-oip-core/behave.ini`.
 
 See `aissemble-oip-core/tests/README.md` for detailed testing documentation.
+
+### Common Test Utilities (aissemble-oip-common-test)
+
+The `aissemble-oip-common-test` module provides reusable MLServer test infrastructure to avoid code duplication across modules and examples.
+
+**Key Features:**
+- **MLServerFixture**: Context manager for MLServer lifecycle (start, stop, cleanup)
+- **Behave helpers**: Drop-in functions for `environment.py` hooks
+- **Config builders**: JSON generation for MLServer settings
+
+**Usage in new modules/examples:**
+
+Add to `pyproject.toml`:
+```toml
+[dependency-groups]
+test = [
+    "behave>=1.2.6",
+    "mlserver>=1.6.0",
+    "aissemble-oip-common-test",
+]
+
+[tool.uv.sources]
+aissemble-oip-common-test = { path = "../aissemble-oip-common-test", editable = true }
+```
+
+**For static model directories (examples):**
+```python
+# tests/features/environment.py
+from pathlib import Path
+from aissemble_oip_common_test.behave_helpers import (
+    setup_mlserver_simple,
+    teardown_mlserver,
+)
+
+def before_all(context):
+    models_dir = Path(__file__).parent.parent.parent / "models"
+    setup_mlserver_simple(context, models_dir=models_dir, port=8080)
+    context.mlserver_fixture.start()
+
+def after_all(context):
+    teardown_mlserver(context)
+```
+
+**For dynamic config generation (module tests):**
+```python
+# tests/features/environment.py
+from aissemble_oip_common_test.behave_helpers import (
+    setup_mlserver_dynamic,
+    teardown_mlserver,
+    start_mlserver_with_model,
+)
+
+def before_all(context):
+    setup_mlserver_dynamic(context)
+
+def after_scenario(context, scenario):
+    if hasattr(context, "mlserver_fixture") and context.mlserver_fixture.process:
+        context.mlserver_fixture.stop()
+
+def after_all(context):
+    teardown_mlserver(context)
+
+# In step definitions:
+start_mlserver_with_model(
+    context,
+    model_name="your-model",
+    runtime="your_module.YourRuntime",
+    param1="value1"
+)
+```
+
+**Important Notes:**
+- `aissemble-oip-common-test` must be built **first** (it's listed first in `aissemble-oip-modules/pom.xml`)
+- Uses context manager protocol (`__enter__`/`__exit__`) for automatic cleanup
+- Supports both fixed ports (examples) and dynamic port allocation (module tests)
+- Logs warnings for cleanup failures instead of silent errors
+
+See `aissemble-oip-modules/aissemble-oip-common-test/README.md` for complete API documentation.
