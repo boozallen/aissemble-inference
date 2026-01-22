@@ -116,6 +116,21 @@ aissemble-open-inference-protocol/
 │   ├── pyproject.toml
 │   └── pom.xml
 │
+├── aissemble-oip-deploy/        # Deployment config generation framework
+│   ├── src/aissemble_oip_deploy/
+│   │   ├── cli.py               # Click CLI (oip deploy)
+│   │   ├── config.py            # .oip-deploy.yaml tracking
+│   │   ├── registry.py          # Generator discovery via entry points
+│   │   ├── generators/          # Built-in deployment target generators
+│   │   │   ├── base.py          # Abstract Generator class
+│   │   │   └── local.py         # Local MLServer generator
+│   │   └── templates/           # Jinja2 templates
+│   │       └── local/           # Local deployment templates
+│   ├── README.md                # CLI + extensibility documentation
+│   ├── PLAN.md                  # Implementation roadmap
+│   ├── pyproject.toml           # With CLI + generator entry points
+│   └── pom.xml
+│
 ├── aissemble-oip-modules/       # Model-specific extension modules
 │   ├── aissemble-oip-common-test/  # Reusable test utilities (build first!)
 │   │   ├── src/aissemble_oip_common_test/
@@ -446,3 +461,68 @@ start_mlserver_with_model(
 - Logs warnings for cleanup failures instead of silent errors
 
 See `aissemble-oip-modules/aissemble-oip-common-test/README.md` for complete API documentation.
+
+### Deployment Tooling (aissemble-oip-deploy)
+
+The `aissemble-oip-deploy` module is a **peer to aissemble-oip-core** that provides CLI tooling to generate deployment configurations for any OIP-compatible model. The goal is "write once, deploy many" - users get version-controlled configs in their project.
+
+**Generators are discovered via entry points**, allowing custom deployment targets (OpenShift, AWS SageMaker, air-gapped registries) to be added as separate packages without modifying the core deploy module.
+
+**CLI Commands:**
+```bash
+# Generate local deployment scripts
+oip deploy init --target local
+
+# List available targets (discovers generators via entry points)
+oip deploy list-targets
+```
+
+**Architecture:**
+- `cli.py` - Click-based CLI with `oip deploy` command group
+- `registry.py` - Generator discovery via `oip.generators` entry point group
+- `config.py` - Manages `.oip-deploy.yaml` tracking file (versions, checksums)
+- `generators/base.py` - Abstract `Generator` class with model discovery and template rendering
+- `generators/local.py` - Local MLServer generator (registered via entry point)
+- `templates/` - Jinja2 templates for each deployment target
+
+**Adding a Custom Generator (External Package):**
+
+Custom generators can be added without modifying aissemble-oip-deploy:
+
+1. Create your generator package:
+```python
+# my_org_deploy/openshift.py
+from aissemble_oip_deploy import Generator, ModelInfo
+from pathlib import Path
+
+class OpenShiftGenerator(Generator):
+    """Generator for OpenShift deployments."""
+    name = "openshift"
+
+    def generate(self, models: list[ModelInfo] | None = None) -> list[Path]:
+        if models is None:
+            models = self.detect_models()
+        # Generate files using self.render_template() and self.write_file()
+        return generated_files
+```
+
+2. Register via entry point in `pyproject.toml`:
+```toml
+[project.entry-points."oip.generators"]
+openshift = "my_org_deploy.openshift:OpenShiftGenerator"
+```
+
+3. Install and use:
+```bash
+pip install my-org-deploy
+oip deploy list-targets  # Shows 'openshift' alongside built-in targets
+oip deploy init --target openshift
+```
+
+**Development Status:**
+- Phase A (complete): Module skeleton + Local generator + Entry point discovery
+- Phase B-D (planned): Docker, Kubernetes, KServe generators
+- Phase E (planned): Update/merge workflow with conflict detection
+- Phase F (planned): Example project + documentation
+
+See `aissemble-oip-deploy/README.md` for full documentation.
