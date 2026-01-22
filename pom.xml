@@ -54,6 +54,7 @@
 
     <modules>
         <module>aissemble-oip-core</module>
+        <module>aissemble-oip-deploy</module>
         <module>aissemble-oip-modules</module>
         <module>aissemble-oip-examples</module>
     </modules>

@@ -68,6 +68,32 @@ Major v1.5 refactoring in progress.
 - Full integration with InferenceClient fluent API
 - README with comprehensive usage guide and troubleshooting
 
+### Deploy Module (`aissemble-oip-deploy`) - Phase A
+- Created new CLI module for generating deployment configurations
+- **Key Value**: "Write once, deploy many" - generate version-controlled configs for any OIP model
+- **Project Structure**: `aissemble-oip-deploy` is a **peer to aissemble-oip-core** (not under modules) because it's a framework that others extend
+- **Extensibility**: Generators are discovered via Python entry points (`oip.generators`), allowing custom deployment targets (OpenShift, AWS SageMaker, air-gapped registries) to be added as separate packages
+- CLI entry point: `oip deploy` command group
+- Implemented generator framework:
+  - `GeneratorRegistry` with entry point discovery for extensibility
+  - Abstract `Generator` base class with model discovery and Jinja2 template rendering
+  - `ModelInfo` dataclass for representing discovered models
+  - Automatic detection of models from `model-settings.json` files
+  - Public exports (`Generator`, `GeneratorRegistry`, `ModelInfo`) for custom generators
+- Implemented `LocalGenerator` for local MLServer deployment:
+  - Generates `run-mlserver.sh` startup script
+  - Generates `README.md` with usage instructions
+  - Auto-detects models and lists them in generated scripts
+  - Registered via entry point for consistent discovery
+- Configuration tracking via `.oip-deploy.yaml`:
+  - Tracks generator version and generation timestamp
+  - Records checksums of generated files (for future update/merge functionality)
+  - Maintains list of active deployment targets
+- CLI commands implemented:
+  - `oip deploy init --target local` - generates local deployment configs
+  - `oip deploy list-targets` - shows available generators with descriptions (discovered via entry points)
+- Planned for future phases: Docker, Kubernetes, and KServe generators
+
 ## Architecture Improvements
 - Model-specific code now isolated in separate modules under `aissemble-oip-modules/`
 - Dependencies isolated per module (e.g., ultralytics only in yolo module, sumy only in sumy module)
