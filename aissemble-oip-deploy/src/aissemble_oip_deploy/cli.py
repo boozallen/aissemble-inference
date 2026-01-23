@@ -135,6 +135,33 @@ def init(
     project_dir = project_dir or Path.cwd()
     output_dir = output_dir or project_dir / "deploy"
 
+    # Check if running from wrong directory (inside deploy/)
+    cwd = Path.cwd()
+    if cwd.name == "deploy" and project_dir == cwd:
+        click.echo(
+            "Error: It looks like you're running from inside a deploy/ directory."
+        )
+        click.echo(
+            "Please run from your project root (where pyproject.toml and models/ are)."
+        )
+        click.echo()
+        click.echo("Example:")
+        click.echo("  cd /path/to/your-project")
+        click.echo("  oip deploy init --target docker")
+        raise SystemExit(1)
+
+    # Check for project root indicators
+    has_pyproject = (project_dir / "pyproject.toml").exists()
+    has_models = (project_dir / "models").exists()
+    if not has_pyproject and not has_models:
+        click.echo(
+            f"Warning: No pyproject.toml or models/ directory found in {project_dir}"
+        )
+        click.echo("Are you running from your project root?")
+        click.echo()
+        if not click.confirm("Continue anyway?"):
+            raise SystemExit(1)
+
     # Load or create config
     config_path = output_dir / ".oip-deploy.yaml"
     config = DeployConfig.load(config_path)
