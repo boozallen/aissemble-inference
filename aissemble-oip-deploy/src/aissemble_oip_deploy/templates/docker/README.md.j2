@@ -1,0 +1,135 @@
+# Docker Deployment
+
+This directory contains Docker configuration for containerized deployment.
+
+## Prerequisites
+
+- Docker Desktop or Rancher Desktop
+- Docker Compose (included with Docker Desktop)
+
+## Models
+
+{% for model in models %}
+- {{ model.name }}
+{% else %}
+- (none detected)
+{% endfor %}
+
+## Runtime Dependencies
+
+The following packages are installed in the container (managed via pyproject.toml):
+
+{% for package in runtime_packages %}
+- {{ package }}
+{% endfor %}
+
+To modify dependencies, edit the `[dependency-groups] runtime` section in
+pyproject.toml and run `uv lock` to update the lock file.
+
+## Quick Start
+
+Build and start the container:
+
+```bash
+docker-compose up --build
+```
+
+The server will be available at http://localhost:{{ http_port }}
+
+## Usage
+
+### Build Only
+
+```bash
+docker-compose build
+```
+
+### Start in Background
+
+```bash
+docker-compose up -d
+```
+
+### View Logs
+
+```bash
+docker-compose logs -f
+```
+
+### Stop
+
+```bash
+docker-compose down
+```
+
+## Testing
+
+Once the container is running, test the endpoint:
+
+```bash
+curl -X POST http://localhost:{{ http_port }}/v2/models/<model-name>/infer \
+  -H "Content-Type: application/json" \
+  -d '{"inputs": [...]}'
+```
+
+## Customization
+
+### Environment Variables
+
+The docker-compose.yml supports these environment variables:
+
+- `MLSERVER_HTTP_PORT`: HTTP port (default: {{ http_port }})
+- `MLSERVER_GRPC_PORT`: gRPC port (default: {{ grpc_port }})
+
+### Resource Limits
+
+Edit docker-compose.yml to add resource constraints:
+
+```yaml
+services:
+  mlserver:
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+```
+
+### Modifying Dependencies
+
+Runtime dependencies are managed in pyproject.toml under `[dependency-groups]`:
+
+```toml
+[dependency-groups]
+runtime = [
+    "mlserver>=1.6.0",
+    "your-custom-package>=1.0",
+]
+```
+
+After modifying, run `uv lock` then rebuild the Docker image.
+
+## Production Considerations
+
+For production deployments:
+
+1. **Multi-architecture builds**: Use `docker buildx` for ARM/AMD64 support
+2. **Registry**: Push to a container registry (Docker Hub, ECR, GCR, etc.)
+3. **Secrets**: Use Docker secrets or environment variable injection
+4. **Health checks**: The Dockerfile includes MLServer health endpoints
+5. **Logging**: Configure structured logging for your platform
+
+## Troubleshooting
+
+**Build fails with package not found:**
+- Ensure runtime packages in pyproject.toml are published to PyPI
+- Run `uv lock` to verify dependencies resolve correctly
+- Check network connectivity to PyPI
+
+**Container exits immediately:**
+- Check logs: `docker-compose logs`
+- Verify model-settings.json files are valid JSON
+
+**Port already in use:**
+- Stop other services on port {{ http_port }}/{{ grpc_port }}
+- Or change the ports in docker-compose.yml

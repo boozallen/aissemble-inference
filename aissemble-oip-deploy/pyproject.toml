@@ -11,6 +11,7 @@ dependencies = [
     "click>=8.1.0",
     "jinja2>=3.1.0",
     "pyyaml>=6.0",
+    "tomlkit>=0.12.0",
 ]
 
 [build-system]
@@ -30,6 +31,7 @@ oip = "aissemble_oip_deploy.cli:main"
 
 [project.entry-points."oip.generators"]
 local = "aissemble_oip_deploy.generators:LocalGenerator"
+docker = "aissemble_oip_deploy.generators:DockerGenerator"
 
 [dependency-groups]
 dev = [

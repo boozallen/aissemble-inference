@@ -22,6 +22,7 @@ Deployment config generators for different targets.
 """
 
 from .base import Generator
+from .docker import DockerGenerator
 from .local import LocalGenerator
 
-__all__ = ["Generator", "LocalGenerator"]
+__all__ = ["Generator", "DockerGenerator", "LocalGenerator"]
