@@ -3,6 +3,7 @@
 
 services:
   mlserver:
+    image: {{ image_name }}:latest
     build:
       context: ../..  # Project root (where models/ and pyproject.toml are)
       dockerfile: deploy/docker/Dockerfile

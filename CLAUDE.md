@@ -478,6 +478,12 @@ oip deploy init --target local
 # Generate Docker deployment configs
 oip deploy init --target docker
 
+# Generate Kubernetes manifests (Kustomize-based)
+oip deploy init --target kubernetes
+
+# Generate multiple targets at once
+oip deploy init --target docker --target kubernetes
+
 # List available targets (discovers generators via entry points)
 oip deploy list-targets
 ```
@@ -489,6 +495,7 @@ oip deploy list-targets
 - `generators/base.py` - Abstract `Generator` class with model discovery and template rendering
 - `generators/local.py` - Local MLServer generator (registered via entry point)
 - `generators/docker.py` - Docker deployment generator (multi-stage Dockerfile + Docker Compose)
+- `generators/kubernetes.py` - Kubernetes generator (Kustomize-based with dev/prod overlays)
 - `templates/` - Jinja2 templates for each deployment target
 
 **Adding a Custom Generator (External Package):**
@@ -528,7 +535,8 @@ oip deploy init --target openshift
 **Development Status:**
 - Phase A (complete): Module skeleton + Local generator + Entry point discovery
 - Phase B (complete): Docker generator with multi-stage Dockerfile + Docker Compose
-- Phase C-D (planned): Kubernetes, KServe generators
+- Phase C (complete): Kubernetes generator with Kustomize overlays (dev/prod)
+- Phase D (planned): KServe generator
 - Phase E (planned): Update/merge workflow with conflict detection
 - Phase F (planned): Example project + documentation
 

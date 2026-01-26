@@ -73,6 +73,18 @@ class Generator(ABC):
             lstrip_blocks=True,
         )
 
+    def get_image_name(self) -> str:
+        """
+        Get the Docker image name for this project.
+
+        Derives the image name from the project directory name,
+        ensuring consistency between Docker and Kubernetes deployments.
+
+        Returns:
+            Image name (e.g., 'aissemble-summarization-example')
+        """
+        return self.project_dir.name
+
     def detect_models(
         self, models_dir: Path | None = None, max_depth: int = 5
     ) -> list[ModelInfo]:
@@ -202,3 +214,26 @@ class Generator(ABC):
         if executable:
             path.chmod(0o755)
         return path
+
+    def extract_runtime_packages(self, models: list[ModelInfo]) -> list[str]:
+        """
+        Extract PyPI package names from model runtime implementations.
+
+        Args:
+            models: List of models to extract packages from
+
+        Returns:
+            List of PyPI package specifiers (e.g., ["aissemble-oip-sumy>=1.0"])
+        """
+        packages = set()
+        packages.add("mlserver>=1.6.0")
+
+        for model in models:
+            if model.runtime and "." in model.runtime:
+                # Extract package name from "aissemble_oip_sumy.SumyRuntime"
+                module_name = model.runtime.split(".")[0]
+                # Convert underscores to hyphens for PyPI package names
+                package_name = module_name.replace("_", "-")
+                packages.add(package_name)
+
+        return sorted(packages)

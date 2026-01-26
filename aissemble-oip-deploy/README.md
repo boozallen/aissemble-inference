@@ -44,6 +44,17 @@ oip deploy init --target docker
 cd deploy/docker && docker-compose up --build
 ```
 
+Or for Kubernetes:
+
+```bash
+# Generate Kubernetes manifests (uses Docker image from above)
+oip deploy init --target docker --target kubernetes
+
+# Build Docker image, then deploy to K8s
+docker build -t my-app:latest -f deploy/docker/Dockerfile .
+kubectl apply -k deploy/kubernetes/base
+```
+
 ## CLI Reference
 
 ### `oip deploy init`
@@ -69,8 +80,11 @@ oip deploy init --target local
 # Generate Docker deployment
 oip deploy init --target docker
 
+# Generate Kubernetes manifests
+oip deploy init --target kubernetes
+
 # Generate multiple targets
-oip deploy init --target local --target docker
+oip deploy init --target local --target docker --target kubernetes
 
 # Generate for all available targets
 oip deploy init --target all
@@ -90,7 +104,7 @@ oip deploy list-targets
 |--------|-------------|--------|
 | `local` | Local MLServer scripts for development | Available |
 | `docker` | Containerized deployment with Docker Compose | Available |
-| `kubernetes` | Standard K8s Deployment + Service | Coming soon |
+| `kubernetes` | Standard K8s Deployment + Service with Kustomize | Available |
 | `kserve` | Serverless ML on Kubernetes | Coming soon |
 
 ## Generated Output Structure
@@ -112,7 +126,20 @@ your-project/
       docker-compose.yml      # Local container testing
       .dockerignore           # Build context exclusions
       README.md               # Docker deployment instructions
+    kubernetes/
+      base/
+        deployment.yaml       # K8s Deployment with health checks
+        service.yaml          # ClusterIP Service
+        kustomization.yaml    # Kustomize base config
+      overlays/
+        dev/
+          kustomization.yaml  # Dev overlay (1 replica, lower resources)
+        prod/
+          kustomization.yaml  # Prod overlay (2 replicas, higher resources)
+      README.md               # Kubernetes deployment instructions
 ```
+
+**Note:** The Kubernetes generator uses the Docker image built by the Docker generator. This keeps things DRY - the Dockerfile is defined once and reused across Docker Compose and Kubernetes deployments.
 
 ## Configuration Tracking
 
@@ -180,9 +207,9 @@ oip deploy init --target openshift
 This module is under active development. Currently implemented:
 - [x] Phase A: Module skeleton + Local generator + Entry point discovery
 - [x] Phase B: Docker generator with multi-stage Dockerfile + Docker Compose
+- [x] Phase C: Kubernetes generator with Kustomize overlays
 
 Coming soon:
-- [ ] Phase C: Kubernetes vanilla generator
 - [ ] Phase D: KServe generator
 - [ ] Phase E: Update/merge workflow
 - [ ] Phase F: Example project + documentation

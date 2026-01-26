@@ -18,7 +18,7 @@ Create a new module **`aissemble-oip-deploy`** that provides CLI tooling to gene
 |-------|-------|-------------|--------|
 | **Phase A** | Module skeleton + Local generator | `oip deploy init --target local` works | **COMPLETE** |
 | **Phase B** | Docker generator | `oip deploy init --target docker` works | **COMPLETE** |
-| **Phase C** | Kubernetes vanilla generator | `oip deploy init --target kubernetes` works | Not started |
+| **Phase C** | Kubernetes vanilla generator | `oip deploy init --target kubernetes` works | **COMPLETE** |
 | **Phase D** | KServe generator | `oip deploy init --target kserve` works | Not started |
 | **Phase E** | Update/merge workflow | `oip deploy update` with conflict detection | Not started |
 | **Phase F** | Example project + docs | Complete example + documentation | Not started |
