@@ -123,9 +123,11 @@ aissemble-open-inference-protocol/
 │   │   ├── registry.py          # Generator discovery via entry points
 │   │   ├── generators/          # Built-in deployment target generators
 │   │   │   ├── base.py          # Abstract Generator class
-│   │   │   └── local.py         # Local MLServer generator
+│   │   │   ├── local.py         # Local MLServer generator
+│   │   │   └── docker.py        # Docker deployment generator
 │   │   └── templates/           # Jinja2 templates
-│   │       └── local/           # Local deployment templates
+│   │       ├── local/           # Local deployment templates
+│   │       └── docker/          # Docker deployment templates
 │   ├── README.md                # CLI + extensibility documentation
 │   ├── PLAN.md                  # Implementation roadmap
 │   ├── pyproject.toml           # With CLI + generator entry points
@@ -473,6 +475,9 @@ The `aissemble-oip-deploy` module is a **peer to aissemble-oip-core** that provi
 # Generate local deployment scripts
 oip deploy init --target local
 
+# Generate Docker deployment configs
+oip deploy init --target docker
+
 # List available targets (discovers generators via entry points)
 oip deploy list-targets
 ```
@@ -483,6 +488,7 @@ oip deploy list-targets
 - `config.py` - Manages `.oip-deploy.yaml` tracking file (versions, checksums)
 - `generators/base.py` - Abstract `Generator` class with model discovery and template rendering
 - `generators/local.py` - Local MLServer generator (registered via entry point)
+- `generators/docker.py` - Docker deployment generator (multi-stage Dockerfile + Docker Compose)
 - `templates/` - Jinja2 templates for each deployment target
 
 **Adding a Custom Generator (External Package):**
@@ -521,7 +527,8 @@ oip deploy init --target openshift
 
 **Development Status:**
 - Phase A (complete): Module skeleton + Local generator + Entry point discovery
-- Phase B-D (planned): Docker, Kubernetes, KServe generators
+- Phase B (complete): Docker generator with multi-stage Dockerfile + Docker Compose
+- Phase C-D (planned): Kubernetes, KServe generators
 - Phase E (planned): Update/merge workflow with conflict detection
 - Phase F (planned): Example project + documentation
 

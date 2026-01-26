@@ -17,7 +17,7 @@ Create a new module **`aissemble-oip-deploy`** that provides CLI tooling to gene
 | Phase | Scope | Deliverable | Status |
 |-------|-------|-------------|--------|
 | **Phase A** | Module skeleton + Local generator | `oip deploy init --target local` works | **COMPLETE** |
-| **Phase B** | Docker generator | `oip deploy init --target docker` works | Not started |
+| **Phase B** | Docker generator | `oip deploy init --target docker` works | **COMPLETE** |
 | **Phase C** | Kubernetes vanilla generator | `oip deploy init --target kubernetes` works | Not started |
 | **Phase D** | KServe generator | `oip deploy init --target kserve` works | Not started |
 | **Phase E** | Update/merge workflow | `oip deploy update` with conflict detection | Not started |
@@ -109,14 +109,17 @@ aissemble-oip-deploy/           # Peer to aissemble-oip-core (NOT under modules)
       __init__.py
       base.py                   # Abstract Generator class
       local.py                  # Local MLServer generator (registered via entry point)
-      # docker.py               # Phase B
+      docker.py                 # Docker generator (registered via entry point)
       # kubernetes.py           # Phase C
-        # kserve.py             # Phase D
+      # kserve.py               # Phase D
 
       templates/
         local/
           run-mlserver.sh.j2
-        # docker/               # Phase B
+        docker/
+          Dockerfile.j2
+          docker-compose.yml.j2
+          .dockerignore.j2
         # kubernetes/           # Phase C
         # kserve/               # Phase D
 

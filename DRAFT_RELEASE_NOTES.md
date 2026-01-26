@@ -91,8 +91,19 @@ Major v1.5 refactoring in progress.
   - Maintains list of active deployment targets
 - CLI commands implemented:
   - `oip deploy init --target local` - generates local deployment configs
+  - `oip deploy init --target docker` - generates Docker deployment configs
   - `oip deploy list-targets` - shows available generators with descriptions (discovered via entry points)
-- Planned for future phases: Docker, Kubernetes, and KServe generators
+
+### Deploy Module (`aissemble-oip-deploy`) - Phase B
+- Implemented `DockerGenerator` for containerized MLServer deployment:
+  - Multi-stage Dockerfile for smaller images (builder + runtime stages)
+  - Docker Compose configuration for easy local container testing
+  - `.dockerignore` for optimized build context
+  - Auto-detection of runtime packages from `model-settings.json` implementation field
+  - Health check endpoint configured in Dockerfile
+  - Generated README with deployment instructions
+- Docker generator registered via entry point for consistent discovery
+- Planned for future phases: Kubernetes and KServe generators
 
 ## Architecture Improvements
 - Model-specific code now isolated in separate modules under `aissemble-oip-modules/`

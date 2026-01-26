@@ -34,6 +34,16 @@ oip deploy init --target local
 cd deploy/local && ./run-mlserver.sh
 ```
 
+Or for containerized deployment:
+
+```bash
+# Generate Docker deployment configs
+oip deploy init --target docker
+
+# Build and run with Docker Compose
+cd deploy/docker && docker-compose up --build
+```
+
 ## CLI Reference
 
 ### `oip deploy init`
@@ -56,6 +66,12 @@ oip deploy init [OPTIONS]
 # Generate local deployment only
 oip deploy init --target local
 
+# Generate Docker deployment
+oip deploy init --target docker
+
+# Generate multiple targets
+oip deploy init --target local --target docker
+
 # Generate for all available targets
 oip deploy init --target all
 ```
@@ -73,7 +89,7 @@ oip deploy list-targets
 | Target | Description | Status |
 |--------|-------------|--------|
 | `local` | Local MLServer scripts for development | Available |
-| `docker` | Containerized deployment | Coming soon |
+| `docker` | Containerized deployment with Docker Compose | Available |
 | `kubernetes` | Standard K8s Deployment + Service | Coming soon |
 | `kserve` | Serverless ML on Kubernetes | Coming soon |
 
@@ -91,6 +107,11 @@ your-project/
     local/
       run-mlserver.sh         # Start MLServer locally
       README.md               # Local deployment instructions
+    docker/
+      Dockerfile              # Multi-stage build for MLServer
+      docker-compose.yml      # Local container testing
+      .dockerignore           # Build context exclusions
+      README.md               # Docker deployment instructions
 ```
 
 ## Configuration Tracking
@@ -158,9 +179,9 @@ oip deploy init --target openshift
 
 This module is under active development. Currently implemented:
 - [x] Phase A: Module skeleton + Local generator + Entry point discovery
+- [x] Phase B: Docker generator with multi-stage Dockerfile + Docker Compose
 
 Coming soon:
-- [ ] Phase B: Docker generator
 - [ ] Phase C: Kubernetes vanilla generator
 - [ ] Phase D: KServe generator
 - [ ] Phase E: Update/merge workflow
