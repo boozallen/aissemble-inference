@@ -2,6 +2,12 @@
 
 This directory contains Docker configuration for containerized deployment.
 
+{% if use_wheels %}
+**Mode:** Dev (local wheels)
+{% else %}
+**Mode:** Release (PyPI packages)
+{% endif %}
+
 ## Prerequisites
 
 - Docker Desktop or Rancher Desktop
@@ -17,14 +23,22 @@ This directory contains Docker configuration for containerized deployment.
 
 ## Runtime Dependencies
 
-The following packages are installed in the container (managed via pyproject.toml):
+{% if use_wheels %}
+The following packages are installed in the container (from pre-built wheels):
 
 {% for package in runtime_packages %}
 - {{ package }}
 {% endfor %}
 
-To modify dependencies, edit the `[dependency-groups] runtime` section in
-pyproject.toml and run `uv lock` to update the lock file.
+The wheels in `wheels/` were built using [uv-monorepo-dependency-tool](https://github.com/TechnologyBrewery/uv-monorepo-dependency-tool)
+to convert local path dependencies to pinned version dependencies.
+{% else %}
+The following packages are installed from PyPI:
+
+{% for package in runtime_packages %}
+- {{ package }}
+{% endfor %}
+{% endif %}
 
 ## Quick Start
 
@@ -95,19 +109,30 @@ services:
           memory: 4G
 ```
 
-### Modifying Dependencies
+{% if use_wheels %}
+### Rebuilding Wheels
 
-Runtime dependencies are managed in pyproject.toml under `[dependency-groups]`:
+To regenerate the wheels with updated dependencies:
 
-```toml
-[dependency-groups]
-runtime = [
-    "mlserver>=1.6.0",
-    "your-custom-package>=1.0",
-]
+```bash
+uv tool run uv-monorepo-dependency-tool build-rewrite-path-deps --version-pinning-strategy=mixed
+cp dist/*.whl deploy/docker/wheels/
 ```
 
-After modifying, run `uv lock` then rebuild the Docker image.
+Or re-run the generator:
+
+```bash
+oip deploy init --target docker
+```
+{% else %}
+### Updating Dependencies
+
+Edit `requirements.txt` to change package versions, then rebuild:
+
+```bash
+docker-compose build --no-cache
+```
+{% endif %}
 
 ## Production Considerations
 
@@ -122,9 +147,12 @@ For production deployments:
 ## Troubleshooting
 
 **Build fails with package not found:**
-- Ensure runtime packages in pyproject.toml are published to PyPI
-- Run `uv lock` to verify dependencies resolve correctly
+{% if use_wheels %}
+- Regenerate wheels: `oip deploy init --target docker`
+{% else %}
+- Ensure runtime packages are published to PyPI
 - Check network connectivity to PyPI
+{% endif %}
 
 **Container exits immediately:**
 - Check logs: `docker-compose logs`

@@ -20,9 +20,12 @@
 """
 Docker deployment generator.
 
-Uses uv for dependency management to ensure reproducible builds.
-Updates pyproject.toml with runtime dependencies and generates
-Dockerfile that installs from the lock file.
+Generates Dockerfile and docker-compose.yml for containerized MLServer deployment.
+
+For dev versions: Uses uv-monorepo-dependency-tool to build wheels with pinned
+dependencies, including all transitive local path dependencies.
+
+For release versions: Generates requirements.txt to install from PyPI.
 """
 
 import shutil
@@ -44,9 +47,6 @@ class DockerGenerator(Generator):
         """
         Generate Docker deployment configs.
 
-        Updates pyproject.toml with runtime dependencies, runs uv lock,
-        and generates Dockerfile that installs from the lock file.
-
         Args:
             models: Models to generate configs for (auto-detected if None)
 
@@ -56,29 +56,36 @@ class DockerGenerator(Generator):
         if models is None:
             models = self.detect_models()
 
-        self._check_uv_installed()
-
         generated_files = []
         target_dir = self.output_dir / "docker"
 
-        # Extract runtime packages and update pyproject.toml
+        # Extract runtime packages for documentation and requirements
         runtime_packages = self._extract_runtime_packages(models)
-        pyproject_path = self.project_dir / "pyproject.toml"
 
-        if not pyproject_path.exists():
-            raise FileNotFoundError(
-                f"pyproject.toml not found at {pyproject_path}. "
-                "Docker generator requires a pyproject.toml for dependency management."
+        # Check if this is a dev version
+        is_dev = self._is_dev_version()
+
+        if is_dev:
+            # Build wheels for local testing
+            wheels_dir = target_dir / "wheels"
+            wheel_files = self._build_all_wheels(wheels_dir)
+            generated_files.extend(wheel_files)
+            use_wheels = True
+        else:
+            # Generate requirements.txt for PyPI install
+            requirements_content = "\n".join(runtime_packages) + "\n"
+            requirements_path = self.write_file(
+                target_dir / "requirements.txt", requirements_content
             )
-
-        self._update_pyproject_toml(pyproject_path, runtime_packages)
-        self._run_uv_lock()
+            generated_files.append(requirements_path)
+            use_wheels = False
 
         # Generate Dockerfile
         dockerfile_content = self.render_template(
             "docker/Dockerfile.j2",
             {
                 "python_version": "3.11",
+                "use_wheels": use_wheels,
             },
         )
         dockerfile_path = self.write_file(target_dir / "Dockerfile", dockerfile_content)
@@ -116,6 +123,7 @@ class DockerGenerator(Generator):
                 "runtime_packages": runtime_packages,
                 "http_port": 8080,
                 "grpc_port": 8081,
+                "use_wheels": use_wheels,
             },
         )
         readme_path = self.write_file(target_dir / "README.md", readme_content)
@@ -123,13 +131,178 @@ class DockerGenerator(Generator):
 
         return generated_files
 
-    def _check_uv_installed(self) -> None:
-        """Check that uv is installed and available."""
+    def _is_dev_version(self) -> bool:
+        """
+        Check if the project version is a dev version.
+
+        Returns:
+            True if version contains '.dev', False otherwise
+        """
+        pyproject_path = self.project_dir / "pyproject.toml"
+        if not pyproject_path.exists():
+            return False
+
+        content = pyproject_path.read_text(encoding="utf-8")
+        doc = tomlkit.parse(content)
+
+        version = doc.get("project", {}).get("version", "")
+        return ".dev" in version
+
+    def _build_all_wheels(self, wheels_dir: Path) -> list[Path]:
+        """
+        Build wheels for this project and all local path dependencies.
+
+        Recursively finds and builds all monorepo packages that this project
+        depends on, ensuring Docker has all required wheels.
+
+        Args:
+            wheels_dir: Directory to copy built wheels to
+
+        Returns:
+            List of paths to copied wheel files
+        """
         if shutil.which("uv") is None:
             raise RuntimeError(
                 "uv is not installed or not in PATH. "
                 "Install uv: https://docs.astral.sh/uv/getting-started/installation/"
             )
+
+        wheels_dir.mkdir(parents=True, exist_ok=True)
+
+        # Find all projects to build (this project + path dependencies)
+        projects_to_build = self._find_all_path_dependencies(self.project_dir)
+
+        print(
+            f"  Building wheels for {len(projects_to_build)} project(s) (dev mode)...",
+            file=sys.stderr,
+        )
+
+        copied_wheels = []
+        for project_path in projects_to_build:
+            wheel_path = self._build_single_wheel(project_path, wheels_dir)
+            if wheel_path:
+                copied_wheels.append(wheel_path)
+
+        if not copied_wheels:
+            raise RuntimeError(
+                "No wheel files were built. "
+                "Check that uv-monorepo-dependency-tool completed successfully."
+            )
+
+        print(f"  Built {len(copied_wheels)} wheel(s) to {wheels_dir}", file=sys.stderr)
+        return copied_wheels
+
+    def _find_all_path_dependencies(self, start_dir: Path) -> list[Path]:
+        """
+        Recursively find all local path dependencies.
+
+        Args:
+            start_dir: Starting project directory
+
+        Returns:
+            List of project directories to build (including start_dir)
+        """
+        visited = set()
+        to_visit = [start_dir.resolve()]
+        result = []
+
+        while to_visit:
+            current = to_visit.pop(0)
+            if current in visited:
+                continue
+            visited.add(current)
+            result.append(current)
+
+            # Find path dependencies in this project
+            path_deps = self._get_path_dependencies(current)
+            for dep_path in path_deps:
+                resolved = (current / dep_path).resolve()
+                if resolved.exists() and resolved not in visited:
+                    to_visit.append(resolved)
+
+        return result
+
+    def _get_path_dependencies(self, project_dir: Path) -> list[str]:
+        """
+        Extract path dependencies from a project's pyproject.toml.
+
+        Args:
+            project_dir: Project directory containing pyproject.toml
+
+        Returns:
+            List of relative path strings to dependencies
+        """
+        pyproject_path = project_dir / "pyproject.toml"
+        if not pyproject_path.exists():
+            return []
+
+        content = pyproject_path.read_text(encoding="utf-8")
+        doc = tomlkit.parse(content)
+
+        # Look for [tool.uv.sources] section
+        sources = doc.get("tool", {}).get("uv", {}).get("sources", {})
+
+        paths = []
+        for _name, source in sources.items():
+            if isinstance(source, dict) and "path" in source:
+                paths.append(source["path"])
+
+        return paths
+
+    def _build_single_wheel(self, project_dir: Path, wheels_dir: Path) -> Path | None:
+        """
+        Build a wheel for a single project using uv-monorepo-dependency-tool.
+
+        Args:
+            project_dir: Project directory to build
+            wheels_dir: Directory to copy the wheel to
+
+        Returns:
+            Path to the copied wheel file, or None if build failed
+        """
+        project_name = project_dir.name
+        print(f"    Building {project_name}...", file=sys.stderr)
+
+        result = subprocess.run(
+            [
+                "uv",
+                "tool",
+                "run",
+                "uv-monorepo-dependency-tool",
+                "build-rewrite-path-deps",
+                "--version-pinning-strategy=mixed",
+            ],
+            cwd=project_dir,
+            capture_output=True,
+            text=True,
+        )
+
+        if result.returncode != 0:
+            print(
+                f"    Warning: Failed to build {project_name}: {result.stderr}",
+                file=sys.stderr,
+            )
+            return None
+
+        # Find and copy the built wheel
+        dist_dir = project_dir / "dist"
+        if not dist_dir.exists():
+            print(
+                f"    Warning: No dist/ directory for {project_name}", file=sys.stderr
+            )
+            return None
+
+        # Get the most recent wheel
+        wheels = sorted(dist_dir.glob("*.whl"), key=lambda p: p.stat().st_mtime)
+        if not wheels:
+            print(f"    Warning: No wheel found for {project_name}", file=sys.stderr)
+            return None
+
+        wheel_file = wheels[-1]  # Most recent
+        dest_path = wheels_dir / wheel_file.name
+        shutil.copy2(wheel_file, dest_path)
+        print(f"      Copied {wheel_file.name}", file=sys.stderr)
+        return dest_path
 
     def _extract_runtime_packages(self, models: list[ModelInfo]) -> list[str]:
         """
@@ -153,47 +326,3 @@ class DockerGenerator(Generator):
                 packages.add(package_name)
 
         return sorted(packages)
-
-    def _update_pyproject_toml(
-        self, pyproject_path: Path, runtime_packages: list[str]
-    ) -> None:
-        """
-        Update pyproject.toml with runtime dependency group.
-
-        Args:
-            pyproject_path: Path to pyproject.toml
-            runtime_packages: List of package specifiers to add
-        """
-        content = pyproject_path.read_text(encoding="utf-8")
-        doc = tomlkit.parse(content)
-
-        # Ensure dependency-groups section exists
-        if "dependency-groups" not in doc:
-            doc["dependency-groups"] = tomlkit.table()
-
-        # Update or create runtime group
-        runtime_array = tomlkit.array()
-        for pkg in runtime_packages:
-            runtime_array.append(pkg)
-        runtime_array.multiline(True)
-
-        doc["dependency-groups"]["runtime"] = runtime_array
-
-        pyproject_path.write_text(tomlkit.dumps(doc), encoding="utf-8")
-        print(f"  Updated {pyproject_path} with runtime dependencies", file=sys.stderr)
-
-    def _run_uv_lock(self) -> None:
-        """Run uv lock to update the lock file."""
-        print("  Running uv lock...", file=sys.stderr)
-        result = subprocess.run(
-            ["uv", "lock"],
-            cwd=self.project_dir,
-            capture_output=True,
-            text=True,
-        )
-        if result.returncode != 0:
-            raise RuntimeError(
-                f"uv lock failed:\n{result.stderr}\n"
-                "Ensure all runtime packages are available on PyPI."
-            )
-
