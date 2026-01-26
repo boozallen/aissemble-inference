@@ -23,6 +23,7 @@ Deployment config generators for different targets.
 
 from .base import Generator
 from .docker import DockerGenerator
+from .kubernetes import KubernetesGenerator
 from .local import LocalGenerator
 
-__all__ = ["Generator", "DockerGenerator", "LocalGenerator"]
+__all__ = ["Generator", "DockerGenerator", "KubernetesGenerator", "LocalGenerator"]

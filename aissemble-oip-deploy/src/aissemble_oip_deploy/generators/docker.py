@@ -60,7 +60,7 @@ class DockerGenerator(Generator):
         target_dir = self.output_dir / "docker"
 
         # Extract runtime packages for documentation and requirements
-        runtime_packages = self._extract_runtime_packages(models)
+        runtime_packages = self.extract_runtime_packages(models)
 
         # Check if this is a dev version
         is_dev = self._is_dev_version()
@@ -92,9 +92,11 @@ class DockerGenerator(Generator):
         generated_files.append(dockerfile_path)
 
         # Generate docker-compose.yml
+        image_name = self.get_image_name()
         compose_content = self.render_template(
             "docker/docker-compose.yml.j2",
             {
+                "image_name": image_name,
                 "http_port": 8080,
                 "grpc_port": 8081,
                 "models": models,
@@ -303,26 +305,3 @@ class DockerGenerator(Generator):
         shutil.copy2(wheel_file, dest_path)
         print(f"      Copied {wheel_file.name}", file=sys.stderr)
         return dest_path
-
-    def _extract_runtime_packages(self, models: list[ModelInfo]) -> list[str]:
-        """
-        Extract PyPI package names from model runtime implementations.
-
-        Args:
-            models: List of models to extract packages from
-
-        Returns:
-            List of PyPI package specifiers (e.g., ["aissemble-oip-sumy>=1.0"])
-        """
-        packages = set()
-        packages.add("mlserver>=1.6.0")
-
-        for model in models:
-            if model.runtime and "." in model.runtime:
-                # Extract package name from "aissemble_oip_sumy.SumyRuntime"
-                module_name = model.runtime.split(".")[0]
-                # Convert underscores to hyphens for PyPI package names
-                package_name = module_name.replace("_", "-")
-                packages.add(package_name)
-
-        return sorted(packages)

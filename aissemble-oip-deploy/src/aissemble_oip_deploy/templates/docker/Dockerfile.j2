@@ -18,7 +18,7 @@ WORKDIR /app
 # Copy pre-built wheels with pinned dependencies (dev mode)
 COPY deploy/docker/wheels/ /wheels/
 
-# Create virtual environment and install wheels (mlserver comes as a dependency)
+# Create virtual environment and install wheels
 RUN uv venv .venv && \
     uv pip install --no-cache /wheels/*.whl
 {% else %}

@@ -7,7 +7,9 @@ authors = [
     { name = "aiSSEMBLE Team", email = "aissemble@bah.com" }
 ]
 requires-python = ">=3.9.14"
-dependencies = []
+dependencies = [
+    "mlserver>=1.6.0",
+]
 
 [build-system]
 requires = ["hatchling"]

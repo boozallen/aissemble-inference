@@ -125,6 +125,11 @@ def init(
     if "all" in targets:
         targets = available
 
+    # Kubernetes depends on Docker - auto-include if not present
+    if "kubernetes" in targets and "docker" not in targets:
+        click.echo("Note: Adding 'docker' target (required by kubernetes)")
+        targets.insert(0, "docker")
+
     # Validate targets
     for t in targets:
         if t not in available and t != "all":
@@ -214,10 +219,13 @@ def init(
     click.echo("Next steps:")
     if "local" in targets:
         click.echo("  Local:  cd deploy/local && ./run-mlserver.sh")
-    if "docker" in targets:
-        click.echo("  Docker: cd deploy/docker && docker-compose up --build")
     if "kubernetes" in targets:
-        click.echo("  K8s:    kubectl apply -k deploy/kubernetes/base")
+        # Kubernetes workflow: build image, then deploy
+        click.echo("  K8s:    cd deploy/docker && docker-compose build")
+        click.echo("          kubectl apply -k deploy/kubernetes/overlays/dev")
+    elif "docker" in targets:
+        # Docker-only workflow: build and run
+        click.echo("  Docker: cd deploy/docker && docker-compose up --build")
     if "kserve" in targets:
         click.echo("  KServe: kubectl apply -f deploy/kserve/inference-service.yaml")
 

@@ -32,6 +32,7 @@ oip = "aissemble_oip_deploy.cli:main"
 [project.entry-points."oip.generators"]
 local = "aissemble_oip_deploy.generators:LocalGenerator"
 docker = "aissemble_oip_deploy.generators:DockerGenerator"
+kubernetes = "aissemble_oip_deploy.generators:KubernetesGenerator"
 
 [dependency-groups]
 dev = [
