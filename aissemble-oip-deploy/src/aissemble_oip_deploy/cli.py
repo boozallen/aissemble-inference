@@ -130,6 +130,11 @@ def init(
         click.echo("Note: Adding 'docker' target (required by kubernetes)")
         targets.insert(0, "docker")
 
+    # KServe depends on Docker - auto-include if not present
+    if "kserve" in targets and "docker" not in targets:
+        click.echo("Note: Adding 'docker' target (required by kserve)")
+        targets.insert(0, "docker")
+
     # Validate targets
     for t in targets:
         if t not in available and t != "all":
@@ -227,7 +232,8 @@ def init(
         # Docker-only workflow: build and run
         click.echo("  Docker: cd deploy/docker && docker-compose up --build")
     if "kserve" in targets:
-        click.echo("  KServe: kubectl apply -f deploy/kserve/inference-service.yaml")
+        click.echo("  KServe: kubectl apply -f deploy/kserve/serving-runtime.yaml")
+        click.echo("          kubectl apply -f deploy/kserve/inference-service.yaml")
 
 
 @deploy.command("list-targets")

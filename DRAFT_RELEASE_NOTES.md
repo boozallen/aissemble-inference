@@ -103,7 +103,27 @@ Major v1.5 refactoring in progress.
   - Health check endpoint configured in Dockerfile
   - Generated README with deployment instructions
 - Docker generator registered via entry point for consistent discovery
-- Planned for future phases: Kubernetes and KServe generators
+
+### Deploy Module (`aissemble-oip-deploy`) - Phase C
+- Implemented `KubernetesGenerator` for standard Kubernetes deployments:
+  - Kustomize-based structure with base manifests and environment overlays
+  - Deployment with health checks (startup, readiness, liveness probes)
+  - ClusterIP Service with HTTP and gRPC port exposure
+  - Dev overlay: 1 replica, lower resources, NodePort for easy local access
+  - Prod overlay: 3 replicas, higher resources, HPA-ready configuration
+  - Generated README with comprehensive deployment instructions
+- Auto-includes Docker target when Kubernetes is selected (image dependency)
+- Kubernetes generator registered via entry point for consistent discovery
+
+### Deploy Module (`aissemble-oip-deploy`) - Phase D
+- Implemented `KServeGenerator` for serverless ML deployments:
+  - ServingRuntime + InferenceService pattern for DRY configuration
+  - ServingRuntime defines shared runtime config (image, ports, resources)
+  - InferenceService references the runtime and adds scaling configuration
+  - Scale-to-zero support with configurable min/max replicas (default: 0-5)
+  - Generated README with cert-manager/KServe installation prerequisites
+- Auto-includes Docker target when KServe is selected (image dependency)
+- KServe generator registered via entry point for consistent discovery
 
 ## Architecture Improvements
 - Model-specific code now isolated in separate modules under `aissemble-oip-modules/`

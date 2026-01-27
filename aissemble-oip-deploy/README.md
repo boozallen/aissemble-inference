@@ -55,6 +55,19 @@ docker build -t my-app:latest -f deploy/docker/Dockerfile .
 kubectl apply -k deploy/kubernetes/base
 ```
 
+Or for KServe (serverless ML with scale-to-zero):
+
+```bash
+# Generate KServe manifests (uses Docker image from above)
+oip deploy init --target kserve
+
+# Build and push Docker image, then deploy to KServe
+docker build -t my-registry/my-app:v1.0.0 -f deploy/docker/Dockerfile .
+docker push my-registry/my-app:v1.0.0
+kubectl apply -f deploy/kserve/serving-runtime.yaml
+kubectl apply -f deploy/kserve/inference-service.yaml
+```
+
 ## CLI Reference
 
 ### `oip deploy init`
@@ -83,8 +96,11 @@ oip deploy init --target docker
 # Generate Kubernetes manifests
 oip deploy init --target kubernetes
 
+# Generate KServe manifests (serverless ML)
+oip deploy init --target kserve
+
 # Generate multiple targets
-oip deploy init --target local --target docker --target kubernetes
+oip deploy init --target local --target docker --target kubernetes --target kserve
 
 # Generate for all available targets
 oip deploy init --target all
@@ -105,7 +121,7 @@ oip deploy list-targets
 | `local` | Local MLServer scripts for development | Available |
 | `docker` | Containerized deployment with Docker Compose | Available |
 | `kubernetes` | Standard K8s Deployment + Service with Kustomize | Available |
-| `kserve` | Serverless ML on Kubernetes | Coming soon |
+| `kserve` | KServe InferenceService with scale-to-zero | Available |
 
 ## Generated Output Structure
 
@@ -137,9 +153,13 @@ your-project/
         prod/
           kustomization.yaml  # Prod overlay (2 replicas, higher resources)
       README.md               # Kubernetes deployment instructions
+    kserve/
+      serving-runtime.yaml    # KServe ServingRuntime (shared runtime config)
+      inference-service.yaml  # KServe InferenceService with scale-to-zero
+      README.md               # KServe deployment instructions
 ```
 
-**Note:** The Kubernetes generator uses the Docker image built by the Docker generator. This keeps things DRY - the Dockerfile is defined once and reused across Docker Compose and Kubernetes deployments.
+**Note:** The Kubernetes and KServe generators use the Docker image built by the Docker generator. This keeps things DRY - the Dockerfile is defined once and reused across Docker Compose, Kubernetes, and KServe deployments.
 
 ## Configuration Tracking
 
@@ -208,9 +228,9 @@ This module is under active development. Currently implemented:
 - [x] Phase A: Module skeleton + Local generator + Entry point discovery
 - [x] Phase B: Docker generator with multi-stage Dockerfile + Docker Compose
 - [x] Phase C: Kubernetes generator with Kustomize overlays
+- [x] Phase D: KServe generator with ServingRuntime + InferenceService
 
 Coming soon:
-- [ ] Phase D: KServe generator
 - [ ] Phase E: Update/merge workflow
 - [ ] Phase F: Example project + documentation
 
