@@ -1,0 +1,278 @@
+# KServe Deployment
+
+This directory contains KServe manifests for deploying MLServer models using the
+ServingRuntime + InferenceService pattern for DRY configuration.
+
+## Prerequisites
+
+### 1. Kubernetes Cluster
+
+A Kubernetes cluster (Rancher Desktop, kind, minikube, EKS, GKE, etc.)
+
+### 2. cert-manager
+
+KServe requires cert-manager for webhook certificates:
+
+```bash
+# Install cert-manager
+kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.3/cert-manager.yaml
+
+# Wait for cert-manager to be ready
+kubectl wait --for=condition=Available deployment --all -n cert-manager --timeout=300s
+```
+
+### 3. Knative Serving (for serverless/scale-to-zero)
+
+KServe's serverless mode requires Knative Serving:
+
+```bash
+# Install Knative Serving CRDs and core
+kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.12.0/serving-crds.yaml
+kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.12.0/serving-core.yaml
+
+# Install networking layer (Kourier - lighter than Istio)
+kubectl apply -f https://github.com/knative/net-kourier/releases/download/knative-v1.12.0/kourier.yaml
+
+# Configure Knative to use Kourier
+kubectl patch configmap/config-network -n knative-serving \
+  --type merge -p '{"data":{"ingress-class":"kourier.ingress.networking.knative.dev"}}'
+
+# Wait for Knative to be ready
+kubectl wait --for=condition=Available deployment --all -n knative-serving --timeout=300s
+```
+
+**Note:** If your cluster already has Istio, you can skip Kourier and configure Knative to use Istio instead.
+
+### 4. KServe
+
+Install KServe (includes ServingRuntime CRD):
+
+```bash
+# Install KServe
+kubectl apply -f https://github.com/kserve/kserve/releases/download/v0.11.2/kserve.yaml
+
+# Wait for KServe to be ready
+kubectl wait --for=condition=Available deployment --all -n kserve --timeout=300s
+```
+
+### 5. Docker Image
+
+Build and push the Docker image (see `../docker/`).
+
+## Structure
+
+```
+kserve/
+  serving-runtime.yaml    # ServingRuntime (shared runtime configuration)
+  inference-service.yaml  # InferenceService (model deployment)
+```
+
+**Why two files?** This follows the DRY principle:
+- **ServingRuntime** defines the runtime configuration once (image, ports, resources)
+- **InferenceService** references the runtime and adds scaling configuration
+- If you later add more services, they can share the same ServingRuntime
+
+## Models Included
+
+{% for model in models %}
+- **{{ model.name }}**{% if model.runtime %} ({{ model.runtime }}){% endif %}
+
+{% endfor %}
+
+## Namespace Configuration
+
+By default, these manifests deploy to the `default` namespace. For production deployments,
+create a dedicated namespace:
+
+```bash
+# Create namespace
+kubectl create namespace ml-serving
+
+# Deploy to the namespace
+kubectl apply -f serving-runtime.yaml -n ml-serving
+kubectl apply -f inference-service.yaml -n ml-serving
+```
+
+Alternatively, uncomment and set the `namespace` field in both YAML files.
+
+## Deployment
+
+### 1. Build and Push Docker Image
+
+```bash
+cd ../docker
+docker-compose build
+
+# Tag and push to your registry
+docker tag {{ image_name }}:latest your-registry/{{ image_name }}:v1.0.0
+docker push your-registry/{{ image_name }}:v1.0.0
+```
+
+### 2. Update Image Reference
+
+Edit `serving-runtime.yaml` to use your registry:
+
+```yaml
+containers:
+  - name: kserve-container
+    image: your-registry/{{ image_name }}:v1.0.0  # Update this line
+```
+
+### 3. Deploy to KServe
+
+```bash
+# Apply the ServingRuntime first (defines the runtime)
+kubectl apply -f serving-runtime.yaml
+
+# Verify ServingRuntime is created
+kubectl get servingruntime {{ app_name }}-runtime
+
+# Apply the InferenceService (deploys the model)
+kubectl apply -f inference-service.yaml
+
+# Watch for the InferenceService to become ready
+kubectl get inferenceservice {{ app_name }} -w
+
+# Wait for ready status
+kubectl wait --for=condition=Ready inferenceservice/{{ app_name }} --timeout=300s
+```
+
+## Testing the Deployment
+
+### Get the Ingress URL
+
+```bash
+# Get the InferenceService URL
+SERVICE_URL=$(kubectl get inferenceservice {{ app_name }} -o jsonpath='{.status.url}')
+echo $SERVICE_URL
+
+# For local clusters without ingress, use port-forward:
+kubectl port-forward svc/{{ app_name }}-predictor 8080:80
+SERVICE_URL="http://localhost:8080"
+```
+
+### Test Health Endpoint
+
+```bash
+curl ${SERVICE_URL}/v2/health/ready
+```
+
+### Test Inference
+
+```bash
+# Example inference request (adjust for your model)
+curl -X POST ${SERVICE_URL}/v2/models/{{ models[0].name if models else 'your-model' }}/infer \
+  -H "Content-Type: application/json" \
+  -d '{
+    "inputs": [
+      {
+        "name": "input",
+        "shape": [1],
+        "datatype": "BYTES",
+        "data": ["your input data"]
+      }
+    ]
+  }'
+```
+
+## Scale-to-Zero Verification
+
+KServe supports scale-to-zero when there's no traffic:
+
+```bash
+# Check current pods
+kubectl get pods -l serving.kserve.io/inferenceservice={{ app_name }}
+
+# Wait 5+ minutes with no traffic, then check again
+kubectl get pods -l serving.kserve.io/inferenceservice={{ app_name }}
+# Should show 0 pods
+
+# Send a request - pods should spin up
+curl ${SERVICE_URL}/v2/health/ready
+kubectl get pods -l serving.kserve.io/inferenceservice={{ app_name }}
+# Should show 1+ pods starting
+```
+
+## Configuration Options
+
+### Scaling Configuration
+
+Edit `inference-service.yaml`:
+
+```yaml
+spec:
+  predictor:
+    minReplicas: 1      # Set to 1 to disable scale-to-zero
+    maxReplicas: 10     # Maximum replicas for high traffic
+```
+
+### Resource Limits
+
+Edit `serving-runtime.yaml`:
+
+```yaml
+resources:
+  requests:
+    memory: "1Gi"
+    cpu: "500m"
+  limits:
+    memory: "4Gi"
+    cpu: "2000m"
+```
+
+### GPU Support
+
+Add to `serving-runtime.yaml`:
+
+```yaml
+resources:
+  limits:
+    nvidia.com/gpu: 1
+```
+
+## Monitoring
+
+```bash
+# View logs
+kubectl logs -l serving.kserve.io/inferenceservice={{ app_name }} -c kserve-container
+
+# View events
+kubectl describe inferenceservice {{ app_name }}
+```
+
+## Cleanup
+
+```bash
+# Remove InferenceService
+kubectl delete inferenceservice {{ app_name }}
+
+# Remove ServingRuntime
+kubectl delete servingruntime {{ app_name }}-runtime
+```
+
+## Troubleshooting
+
+### "no matches for kind ServingRuntime"
+
+KServe is not installed or missing the ServingRuntime CRD. Follow the Prerequisites section above.
+
+### InferenceService stuck in "Unknown"
+
+```bash
+kubectl get servingruntime {{ app_name }}-runtime
+kubectl describe inferenceservice {{ app_name }}
+```
+
+### Pod fails to start
+
+```bash
+kubectl describe pod -l serving.kserve.io/inferenceservice={{ app_name }}
+kubectl logs -l serving.kserve.io/inferenceservice={{ app_name }} -c kserve-container
+```
+
+### Image pull errors
+
+For local images on Rancher Desktop with containerd:
+```bash
+docker save {{ image_name }}:latest | nerdctl --namespace k8s.io load
+```

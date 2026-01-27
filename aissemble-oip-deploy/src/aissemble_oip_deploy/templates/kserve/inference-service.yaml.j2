@@ -1,0 +1,14 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: {{ app_name }}
+  # namespace: your-namespace  # Uncomment and set for non-default namespace
+spec:
+  predictor:
+    minReplicas: 0
+    maxReplicas: 5
+    model:
+      modelFormat:
+        name: mlserver
+      runtime: {{ app_name }}-runtime
+      protocolVersion: v2

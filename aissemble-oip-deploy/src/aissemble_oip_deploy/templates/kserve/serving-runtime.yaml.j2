@@ -1,0 +1,35 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: {{ app_name }}-runtime
+  # namespace: your-namespace  # Uncomment and set for non-default namespace
+spec:
+  supportedModelFormats:
+    - name: mlserver
+      version: "1"
+      autoSelect: true
+  protocolVersions:
+    - v2
+  containers:
+    - name: kserve-container
+      image: {{ image_name }}:latest
+      ports:
+        - name: h2c
+          containerPort: {{ http_port }}
+          protocol: TCP
+        - name: grpc
+          containerPort: {{ grpc_port }}
+          protocol: TCP
+      env:
+        - name: MLSERVER_HTTP_PORT
+          value: "{{ http_port }}"
+        - name: MLSERVER_GRPC_PORT
+          value: "{{ grpc_port }}"
+      # Adjust resources based on model size - larger models may need 4Gi+ memory
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "250m"
+        limits:
+          memory: "2Gi"
+          cpu: "1000m"

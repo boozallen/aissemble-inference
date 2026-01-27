@@ -19,7 +19,7 @@ Create a new module **`aissemble-oip-deploy`** that provides CLI tooling to gene
 | **Phase A** | Module skeleton + Local generator | `oip deploy init --target local` works | **COMPLETE** |
 | **Phase B** | Docker generator | `oip deploy init --target docker` works | **COMPLETE** |
 | **Phase C** | Kubernetes vanilla generator | `oip deploy init --target kubernetes` works | **COMPLETE** |
-| **Phase D** | KServe generator | `oip deploy init --target kserve` works | Not started |
+| **Phase D** | KServe generator | `oip deploy init --target kserve` works | **COMPLETE** |
 | **Phase E** | Update/merge workflow | `oip deploy update` with conflict detection | Not started |
 | **Phase F** | Example project + docs | Complete example + documentation | Not started |
 
@@ -162,8 +162,9 @@ user-project/
           kustomization.yaml    # Prod environment overlay
       README.md                 # K8s deployment instructions
 
-    kserve/                     # Phase D
-      inference-service.yaml    # KServe InferenceService
+    kserve/                     # Phase D - COMPLETE
+      serving-runtime.yaml      # KServe ServingRuntime (shared runtime config)
+      inference-service.yaml    # KServe InferenceService (references runtime)
       README.md                 # KServe deployment instructions
 ```
 
@@ -274,37 +275,39 @@ kubectl get pods
 
 ---
 
-### Phase D: KServe Generator
+### Phase D: KServe Generator - COMPLETE
 
 **Goal**: Add KServe InferenceService generation for serverless ML.
 
-**Deliverables**:
-1. `generators/kserve.py` implementation
-2. KServe InferenceService template
-3. Scale-to-zero configuration
+**Delivered**:
+1. `generators/kserve.py` implementation with ServingRuntime + InferenceService pattern
+2. KServe templates: `serving-runtime.yaml.j2`, `inference-service.yaml.j2`, `README.md.j2`
+3. Scale-to-zero configuration (minReplicas: 0)
+4. Auto-dependency on Docker target (like Kubernetes generator)
+5. Comprehensive README with cert-manager and KServe installation prerequisites
 
-**Files to Create**:
+**Files Created**:
 ```
 src/aissemble_oip_deploy/
   generators/kserve.py
   templates/kserve/
-    inference-service.yaml.j2
+    serving-runtime.yaml.j2    # ServingRuntime with MLServer image
+    inference-service.yaml.j2  # InferenceService referencing the runtime
+    README.md.j2               # Deployment instructions with prerequisites
 ```
 
-**Template Considerations**:
-- Custom predictor with MLServer image
-- Scale-to-zero annotations
-- Min/max replicas
-- Resource requests/limits
-- Storage URI for models (optional)
+**Design Decision**: Uses ServingRuntime + InferenceService pattern for DRY:
+- ServingRuntime defines shared runtime configuration (image, ports, resources)
+- InferenceService references the runtime and adds scaling configuration
+- Separates runtime concerns from deployment concerns
+- Multiple InferenceServices can share the same ServingRuntime
+- Requires full KServe installation (cert-manager + KServe CRDs)
 
-**Verification**:
+**Verified**:
 ```bash
 oip deploy init --target kserve
-# On Rancher Desktop with KServe installed:
-kubectl apply -f deploy/kserve/inference-service.yaml
-kubectl get inferenceservice
-# Verify scale-to-zero works
+# Generates: serving-runtime.yaml, inference-service.yaml, README.md
+# Auto-includes docker target for image building
 ```
 
 ---
