@@ -1,103 +1,73 @@
 # aiSSEMBLE&trade; Open Inference Protocol
 
-![PyPI - Version](https://img.shields.io/pypi/v/aissemble-open-inference-protocol-shared)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-open-inference-protocol-shared)
-![PyPI - Format](https://img.shields.io/pypi/format/aissemble-open-inference-protocol-shared)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-open-inference-protocol-shared)
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-oip-core)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-oip-core)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-oip-core)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-oip-core)
 [![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 [![License](https://img.shields.io/github/license/boozallen/aissemble-open-inference-protocol)](https://www.apache.org/licenses/LICENSE-2.0)
 
-**v1.5 – Early Preview**
+A modular Python library for deploying ML models to production using the [Open Inference Protocol](https://github.com/kserve/open-inference-protocol). Built on MLServer, designed for enterprise deployment.
 
-The aiSSEMBLE [Open Inference Protocol (OIP)](https://github.com/kserve/open-inference-protocol) project is evolving
-from a reference implementation of the Open Inference Protocol into a **modular, enterprise-ready Python library**
-designed to help data science teams move ML models from prototype to secure, scalable production with minimal friction.
+## Key Features
 
-## 🎯 Key Value Propositions
+### Tensor Abstraction
 
-### 1. Easy-to-Use Client with Tensor Abstraction
-
-Work with domain objects, not raw tensors. aiSSEMBLE OIP provides a fluent, task-oriented API that completely abstracts tensor complexity.
+Work with domain objects, not raw tensors:
 
 ```python
 # Traditional OIP: Manual tensor parsing
 outputs = response.json()["outputs"]
 bbox_tensor = next(o for o in outputs if o["name"] == "bboxes")
-bboxes = bbox_tensor["data"]  # Is this [N,4] or [1,N,4]? Pixel or normalized?
+bboxes = bbox_tensor["data"]  # Is this [N,4] or [1,N,4]? What coordinate system?
 
-# aiSSEMBLE OIP: Natural, strongly-typed API
+# aiSSEMBLE OIP: Typed domain objects
 client = InferenceClient(adapter, endpoint)
 result = client.detect_object().image("dog.jpg").confidence(0.5).run()
-for detection in result.detections:  # Typed domain objects
+for detection in result.detections:
     print(f"{detection.label} at {detection.bbox}")
 ```
 
-**Benefits:** No tensor knowledge required • Swap OIP backends without code changes • Task-specific fluent APIs • Type-safe with IDE support
+### Write Once, Deploy Many
 
-See [TENSOR_ABSTRACTION.md](./aissemble-oip-examples/aissemble-object-detection-example/TENSOR_ABSTRACTION.md) for detailed examples.
-
----
-
-### 2. Write Once, Deploy Many
-
-Write your model runtime once, deploy everywhere. The `oip deploy` CLI generates configs for local, Docker, Kubernetes, and KServe from a single source.
+Generate deployment configs for multiple targets from a single model:
 
 ```bash
 pip install aissemble-oip-deploy
-cd your-project/
-oip deploy init --target local --target docker --target kubernetes
+oip deploy init --target local --target docker --target kubernetes --target kserve
 ```
 
-```python
-# Your model - write once
-class SumyRuntime(MLModel):
-    async def predict(self, payload):
-        return summary
+| Target | Description |
+|--------|-------------|
+| `local` | MLServer scripts for development |
+| `docker` | Multi-stage Dockerfile + Docker Compose |
+| `kubernetes` | Kustomize manifests with dev/prod overlays |
+| `kserve` | ServingRuntime + InferenceService with scale-to-zero |
 
-# Deploy everywhere - zero code changes
-# Local:   ./deploy/local/run-mlserver.sh
-# Docker:  docker-compose up
-# K8s:     kubectl apply -k deploy/kubernetes/base
-# KServe:  kubectl apply -f deploy/kserve/inference-service.yaml
+See [`aissemble-oip-deploy/README.md`](./aissemble-oip-deploy/README.md) for details.
+
+## Installation
+
+```bash
+# Core library
+pip install aissemble-oip-core
+
+# Model modules (install as needed)
+pip install aissemble-oip-yolo    # YOLO object detection
+pip install aissemble-oip-sumy    # Text summarization
+
+# Deployment tooling
+pip install aissemble-oip-deploy
 ```
 
-**Benefits:** Version-controlled configs • No copy-paste errors • Extensible via entry points • Safe updates with checksums
+## Modules
 
-**Targets:** `local` (available) • `docker` (coming soon) • `kubernetes` (coming soon) • `kserve` (coming soon)
-
-See [`aissemble-oip-deploy/README.md`](./aissemble-oip-deploy/README.md) for custom generator examples.
-
----
-
-## High-Level Goals for v1.5
-
-- Remain fully compliant with the Open Inference Protocol (OIP) specification
-- Provide a lightweight, extensible library built on MLServer as the core inference engine
-- Serve as production-grade "glue" between existing data science artifacts and enterprise deployment targets
-- Enable rapid, repeatable deployment to diverse environments (Kubernetes, AWS, on-prem, edge)
-- Offer pluggable integrations and sensible defaults for:
-  - Security (authentication, authorization, encryption)
-  - Observability (centralized logging, Prometheus/Grafana metrics)
-  - Compliance needs common in regulated settings (FedRAMP, NIST, DoD IL support)
-- Simplify handoffs across data scientists, software engineers, and DevSecOps teams via standardized, framework-agnostic
- abstractions
-
-This version focuses on establishing the core architecture, extension points, and initial capabilities. Detailed
-documentation, examples, contribution guides, and full feature specifications will be expanded progressively as part
-of the v1.5 effort.
-
-
-## Modular Architecture
-
-The library uses a plugin-based architecture for model-specific implementations:
-
-```
-aissemble-oip-core          # Base abstractions (OipAdapter, Translator, Predictor)
-aissemble-oip-deploy        # Deployment tooling (Local, Docker, K8s, KServe)
-aissemble-oip-yolo          # YOLO model family (YOLOv5, v8, v11)
-aissemble-oip-sumy          # Text summarization (TextRank, LSA, LexRank)
-aissemble-oip-<model>       # Future: ResNet, Whisper, LLaMA, etc.
-```
+| Module | Description |
+|--------|-------------|
+| `aissemble-oip-core` | Base abstractions (OipAdapter, Translator, Predictor) |
+| `aissemble-oip-deploy` | Deployment config generation (Local, Docker, K8s, KServe) |
+| `aissemble-oip-yolo` | YOLO model family (v5, v8, v11) |
+| `aissemble-oip-sumy` | Text summarization (TextRank, LSA, LexRank) |
 
 Modules auto-register via Python entry points:
 
@@ -112,40 +82,15 @@ print(ModuleRegistry.instance().list_available())
 client = InferenceClient(adapter, endpoint)
 result = client.detect_object("yolo").image("photo.jpg").confidence(0.5).run()
 
-# Use text summarization
+# Text summarization
 summary = client.summarize("sumy").text("Long article...").max_length(100).run()
-print(summary.summary)
 ```
 
-## Quick Start
+## Examples
 
-```bash
-# Install core library with model modules
-pip install aissemble-oip-core aissemble-oip-yolo aissemble-oip-sumy
+- **Object Detection**: [`aissemble-oip-examples/aissemble-object-detection-example/`](./aissemble-oip-examples/aissemble-object-detection-example/)
+- **Text Summarization**: [`aissemble-oip-examples/aissemble-summarization-example/`](./aissemble-oip-examples/aissemble-summarization-example/)
 
-# Install deployment tooling
-pip install aissemble-oip-deploy
+## License
 
-# Or install from source
-cd aissemble-oip-core && uv sync
-cd ../aissemble-oip-deploy && uv sync
-cd ../aissemble-oip-modules/aissemble-oip-yolo && uv sync
-cd ../aissemble-oip-sumy && uv sync
-```
-
-### Examples
-
-Complete working examples demonstrating end-to-end usage:
-
-- **Object Detection**: `aissemble-oip-examples/aissemble-object-detection-example/`
-  - YOLO model integration with MLServer
-  - Image-based inference workflows
-  - BDD testing patterns
-
-- **Text Summarization**: `aissemble-oip-examples/aissemble-summarization-example/`
-  - Sumy integration with multiple algorithms (TextRank, LSA, LexRank)
-  - Text-based inference workflows
-  - MLServer configuration examples
-
-**Status:** Active development – not yet feature-complete.
-Feedback and early adopters welcome.
+Apache 2.0

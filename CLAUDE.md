@@ -124,12 +124,15 @@ aissemble-open-inference-protocol/
 │   │   ├── generators/          # Built-in deployment target generators
 │   │   │   ├── base.py          # Abstract Generator class
 │   │   │   ├── local.py         # Local MLServer generator
-│   │   │   └── docker.py        # Docker deployment generator
+│   │   │   ├── docker.py        # Docker deployment generator
+│   │   │   ├── kubernetes.py    # Kubernetes generator (Kustomize)
+│   │   │   └── kserve.py        # KServe generator (serverless)
 │   │   └── templates/           # Jinja2 templates
 │   │       ├── local/           # Local deployment templates
-│   │       └── docker/          # Docker deployment templates
+│   │       ├── docker/          # Docker deployment templates
+│   │       ├── kubernetes/      # Kubernetes manifests
+│   │       └── kserve/          # KServe manifests
 │   ├── README.md                # CLI + extensibility documentation
-│   ├── PLAN.md                  # Implementation roadmap
 │   ├── pyproject.toml           # With CLI + generator entry points
 │   └── pom.xml
 │
@@ -496,10 +499,7 @@ oip deploy list-targets
 - `registry.py` - Generator discovery via `oip.generators` entry point group
 - `config.py` - Manages `.oip-deploy.yaml` tracking file (versions, checksums)
 - `generators/base.py` - Abstract `Generator` class with model discovery and template rendering
-- `generators/local.py` - Local MLServer generator (registered via entry point)
-- `generators/docker.py` - Docker deployment generator (multi-stage Dockerfile + Docker Compose)
-- `generators/kubernetes.py` - Kubernetes generator (Kustomize-based with dev/prod overlays)
-- `generators/kserve.py` - KServe generator (ServingRuntime + InferenceService, scale-to-zero)
+- `generators/*.py` - Built-in generators (local, docker, kubernetes, kserve)
 - `templates/` - Jinja2 templates for each deployment target
 
 **Adding a Custom Generator (External Package):**
@@ -536,12 +536,10 @@ oip deploy list-targets  # Shows 'openshift' alongside built-in targets
 oip deploy init --target openshift
 ```
 
-**Development Status:**
-- Phase A (complete): Module skeleton + Local generator + Entry point discovery
-- Phase B (complete): Docker generator with multi-stage Dockerfile + Docker Compose
-- Phase C (complete): Kubernetes generator with Kustomize overlays (dev/prod)
-- Phase D (complete): KServe generator with ServingRuntime + InferenceService
-- Phase E (planned): Update/merge workflow with conflict detection
-- Phase F (planned): Example project + documentation
+**Built-in Generators:**
+- `local` - Local MLServer scripts for development
+- `docker` - Multi-stage Dockerfile + Docker Compose
+- `kubernetes` - Kustomize-based manifests with dev/prod overlays
+- `kserve` - ServingRuntime + InferenceService with scale-to-zero
 
 See `aissemble-oip-deploy/README.md` for full documentation.

@@ -222,20 +222,6 @@ oip deploy list-targets  # Shows 'openshift' alongside built-in targets
 oip deploy init --target openshift
 ```
 
-## Development Status
-
-This module is under active development. Currently implemented:
-- [x] Phase A: Module skeleton + Local generator + Entry point discovery
-- [x] Phase B: Docker generator with multi-stage Dockerfile + Docker Compose
-- [x] Phase C: Kubernetes generator with Kustomize overlays
-- [x] Phase D: KServe generator with ServingRuntime + InferenceService
-
-Coming soon:
-- [ ] Phase E: Update/merge workflow
-- [ ] Phase F: Example project + documentation
-
-See [PLAN.md](./PLAN.md) for detailed implementation plan.
-
 ## License
 
 Apache 2.0

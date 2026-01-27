@@ -48,7 +48,7 @@
     </licenses>
     
     <properties>
-        <version.habushu.plugin>3.3.0</version.habushu.plugin>
+        <version.habushu.plugin>3.4.0</version.habushu.plugin>
         <version.python>3.11.4</version.python>
     </properties>
 

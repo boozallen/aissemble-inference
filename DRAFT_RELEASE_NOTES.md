@@ -121,9 +121,16 @@ Major v1.5 refactoring in progress.
   - ServingRuntime defines shared runtime config (image, ports, resources)
   - InferenceService references the runtime and adds scaling configuration
   - Scale-to-zero support with configurable min/max replicas (default: 0-5)
-  - Generated README with cert-manager/KServe installation prerequisites
+  - Generated README with cert-manager, Knative Serving, and KServe installation prerequisites
+  - Namespace configuration guidance for production deployments
 - Auto-includes Docker target when KServe is selected (image dependency)
 - KServe generator registered via entry point for consistent discovery
+
+### Deploy Module (`aissemble-oip-deploy`) - Documentation Complete
+- Comprehensive README with CLI reference and custom generator guide
+- Generated READMEs for each deployment target with step-by-step instructions
+- KServe README includes full prerequisite installation (cert-manager, Knative, Kourier, KServe)
+- Kubernetes README covers Kustomize overlays for dev/prod environments
 
 ## Architecture Improvements
 - Model-specific code now isolated in separate modules under `aissemble-oip-modules/`
