@@ -9,6 +9,42 @@
 
 A modular Python library for deploying ML models to production using the [Open Inference Protocol](https://github.com/kserve/open-inference-protocol). Built on MLServer, designed for enterprise deployment.
 
+## How aiSSEMBLE OIP Fits In
+
+aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packaging models to consuming them in applications. It leverages [MLServer](https://mlserver.readthedocs.io/) as the inference runtime across all environments, with optional [KServe](https://kserve.github.io/) integration for serverless Kubernetes deployments.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        aiSSEMBLE OIP                            │
+│         Deployment Tooling (oip deploy)  +  Client Library      │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │ generates / speaks OIP to
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                          MLServer                               │
+│    Lightweight Python inference server - works everywhere       │
+│    Local  →  Docker  →  Kubernetes  →  KServe (optional)        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### What aiSSEMBLE OIP Adds
+
+| Layer | What It Does |
+|-------|--------------|
+| **`oip deploy`** | Generates deployment configs for MLServer across environments |
+| **Client library** | Abstracts tensor complexity into task-specific APIs |
+
+### Deployment Progression
+
+| Target | Infrastructure | Use Case |
+|--------|---------------|----------|
+| `local` | MLServer | Development |
+| `docker` | MLServer + Docker | Containerized deployment |
+| `kubernetes` | MLServer + K8s | Production Kubernetes |
+| `kserve` | MLServer + KServe | Serverless ML (autoscaling, scale-to-zero) |
+
+**You don't need aiSSEMBLE OIP if** you already have deployment workflows and OIP client code you're happy with - MLServer and KServe are excellent tools on their own.
+
 ## Key Features
 
 ### Tensor Abstraction
