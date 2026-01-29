@@ -1,9 +1,9 @@
-# aiSSEMBLE&trade; Open Inference Protocol
+# aiSSEMBLE&trade; Inference
 
-![PyPI - Version](https://img.shields.io/pypi/v/aissemble-oip-core)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-oip-core)
-![PyPI - Format](https://img.shields.io/pypi/format/aissemble-oip-core)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-oip-core)
+![PyPI - Version](https://img.shields.io/pypi/v/aissemble-inference-core)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/aissemble-inference-core)
+![PyPI - Format](https://img.shields.io/pypi/format/aissemble-inference-core)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/aissemble-inference-core)
 [![Build (github)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml/badge.svg)](https://github.com/boozallen/aissemble-open-inference-protocol/actions/workflows/build.yaml)
 [![License](https://img.shields.io/github/license/boozallen/aissemble-open-inference-protocol)](https://www.apache.org/licenses/LICENSE-2.0)
 
@@ -16,7 +16,7 @@ aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packa
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        aiSSEMBLE OIP                            │
-│         Deployment Tooling (oip deploy)  +  Client Library      │
+│         Deployment Tooling (inference deploy)  +  Client Library      │
 └──────────────────────────────┬──────────────────────────────────┘
                                │ generates / speaks OIP to
                                ▼
@@ -31,7 +31,7 @@ aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packa
 
 | Layer | What It Does |
 |-------|--------------|
-| **`oip deploy`** | Generates deployment configs for MLServer across environments |
+| **`inference deploy`** | Generates deployment configs for MLServer across environments |
 | **Client library** | Abstracts tensor complexity into task-specific APIs |
 
 ### Deployment Progression
@@ -69,8 +69,8 @@ for detection in result.detections:
 Generate deployment configs for multiple targets from a single model:
 
 ```bash
-pip install aissemble-oip-deploy
-oip deploy init --target local --target docker --target kubernetes --target kserve
+pip install aissemble-inference-deploy
+inference deploy init --target local --target docker --target kubernetes --target kserve
 ```
 
 | Target | Description |
@@ -80,35 +80,35 @@ oip deploy init --target local --target docker --target kubernetes --target kser
 | `kubernetes` | Kustomize manifests with dev/prod overlays |
 | `kserve` | ServingRuntime + InferenceService with scale-to-zero |
 
-See [`aissemble-oip-deploy/README.md`](./aissemble-oip-deploy/README.md) for details.
+See [`aissemble-inference-deploy/README.md`](./aissemble-inference-deploy/README.md) for details.
 
 ## Installation
 
 ```bash
 # Core library
-pip install aissemble-oip-core
+pip install aissemble-inference-core
 
 # Model modules (install as needed)
-pip install aissemble-oip-yolo    # YOLO object detection
-pip install aissemble-oip-sumy    # Text summarization
+pip install aissemble-inference-yolo    # YOLO object detection
+pip install aissemble-inference-sumy    # Text summarization
 
 # Deployment tooling
-pip install aissemble-oip-deploy
+pip install aissemble-inference-deploy
 ```
 
 ## Modules
 
 | Module | Description |
 |--------|-------------|
-| `aissemble-oip-core` | Base abstractions (OipAdapter, Translator, Predictor) |
-| `aissemble-oip-deploy` | Deployment config generation (Local, Docker, K8s, KServe) |
-| `aissemble-oip-yolo` | YOLO model family (v5, v8, v11) |
-| `aissemble-oip-sumy` | Text summarization (TextRank, LSA, LexRank) |
+| `aissemble-inference-core` | Base abstractions (OipAdapter, Translator, Predictor) |
+| `aissemble-inference-deploy` | Deployment config generation (Local, Docker, K8s, KServe) |
+| `aissemble-inference-yolo` | YOLO model family (v5, v8, v11) |
+| `aissemble-inference-sumy` | Text summarization (TextRank, LSA, LexRank) |
 
 Modules auto-register via Python entry points:
 
 ```python
-from aissemble_oip_core.client import InferenceClient, ModuleRegistry
+from aissemble_inference_core.client import InferenceClient, ModuleRegistry
 
 # Discover installed modules
 print(ModuleRegistry.instance().list_available())
@@ -124,8 +124,8 @@ summary = client.summarize("sumy").text("Long article...").max_length(100).run()
 
 ## Examples
 
-- **Object Detection**: [`aissemble-oip-examples/aissemble-object-detection-example/`](./aissemble-oip-examples/aissemble-object-detection-example/)
-- **Text Summarization**: [`aissemble-oip-examples/aissemble-summarization-example/`](./aissemble-oip-examples/aissemble-summarization-example/)
+- **Object Detection**: [`aissemble-inference-examples/aissemble-object-detection-example/`](./aissemble-inference-examples/aissemble-object-detection-example/)
+- **Text Summarization**: [`aissemble-inference-examples/aissemble-summarization-example/`](./aissemble-inference-examples/aissemble-summarization-example/)
 
 ## License
 

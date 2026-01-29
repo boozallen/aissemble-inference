@@ -1,7 +1,7 @@
 # This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
 
-name: Build aissemble-open-inference-protocol
+name: Build aissemble-inference
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
           pypi-token: ${{ secrets.TEST_PYPI_TOKEN }}
 
       # Run build and deploy test artifacts
-      - name: Build aissemble-open-inference-protocol
+      - name: Build aissemble-inference
         run: mvn clean deploy -B -U -Pdefault-build,ci
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

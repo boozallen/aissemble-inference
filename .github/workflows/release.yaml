@@ -1,4 +1,4 @@
-# This workflow kicks off the release job of aiSSEMBLE Open Inference Protocol
+# This workflow kicks off the release job of aiSSEMBLE Inference
 # and deploys artifacts to Maven Central, ghcr.io and pypi
 
 # This workflow uses actions that are not certified by GitHub.
@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Release aissemble-open-inference-protocol
+name: Release aissemble-inference
 
 on:
   workflow_dispatch:
@@ -58,7 +58,7 @@ jobs:
           package-index: pypi
           pypi-username: ${{ secrets.PYPI_USERNAME }}
           pypi-token: ${{ secrets.PYPI_TOKEN }}
-      - name: Release aissemble-open-inference-protocol
+      - name: Release aissemble-inference
         run: |
           git config --local user.email "aissemble@bah.com"
           git config --local user.name "Github Actions"

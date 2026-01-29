@@ -25,18 +25,18 @@ Major v1.5 refactoring in progress.
 
 ### Modular Architecture
 - Implemented `ModuleRegistry` for dynamic plugin discovery via Python entry points
-- Added entry point groups: `oip.runtimes`, `oip.translators`, `oip.builders`
+- Added entry point groups: `inference.runtimes`, `inference.translators`, `inference.builders`
 - Added `list_available_modules()`, `get_translator()`, `get_runtime()` methods to `InferenceClient`
 - Core components now register via entry points for consistent discovery
 
-### YOLO Module (`aissemble-oip-yolo`)
+### YOLO Module (`aissemble-inference-yolo`)
 - Created new module for YOLO model family support
 - Implemented `YOLORuntime` - MLServer-compatible runtime supporting YOLOv5, v8, v11
 - Implemented `YOLOTranslator` extending `DefaultObjectDetectionTranslator`
 - Module auto-registers via entry points when installed
 - Supports model variant selection via `model-settings.json` parameters
 
-### Sumy Module (`aissemble-oip-sumy`)
+### Sumy Module (`aissemble-inference-sumy`)
 - Created new module for text summarization via the Sumy library
 - Implemented `SumyRuntime` - MLServer-compatible runtime supporting multiple algorithms:
   - TextRank (graph-based ranking, default)
@@ -54,7 +54,7 @@ Major v1.5 refactoring in progress.
 - Created working end-to-end example with real MLServer deployment
 - Added Behave BDD tests that spin up MLServer automatically
 - Tests verify full inference pipeline without mocking
-- Example now uses `aissemble-oip-yolo` module instead of embedded runtime
+- Example now uses `aissemble-inference-yolo` module instead of embedded runtime
 
 ### Summarization Example
 - Created `aissemble-summarization-example` demonstrating text summarization end-to-end
@@ -68,12 +68,12 @@ Major v1.5 refactoring in progress.
 - Full integration with InferenceClient fluent API
 - README with comprehensive usage guide and troubleshooting
 
-### Deploy Module (`aissemble-oip-deploy`) - Phase A
+### Deploy Module (`aissemble-inference-deploy`) - Phase A
 - Created new CLI module for generating deployment configurations
 - **Key Value**: "Write once, deploy many" - generate version-controlled configs for any OIP model
-- **Project Structure**: `aissemble-oip-deploy` is a **peer to aissemble-oip-core** (not under modules) because it's a framework that others extend
-- **Extensibility**: Generators are discovered via Python entry points (`oip.generators`), allowing custom deployment targets (OpenShift, AWS SageMaker, air-gapped registries) to be added as separate packages
-- CLI entry point: `oip deploy` command group
+- **Project Structure**: `aissemble-inference-deploy` is a **peer to aissemble-inference-core** (not under modules) because it's a framework that others extend
+- **Extensibility**: Generators are discovered via Python entry points (`inference.generators`), allowing custom deployment targets (OpenShift, AWS SageMaker, air-gapped registries) to be added as separate packages
+- CLI entry point: `inference deploy` command group
 - Implemented generator framework:
   - `GeneratorRegistry` with entry point discovery for extensibility
   - Abstract `Generator` base class with model discovery and Jinja2 template rendering
@@ -85,16 +85,16 @@ Major v1.5 refactoring in progress.
   - Generates `README.md` with usage instructions
   - Auto-detects models and lists them in generated scripts
   - Registered via entry point for consistent discovery
-- Configuration tracking via `.oip-deploy.yaml`:
+- Configuration tracking via `.inference-deploy.yaml`:
   - Tracks generator version and generation timestamp
   - Records checksums of generated files (for future update/merge functionality)
   - Maintains list of active deployment targets
 - CLI commands implemented:
-  - `oip deploy init --target local` - generates local deployment configs
-  - `oip deploy init --target docker` - generates Docker deployment configs
-  - `oip deploy list-targets` - shows available generators with descriptions (discovered via entry points)
+  - `inference deploy init --target local` - generates local deployment configs
+  - `inference deploy init --target docker` - generates Docker deployment configs
+  - `inference deploy list-targets` - shows available generators with descriptions (discovered via entry points)
 
-### Deploy Module (`aissemble-oip-deploy`) - Phase B
+### Deploy Module (`aissemble-inference-deploy`) - Phase B
 - Implemented `DockerGenerator` for containerized MLServer deployment:
   - Multi-stage Dockerfile for smaller images (builder + runtime stages)
   - Docker Compose configuration for easy local container testing
@@ -104,7 +104,7 @@ Major v1.5 refactoring in progress.
   - Generated README with deployment instructions
 - Docker generator registered via entry point for consistent discovery
 
-### Deploy Module (`aissemble-oip-deploy`) - Phase C
+### Deploy Module (`aissemble-inference-deploy`) - Phase C
 - Implemented `KubernetesGenerator` for standard Kubernetes deployments:
   - Kustomize-based structure with base manifests and environment overlays
   - Deployment with health checks (startup, readiness, liveness probes)
@@ -115,7 +115,7 @@ Major v1.5 refactoring in progress.
 - Auto-includes Docker target when Kubernetes is selected (image dependency)
 - Kubernetes generator registered via entry point for consistent discovery
 
-### Deploy Module (`aissemble-oip-deploy`) - Phase D
+### Deploy Module (`aissemble-inference-deploy`) - Phase D
 - Implemented `KServeGenerator` for serverless ML deployments:
   - ServingRuntime + InferenceService pattern for DRY configuration
   - ServingRuntime defines shared runtime config (image, ports, resources)
@@ -126,14 +126,14 @@ Major v1.5 refactoring in progress.
 - Auto-includes Docker target when KServe is selected (image dependency)
 - KServe generator registered via entry point for consistent discovery
 
-### Deploy Module (`aissemble-oip-deploy`) - Documentation Complete
+### Deploy Module (`aissemble-inference-deploy`) - Documentation Complete
 - Comprehensive README with CLI reference and custom generator guide
 - Generated READMEs for each deployment target with step-by-step instructions
 - KServe README includes full prerequisite installation (cert-manager, Knative, Kourier, KServe)
 - Kubernetes README covers Kustomize overlays for dev/prod environments
 
 ## Architecture Improvements
-- Model-specific code now isolated in separate modules under `aissemble-oip-modules/`
+- Model-specific code now isolated in separate modules under `aissemble-inference-modules/`
 - Dependencies isolated per module (e.g., ultralytics only in yolo module, sumy only in sumy module)
 - Modules can be versioned and released independently
 - Clear pattern established for adding new model families
@@ -142,7 +142,7 @@ Major v1.5 refactoring in progress.
 - Task-oriented API design isolates OIP protocol details in translators only
 
 ## Testing Improvements
-- **Real MLServer integration tests** for aissemble-oip-sumy module
+- **Real MLServer integration tests** for aissemble-inference-sumy module
   - Replaced mock-based tests with actual OIP/HTTP communication
   - Tests now start real MLServer instances with configured models
   - Validates complete inference pipeline from HTTP request to response

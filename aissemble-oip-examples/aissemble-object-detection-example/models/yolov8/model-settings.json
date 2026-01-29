@@ -1,7 +1,0 @@
-{
-    "name": "yolov8",
-    "implementation": "aissemble_oip_yolo.YOLORuntime",
-    "parameters": {
-        "model": "yolov8n.pt"
-    }
-}

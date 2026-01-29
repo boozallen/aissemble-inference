@@ -1,0 +1,164 @@
+# Kubernetes Deployment
+
+This directory contains Kubernetes manifests for deploying MLServer using Kustomize.
+
+## Prerequisites
+
+- kubectl configured with cluster access
+- Docker image built and pushed to a registry (see `../docker/`)
+- Kustomize (built into kubectl 1.14+)
+
+## Structure
+
+```
+kubernetes/
+  base/                    # Base manifests
+    deployment.yaml        # MLServer Deployment
+    service.yaml           # ClusterIP Service
+    kustomization.yaml     # Kustomize base config
+  overlays/
+    dev/                   # Development overlay (1 replica, lower resources)
+    prod/                  # Production overlay (3 replicas, higher resources)
+```
+
+## Models Included
+
+{% for model in models %}
+- **{{ model.name }}**{% if model.runtime %} ({{ model.runtime }}){% endif %}
+
+{% endfor %}
+
+## Deployment
+
+### Development Environment
+
+```bash
+# Preview the manifests
+kubectl kustomize overlays/dev
+
+# Apply to cluster
+kubectl apply -k overlays/dev
+
+# Check rollout status
+kubectl rollout status deployment/dev-{{ app_name }}
+
+# Check pods
+kubectl get pods -l app={{ app_name }},environment=dev
+```
+
+### Production Environment
+
+```bash
+# Preview the manifests
+kubectl kustomize overlays/prod
+
+# Apply to cluster
+kubectl apply -k overlays/prod
+
+# Check rollout status
+kubectl rollout status deployment/prod-{{ app_name }}
+
+# Check pods
+kubectl get pods -l app={{ app_name }},environment=prod
+```
+
+## Image Configuration
+
+The deployment uses the image `{{ image_name }}:latest` which should be built using the Docker
+generator (`inference deploy init --target docker`) and then `docker-compose build`.
+
+### Local Development (Rancher Desktop)
+
+The dev overlay uses `imagePullPolicy: Never` so the image must be available locally.
+With Rancher Desktop, load the image into the cluster:
+
+```bash
+# Build the image
+cd ../docker && docker-compose build
+
+# For Rancher Desktop with dockerd (moby):
+# Images are automatically available - just deploy
+
+# For Rancher Desktop with containerd:
+# Export and import the image
+docker save {{ image_name }}:latest | nerdctl --namespace k8s.io load
+```
+
+### Remote Clusters
+
+For remote clusters, push the image to a registry and update the image reference:
+
+```bash
+# Tag and push to your registry
+docker tag {{ image_name }}:latest your-registry/{{ image_name }}:v1.0.0
+docker push your-registry/{{ image_name }}:v1.0.0
+
+# Update image using kustomize
+cd overlays/prod
+kustomize edit set image {{ image_name }}=your-registry/{{ image_name }}:v1.0.0
+```
+
+## Accessing the Service
+
+### Development (NodePort)
+
+The dev overlay uses NodePort for direct access without port-forwarding:
+
+```bash
+# Test health endpoint (HTTP on port {{ node_port_http }}, gRPC on port {{ node_port_grpc }})
+curl http://localhost:{{ node_port_http }}/v2/health/ready
+```
+
+If ports {{ node_port_http }}/{{ node_port_grpc }} conflict with other services, edit `overlays/dev/kustomization.yaml`
+to change the `nodePort` values (valid range: 30000-32767).
+
+### Production (Port Forward)
+
+```bash
+kubectl port-forward svc/prod-{{ app_name }} {{ http_port }}:{{ http_port }}
+
+# Test health endpoint
+curl http://localhost:{{ http_port }}/v2/health/ready
+```
+
+### LoadBalancer (Production)
+
+To expose externally, modify the service type in your overlay:
+
+```yaml
+# overlays/prod/service-patch.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ app_name }}
+spec:
+  type: LoadBalancer
+```
+
+## Health Checks
+
+The deployment includes:
+- **Startup probe**: `/v2/health/ready` - Allows up to 5 minutes for model loading (30 retries × 10s)
+- **Readiness probe**: `/v2/health/ready` - Pod ready to receive traffic
+- **Liveness probe**: `/v2/health/live` - Pod is healthy
+
+For larger models that take longer to load, increase `failureThreshold` in the startup probe.
+
+## Resource Limits
+
+| Environment | CPU Request | CPU Limit | Memory Request | Memory Limit | Replicas |
+|-------------|-------------|-----------|----------------|--------------|----------|
+| dev         | 100m        | 500m      | 256Mi          | 1Gi          | 1        |
+| prod        | 500m        | 2000m     | 1Gi            | 4Gi          | 3        |
+
+Adjust these values in the overlay kustomization files based on your model requirements.
+
+## Cleanup
+
+```bash
+# Remove dev deployment
+kubectl delete -k overlays/dev
+
+# Remove prod deployment
+kubectl delete -k overlays/prod
+```

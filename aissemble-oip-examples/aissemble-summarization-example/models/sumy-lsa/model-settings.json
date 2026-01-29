@@ -1,9 +1,0 @@
-{
-    "name": "sumy-lsa",
-    "implementation": "aissemble_oip_sumy.SumyRuntime",
-    "parameters": {
-        "algorithm": "lsa",
-        "sentences_count": 5,
-        "language": "english"
-    }
-}

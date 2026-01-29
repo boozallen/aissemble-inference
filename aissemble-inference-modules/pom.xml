@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.boozallen.aissemble</groupId>
+        <artifactId>aissemble-inference</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>aissemble-inference-modules</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>aissemble-inference-common-test</module>
+        <module>aissemble-inference-sumy</module>
+        <module>aissemble-inference-yolo</module>
+    </modules>
+
+    <name>aiSSEMBLE::Inference::Modules</name>
+
+    <dependencies>
+        <!-- Helps the build reactor order the build appropriately: -->
+        <dependency>
+            <groupId>com.boozallen.aissemble</groupId>
+            <artifactId>aissemble-inference-core</artifactId>
+            <version>1.5.0-SNAPSHOT</version>
+            <type>habushu</type>
+        </dependency>
+    </dependencies>
+
+</project>

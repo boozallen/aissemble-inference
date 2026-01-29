@@ -9,18 +9,18 @@
         <relativePath />
     </parent>
 
-    <artifactId>aissemble-open-inference-protocol</artifactId>
+    <artifactId>aissemble-inference</artifactId>
     <version>1.5.0-SNAPSHOT</version>
 
-    <name>aiSSEMBLE::Open Inference Protocol</name>
-    <description>Houses all of aiSSEMBLE's implementations of the Open Inference Protocol (OIP)</description>
+    <name>aiSSEMBLE::Inference</name>
+    <description>Houses all of aiSSEMBLE's inference implementations</description>
     <packaging>pom</packaging>
-    <url>https://github.com/boozallen/aissemble-open-inference-protocol</url>
+    <url>https://github.com/boozallen/aissemble-inference</url>
 
     <scm>
-        <connection>scm:git:https://github.com/boozallen/aissemble-open-inference-protocol.git</connection>
-        <developerConnection>scm:git:https://github.com/boozallen/aissemble-open-inference-protocol.git</developerConnection>
-        <url>https://github.com/boozallen/aissemble-open-inference-protocol</url>
+        <connection>scm:git:https://github.com/boozallen/aissemble-inference.git</connection>
+        <developerConnection>scm:git:https://github.com/boozallen/aissemble-inference.git</developerConnection>
+        <url>https://github.com/boozallen/aissemble-inference</url>
         <tag>HEAD</tag>
     </scm>
 
@@ -53,10 +53,10 @@
     </properties>
 
     <modules>
-        <module>aissemble-oip-core</module>
-        <module>aissemble-oip-deploy</module>
-        <module>aissemble-oip-modules</module>
-        <module>aissemble-oip-examples</module>
+        <module>aissemble-inference-core</module>
+        <module>aissemble-inference-deploy</module>
+        <module>aissemble-inference-modules</module>
+        <module>aissemble-inference-examples</module>
     </modules>
 
     <profiles>
@@ -68,7 +68,7 @@
             <distributionManagement>
                 <snapshotRepository>
                     <id>ghcr.io</id>
-                    <url>https://maven.pkg.github.com/boozallen/aissemble-open-inference-protocol</url>
+                    <url>https://maven.pkg.github.com/boozallen/aissemble-inference</url>
                 </snapshotRepository>
             </distributionManagement>
         </profile>

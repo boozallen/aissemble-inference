@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-aiSSEMBLE Open Inference Protocol (OIP) is a modular, enterprise-ready Python library built on the Open Inference Protocol specification. The project is evolving into production-grade infrastructure for moving ML models from prototype to secure, scalable production deployment. It provides OIP-compliant client abstractions and is designed to integrate with MLServer, KServe, and other inference runtimes.
+aiSSEMBLE Inference (OIP) is a modular, enterprise-ready Python library built on the Open Inference Protocol specification. The project is evolving into production-grade infrastructure for moving ML models from prototype to secure, scalable production deployment. It provides OIP-compliant client abstractions and is designed to integrate with MLServer, KServe, and other inference runtimes.
 
 **Version**: 1.5.0-SNAPSHOT (Early Preview - Active Development)
 **Python Version**: 3.11.4
@@ -39,7 +39,7 @@ for detection in result.detections:  # Strongly-typed domain objects
 - Pluggable implementations without user code changes
 - Type-safe domain objects instead of raw tensors
 
-See `aissemble-oip-examples/aissemble-object-detection-example/TENSOR_ABSTRACTION.md` for detailed examples showing how multiple completely different tensor formats work with identical client code.
+See `aissemble-inference-examples/aissemble-object-detection-example/TENSOR_ABSTRACTION.md` for detailed examples showing how multiple completely different tensor formats work with identical client code.
 
 ## Build System
 
@@ -64,14 +64,14 @@ mvn clean deploy -Prelease
 
 Build specific module (from root):
 ```bash
-mvn clean install -pl aissemble-oip-core
+mvn clean install -pl aissemble-inference-core
 ```
 
 ### Python Development Commands
 
 The project uses **uv** for Python dependency management. Each Python module has its own virtual environment managed by Habushu.
 
-Navigate to a Python module (e.g., `aissemble-oip-core`) and use:
+Navigate to a Python module (e.g., `aissemble-inference-core`) and use:
 
 Activate virtual environment:
 ```bash
@@ -97,8 +97,8 @@ uv sync
 
 ```
 aissemble-open-inference-protocol/
-├── aissemble-oip-core/          # Core OIP client library
-│   ├── src/aissemble_oip_core/
+├── aissemble-inference-core/          # Core OIP client library
+│   ├── src/aissemble_inference_core/
 │   │   └── client/              # Client abstractions
 │   │       ├── inference_client.py    # Main facade
 │   │       ├── registry.py            # Module discovery registry
@@ -116,10 +116,10 @@ aissemble-open-inference-protocol/
 │   ├── pyproject.toml
 │   └── pom.xml
 │
-├── aissemble-oip-deploy/        # Deployment config generation framework
-│   ├── src/aissemble_oip_deploy/
-│   │   ├── cli.py               # Click CLI (oip deploy)
-│   │   ├── config.py            # .oip-deploy.yaml tracking
+├── aissemble-inference-deploy/        # Deployment config generation framework
+│   ├── src/aissemble_inference_deploy/
+│   │   ├── cli.py               # Click CLI (inference deploy)
+│   │   ├── config.py            # .inference-deploy.yaml tracking
 │   │   ├── registry.py          # Generator discovery via entry points
 │   │   ├── generators/          # Built-in deployment target generators
 │   │   │   ├── base.py          # Abstract Generator class
@@ -136,9 +136,9 @@ aissemble-open-inference-protocol/
 │   ├── pyproject.toml           # With CLI + generator entry points
 │   └── pom.xml
 │
-├── aissemble-oip-modules/       # Model-specific extension modules
-│   ├── aissemble-oip-common-test/  # Reusable test utilities (build first!)
-│   │   ├── src/aissemble_oip_common_test/
+├── aissemble-inference-modules/       # Model-specific extension modules
+│   ├── aissemble-inference-common-test/  # Reusable test utilities (build first!)
+│   │   ├── src/aissemble_inference_common_test/
 │   │   │   ├── mlserver_fixture.py     # MLServer lifecycle management
 │   │   │   ├── behave_helpers.py       # Behave integration utilities
 │   │   │   └── config_builder.py       # MLServer config generation
@@ -146,15 +146,15 @@ aissemble-open-inference-protocol/
 │   │   ├── pyproject.toml       # Test-only dependencies
 │   │   └── pom.xml              # Maven build config
 │   │
-│   ├── aissemble-oip-yolo/      # YOLO model family support
-│   │   ├── src/aissemble_oip_yolo/
+│   ├── aissemble-inference-yolo/      # YOLO model family support
+│   │   ├── src/aissemble_inference_yolo/
 │   │   │   ├── runtime.py       # YOLORuntime (MLServer compatible)
 │   │   │   └── translator.py    # YOLO-specific translator
 │   │   ├── pyproject.toml       # With entry points registration
 │   │   └── pom.xml
 │   │
-│   └── aissemble-oip-sumy/      # Text summarization support
-│       ├── src/aissemble_oip_sumy/
+│   └── aissemble-inference-sumy/      # Text summarization support
+│       ├── src/aissemble_inference_sumy/
 │       │   ├── runtime.py       # SumyRuntime (TextRank, LSA, LexRank)
 │       │   └── translator.py    # Sumy-specific translator
 │       ├── tests/
@@ -163,7 +163,7 @@ aissemble-open-inference-protocol/
 │       ├── pyproject.toml       # With entry points registration
 │       └── pom.xml
 │
-├── aissemble-oip-examples/      # Usage examples
+├── aissemble-inference-examples/      # Usage examples
 │   ├── aissemble-object-detection-example/
 │   │   ├── src/aissemble_object_detection_example/
 │   │   │   └── http_adapter.py  # HTTP OipAdapter implementation
@@ -193,39 +193,39 @@ The OIP client follows a layered architecture inspired by DJL (Deep Java Library
    - Entry point for all client operations
    - Zero-configuration construction
    - Provides task-specific factory methods (e.g., `detect_object()`, `summarize()`)
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/inference_client.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/inference_client.py`
 
 2. **InferenceBuilder** (Abstract Base)
    - Task-specific fluent API for configuring inference requests
    - Concrete implementations for each ML task (object detection, summarization, etc.)
    - Supports method chaining: `.with_model()`, `.with_adapter()`, `.with_translator()`, `.with_parameters()`
    - Streaming support via Python iterator protocol
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/builder/inference_builder.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/builder/inference_builder.py`
 
 3. **RawInferenceBuilder**
    - Low-level, non-fluent API for raw tensor inputs
    - Used only when task-specific abstractions are insufficient
    - Deliberately "ugly" to discourage accidental usage
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/builder/raw_inference_builder.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/builder/raw_inference_builder.py`
 
 4. **Translator**
    - Only component aware of OIP JSON schema, tensor shapes, and protocol details
    - Pluggable and testable in isolation
    - Provides input preprocessing and output postprocessing
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/translator.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/translator.py`
 
 5. **Predictor**
    - Wraps a specific model endpoint
    - Manages resources (connection pools, retries, timeouts)
    - One instance per model reference for efficiency
    - StreamPredictor variant for streaming responses
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/predictor.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/predictor.py`
 
 6. **OipAdapter**
    - Sole class interacting with OIP-compliant HTTP/gRPC endpoints
    - Stateless and mockable for testing
    - Implements backoff, authentication, metrics
-   - Location: `aissemble-oip-core/src/aissemble_oip_core/client/oip_adapter.py`
+   - Location: `aissemble-inference-core/src/aissemble_inference_core/client/oip_adapter.py`
 
 ### Design Philosophy
 
@@ -246,7 +246,7 @@ The project uses a plugin-based modular architecture for model-specific implemen
 Modules register themselves via Python entry points, discovered automatically at runtime:
 
 ```python
-from aissemble_oip_core.client import ModuleRegistry
+from aissemble_inference_core.client import ModuleRegistry
 
 registry = ModuleRegistry.instance()
 print(registry.list_available())
@@ -255,31 +255,31 @@ print(registry.list_available())
 
 ### Entry Point Groups
 
-- `oip.runtimes`: MLServer-compatible model runtimes
-- `oip.translators`: OIP protocol translators
-- `oip.builders`: Task-specific inference builders
+- `inference.runtimes`: MLServer-compatible model runtimes
+- `inference.translators`: OIP protocol translators
+- `inference.builders`: Task-specific inference builders
 
 ### Creating a New Module
 
-1. Create module under `aissemble-oip-modules/` (e.g., `aissemble-oip-resnet/`)
+1. Create module under `aissemble-inference-modules/` (e.g., `aissemble-inference-resnet/`)
 2. Implement runtime, translator, and/or builder classes
 3. Register entry points in `pyproject.toml`:
 
 ```toml
-[project.entry-points."oip.runtimes"]
-resnet = "aissemble_oip_resnet:ResNetRuntime"
+[project.entry-points."inference.runtimes"]
+resnet = "aissemble_inference_resnet:ResNetRuntime"
 
-[project.entry-points."oip.translators"]
-resnet = "aissemble_oip_resnet:ResNetTranslator"
+[project.entry-points."inference.translators"]
+resnet = "aissemble_inference_resnet:ResNetTranslator"
 ```
 
-4. Add module to `aissemble-oip-modules/pom.xml`
-5. **Use `aissemble-oip-common-test` for MLServer test fixtures** (see Testing section below)
+4. Add module to `aissemble-inference-modules/pom.xml`
+5. **Use `aissemble-inference-common-test` for MLServer test fixtures** (see Testing section below)
 
 ### Module Grouping Strategy
 
 - **One module per model family** (not per version)
-- Example: `aissemble-oip-yolo` supports YOLOv5, v8, v11 via configuration
+- Example: `aissemble-inference-yolo` supports YOLOv5, v8, v11 via configuration
 - Version selection via parameters in `model-settings.json`
 - Split into separate modules only when:
   - Different underlying frameworks required
@@ -313,10 +313,10 @@ The project uses **Habushu** (Maven plugin) which wraps **uv** for Python depend
 
 ## Development Workflow
 
-1. Make changes to Python code in `aissemble-oip-core/src/`
-2. Run linter: `cd aissemble-oip-core && ruff check .`
-3. Build module: `mvn clean install -pl aissemble-oip-core` (from root)
-4. Test changes manually or with examples in `aissemble-oip-examples/`
+1. Make changes to Python code in `aissemble-inference-core/src/`
+2. Run linter: `cd aissemble-inference-core && ruff check .`
+3. Build module: `mvn clean install -pl aissemble-inference-core` (from root)
+4. Test changes manually or with examples in `aissemble-inference-examples/`
 
 ## Git Workflow
 
@@ -330,7 +330,7 @@ The project uses **Habushu** (Maven plugin) which wraps **uv** for Python depend
 - The project is in **early preview** (v1.5) - not feature-complete
 - Many TODOs exist in the codebase indicating planned functionality
 - Core abstractions are in place with object detection as the reference implementation
-- The `aissemble-oip-modules` directory contains model-specific modules (e.g., `aissemble-oip-yolo`)
+- The `aissemble-inference-modules` directory contains model-specific modules (e.g., `aissemble-inference-yolo`)
 - New model families should be added as modules, not embedded in examples
 - Modules auto-register via Python entry points for dynamic discovery
 - Examples use MLServer as the reference inference runtime
@@ -357,7 +357,7 @@ Behave is the preferred testing framework for BDD-style tests.
 
 ### Running Tests
 
-From `aissemble-oip-core`:
+From `aissemble-inference-core`:
 
 ```bash
 # Install test dependencies
@@ -376,7 +376,7 @@ behave --tags=@smoke
 ### Test Structure
 
 ```
-aissemble-oip-core/tests/
+aissemble-inference-core/tests/
 ├── features/              # Behave .feature files
 │   ├── steps/            # Step definitions
 │   ├── environment.py    # Test hooks
@@ -385,13 +385,13 @@ aissemble-oip-core/tests/
 └── README.md
 ```
 
-Configuration is in `aissemble-oip-core/behave.ini`.
+Configuration is in `aissemble-inference-core/behave.ini`.
 
-See `aissemble-oip-core/tests/README.md` for detailed testing documentation.
+See `aissemble-inference-core/tests/README.md` for detailed testing documentation.
 
-### Common Test Utilities (aissemble-oip-common-test)
+### Common Test Utilities (aissemble-inference-common-test)
 
-The `aissemble-oip-common-test` module provides reusable MLServer test infrastructure to avoid code duplication across modules and examples.
+The `aissemble-inference-common-test` module provides reusable MLServer test infrastructure to avoid code duplication across modules and examples.
 
 **Key Features:**
 - **MLServerFixture**: Context manager for MLServer lifecycle (start, stop, cleanup)
@@ -406,18 +406,18 @@ Add to `pyproject.toml`:
 test = [
     "behave>=1.2.6",
     "mlserver>=1.6.0",
-    "aissemble-oip-common-test",
+    "aissemble-inference-common-test",
 ]
 
 [tool.uv.sources]
-aissemble-oip-common-test = { path = "../aissemble-oip-common-test", editable = true }
+aissemble-inference-common-test = { path = "../aissemble-inference-common-test", editable = true }
 ```
 
 **For static model directories (examples):**
 ```python
 # tests/features/environment.py
 from pathlib import Path
-from aissemble_oip_common_test.behave_helpers import (
+from aissemble_inference_common_test.behave_helpers import (
     setup_mlserver_simple,
     teardown_mlserver,
 )
@@ -434,7 +434,7 @@ def after_all(context):
 **For dynamic config generation (module tests):**
 ```python
 # tests/features/environment.py
-from aissemble_oip_common_test.behave_helpers import (
+from aissemble_inference_common_test.behave_helpers import (
     setup_mlserver_dynamic,
     teardown_mlserver,
     start_mlserver_with_model,
@@ -460,56 +460,56 @@ start_mlserver_with_model(
 ```
 
 **Important Notes:**
-- `aissemble-oip-common-test` must be built **first** (it's listed first in `aissemble-oip-modules/pom.xml`)
+- `aissemble-inference-common-test` must be built **first** (it's listed first in `aissemble-inference-modules/pom.xml`)
 - Uses context manager protocol (`__enter__`/`__exit__`) for automatic cleanup
 - Supports both fixed ports (examples) and dynamic port allocation (module tests)
 - Logs warnings for cleanup failures instead of silent errors
 
-See `aissemble-oip-modules/aissemble-oip-common-test/README.md` for complete API documentation.
+See `aissemble-inference-modules/aissemble-inference-common-test/README.md` for complete API documentation.
 
-### Deployment Tooling (aissemble-oip-deploy)
+### Deployment Tooling (aissemble-inference-deploy)
 
-The `aissemble-oip-deploy` module is a **peer to aissemble-oip-core** that provides CLI tooling to generate deployment configurations for any OIP-compatible model. The goal is "write once, deploy many" - users get version-controlled configs in their project.
+The `aissemble-inference-deploy` module is a **peer to aissemble-inference-core** that provides CLI tooling to generate deployment configurations for any OIP-compatible model. The goal is "write once, deploy many" - users get version-controlled configs in their project.
 
 **Generators are discovered via entry points**, allowing custom deployment targets (OpenShift, AWS SageMaker, air-gapped registries) to be added as separate packages without modifying the core deploy module.
 
 **CLI Commands:**
 ```bash
 # Generate local deployment scripts
-oip deploy init --target local
+inference deploy init --target local
 
 # Generate Docker deployment configs
-oip deploy init --target docker
+inference deploy init --target docker
 
 # Generate Kubernetes manifests (Kustomize-based)
-oip deploy init --target kubernetes
+inference deploy init --target kubernetes
 
 # Generate KServe manifests (serverless ML with scale-to-zero)
-oip deploy init --target kserve
+inference deploy init --target kserve
 
 # Generate multiple targets at once
-oip deploy init --target docker --target kubernetes --target kserve
+inference deploy init --target docker --target kubernetes --target kserve
 
 # List available targets (discovers generators via entry points)
-oip deploy list-targets
+inference deploy list-targets
 ```
 
 **Architecture:**
-- `cli.py` - Click-based CLI with `oip deploy` command group
-- `registry.py` - Generator discovery via `oip.generators` entry point group
-- `config.py` - Manages `.oip-deploy.yaml` tracking file (versions, checksums)
+- `cli.py` - Click-based CLI with `inference deploy` command group
+- `registry.py` - Generator discovery via `inference.generators` entry point group
+- `config.py` - Manages `.inference-deploy.yaml` tracking file (versions, checksums)
 - `generators/base.py` - Abstract `Generator` class with model discovery and template rendering
 - `generators/*.py` - Built-in generators (local, docker, kubernetes, kserve)
 - `templates/` - Jinja2 templates for each deployment target
 
 **Adding a Custom Generator (External Package):**
 
-Custom generators can be added without modifying aissemble-oip-deploy:
+Custom generators can be added without modifying aissemble-inference-deploy:
 
 1. Create your generator package:
 ```python
 # my_org_deploy/openshift.py
-from aissemble_oip_deploy import Generator, ModelInfo
+from aissemble_inference_deploy import Generator, ModelInfo
 from pathlib import Path
 
 class OpenShiftGenerator(Generator):
@@ -525,15 +525,15 @@ class OpenShiftGenerator(Generator):
 
 2. Register via entry point in `pyproject.toml`:
 ```toml
-[project.entry-points."oip.generators"]
+[project.entry-points."inference.generators"]
 openshift = "my_org_deploy.openshift:OpenShiftGenerator"
 ```
 
 3. Install and use:
 ```bash
 pip install my-org-deploy
-oip deploy list-targets  # Shows 'openshift' alongside built-in targets
-oip deploy init --target openshift
+inference deploy list-targets  # Shows 'openshift' alongside built-in targets
+inference deploy init --target openshift
 ```
 
 **Built-in Generators:**
@@ -542,4 +542,4 @@ oip deploy init --target openshift
 - `kubernetes` - Kustomize-based manifests with dev/prod overlays
 - `kserve` - ServingRuntime + InferenceService with scale-to-zero
 
-See `aissemble-oip-deploy/README.md` for full documentation.
+See `aissemble-inference-deploy/README.md` for full documentation.

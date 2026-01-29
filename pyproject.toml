@@ -1,5 +1,5 @@
 [project]
-name = "aissemble-open-inference-protocol"
+name = "aissemble-inference"
 version = "0.1.0"
 description = "Add your description here"
 requires-python = ">=3.9.14"

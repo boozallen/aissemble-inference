@@ -1,0 +1,9 @@
+{
+    "name": "sumy-textrank",
+    "implementation": "aissemble_inference_sumy.SumyRuntime",
+    "parameters": {
+        "algorithm": "textrank",
+        "sentences_count": 3,
+        "language": "english"
+    }
+}
