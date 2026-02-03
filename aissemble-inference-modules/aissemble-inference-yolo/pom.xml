@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.boozallen.aissemble</groupId>
         <artifactId>aissemble-inference-modules</artifactId>
-        <version>1.5.0-RC3</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>aissemble-inference-yolo</artifactId>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.boozallen.aissemble</groupId>
             <artifactId>aissemble-inference-common-test</artifactId>
-            <version>1.5.0-RC3</version>
+            <version>1.5.0-SNAPSHOT</version>
             <type>habushu</type>
             <scope>test</scope>
         </dependency>
