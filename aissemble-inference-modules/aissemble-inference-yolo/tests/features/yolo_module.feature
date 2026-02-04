@@ -1,5 +1,5 @@
 Feature: YOLO Module Capabilities
-  As a developer using the aiSSEMBLE OIP library
+  As a developer using the aiSSEMBLE Inference library
   I want to use the YOLO module for object detection
   So that I can detect objects in images using various YOLO model versions
 

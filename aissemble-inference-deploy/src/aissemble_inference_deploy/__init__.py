@@ -18,7 +18,7 @@
 # #L%
 ###
 """
-aiSSEMBLE OIP Deploy - Deployment tooling for OIP-compatible models.
+aiSSEMBLE Inference Deploy - Deployment tooling for OIP-compatible models.
 
 This module provides CLI tooling to generate deployment configurations
 for any OIP-compatible model across multiple deployment targets:

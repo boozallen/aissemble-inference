@@ -1,4 +1,4 @@
-# aiSSEMBLE OIP Sumy Module
+# aiSSEMBLE Inference Sumy Module
 
 Sumy library integration for text summarization support in the aiSSEMBLE Inference library.
 

@@ -9,14 +9,14 @@
 
 A modular Python library for deploying ML models to production using the [Open Inference Protocol](https://github.com/kserve/open-inference-protocol). Built on MLServer, designed for enterprise deployment.
 
-## How aiSSEMBLE OIP Fits In
+## How aiSSEMBLE Inference Fits In
 
-aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packaging models to consuming them in applications. It leverages [MLServer](https://mlserver.readthedocs.io/) as the inference runtime across all environments, with optional [KServe](https://kserve.github.io/) integration for serverless Kubernetes deployments.
+aiSSEMBLE Inference is a **toolkit for the full ML deployment lifecycle** - from packaging models to consuming them in applications. It leverages [MLServer](https://mlserver.readthedocs.io/) as the inference runtime across all environments, with optional [KServe](https://kserve.github.io/) integration for serverless Kubernetes deployments.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        aiSSEMBLE OIP                            │
-│         Deployment Tooling (inference deploy)  +  Client Library      │
+│                     aiSSEMBLE Inference                         │
+│    Deployment Tooling (inference deploy)  +  Client Library     │
 └──────────────────────────────┬──────────────────────────────────┘
                                │ generates / speaks OIP to
                                ▼
@@ -27,7 +27,7 @@ aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packa
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### What aiSSEMBLE OIP Adds
+### What aiSSEMBLE Inference Adds
 
 | Layer | What It Does |
 |-------|--------------|
@@ -43,7 +43,7 @@ aiSSEMBLE OIP is a **toolkit for the full ML deployment lifecycle** - from packa
 | `kubernetes` | MLServer + K8s | Production Kubernetes |
 | `kserve` | MLServer + KServe | Serverless ML (autoscaling, scale-to-zero) |
 
-**You don't need aiSSEMBLE OIP if** you already have deployment workflows and OIP client code you're happy with - MLServer and KServe are excellent tools on their own.
+**You don't need aiSSEMBLE Inference if** you already have deployment workflows and OIP client code you're happy with - MLServer and KServe are excellent tools on their own.
 
 ## Key Features
 
@@ -57,7 +57,7 @@ outputs = response.json()["outputs"]
 bbox_tensor = next(o for o in outputs if o["name"] == "bboxes")
 bboxes = bbox_tensor["data"]  # Is this [N,4] or [1,N,4]? What coordinate system?
 
-# aiSSEMBLE OIP: Typed domain objects
+# aiSSEMBLE Inference: Typed domain objects
 client = InferenceClient(adapter, endpoint)
 result = client.detect_object().image("dog.jpg").confidence(0.5).run()
 for detection in result.detections:

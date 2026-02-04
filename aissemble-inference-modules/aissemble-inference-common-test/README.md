@@ -1,4 +1,4 @@
-# aiSSEMBLE OIP Common Test Utilities
+# aiSSEMBLE Inference Common Test Utilities
 
 Reusable MLServer test utilities for aiSSEMBLE Inference modules and examples.
 

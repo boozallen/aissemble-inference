@@ -1,5 +1,5 @@
 Feature: Object Detection with OIP Client
-  As a developer using the aiSSEMBLE OIP library
+  As a developer using the aiSSEMBLE Inference library
   I want to perform object detection on images
   So that I can identify and locate objects in my images
 

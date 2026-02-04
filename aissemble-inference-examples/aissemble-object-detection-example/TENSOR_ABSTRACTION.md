@@ -1,6 +1,6 @@
-# Tensor Abstraction in aiSSEMBLE OIP
+# Tensor Abstraction in aiSSEMBLE Inference
 
-This document demonstrates how aiSSEMBLE OIP abstracts tensor nuances from end users, allowing the same client code to work with different OIP server implementations that return vastly different tensor formats.
+This document demonstrates how aiSSEMBLE Inference abstracts tensor nuances from end users, allowing the same client code to work with different OIP server implementations that return vastly different tensor formats.
 
 ## The Problem: Tensor Leakage in Traditional OIP
 
@@ -35,10 +35,10 @@ for bbox, label in zip(bboxes, labels):
 
 ## The Solution: Translator Pattern
 
-aiSSEMBLE OIP uses the **Translator pattern** to isolate all tensor complexity:
+aiSSEMBLE Inference uses the **Translator pattern** to isolate all tensor complexity:
 
 ```python
-# ✅ aiSSEMBLE OIP - User works with domain objects
+# ✅ aiSSEMBLE Inference - User works with domain objects
 from aissemble_inference_core.client import InferenceClient
 
 client = InferenceClient(adapter=adapter, endpoint="http://localhost:8080")
@@ -290,7 +290,7 @@ result = (
 
 ## Conclusion
 
-The aiSSEMBLE OIP library's translator pattern provides complete abstraction of tensor complexity, allowing:
+The aiSSEMBLE Inference library's translator pattern provides complete abstraction of tensor complexity, allowing:
 
 - **End users** to work with clean, typed domain objects
 - **DevOps teams** to swap inference backends without code changes

@@ -1,4 +1,4 @@
-# aiSSEMBLE OIP YOLO Module
+# aiSSEMBLE Inference YOLO Module
 
 YOLO model family support for the aiSSEMBLE Inference library.
 

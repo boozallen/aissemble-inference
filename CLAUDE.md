@@ -12,9 +12,9 @@ aiSSEMBLE Inference (OIP) is a modular, enterprise-ready Python library built on
 
 ### 🎯 Key Value Proposition: Tensor Abstraction
 
-A major goal of this project is to **abstract tensor nuances from end users**. Traditional OIP implementations leak tensor details (shapes, data types, coordinate systems) into application code. aiSSEMBLE OIP uses the **Translator pattern** to completely isolate tensor complexity:
+A major goal of this project is to **abstract tensor nuances from end users**. Traditional OIP implementations leak tensor details (shapes, data types, coordinate systems) into application code. aiSSEMBLE Inference uses the **Translator pattern** to completely isolate tensor complexity:
 
-**Without aiSSEMBLE OIP (traditional approach):**
+**Without aiSSEMBLE Inference (traditional approach):**
 ```python
 # ❌ User must manually parse raw tensor responses
 response = requests.post(url, json={"inputs": [...]})
@@ -25,7 +25,7 @@ bbox_tensor = next(o for o in outputs if o["name"] == "bboxes")
 bboxes = bbox_tensor["data"]  # Tensor details leak into app code!
 ```
 
-**With aiSSEMBLE OIP:**
+**With aiSSEMBLE Inference:**
 ```python
 # ✅ User works with clean domain objects, zero tensor knowledge required
 result = client.detect_object().image("dog.jpg").run()

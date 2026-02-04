@@ -1,5 +1,5 @@
 Feature: Text Summarization with OIP Client
-  As a developer using aiSSEMBLE OIP
+  As a developer using aiSSEMBLE Inference
   I want to summarize text documents using the sumy module
   So that I can extract key information from long articles
 

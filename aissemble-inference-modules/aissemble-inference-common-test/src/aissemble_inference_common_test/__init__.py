@@ -17,9 +17,9 @@
 # limitations under the License.
 # #L%
 ###
-"""aiSSEMBLE OIP Common Test Utilities.
+"""aiSSEMBLE Inference Common Test Utilities.
 
-Reusable MLServer test fixtures and utilities for aiSSEMBLE OIP modules and examples.
+Reusable MLServer test fixtures and utilities for aiSSEMBLE Inference modules and examples.
 """
 
 from .behave_helpers import (

@@ -17,10 +17,10 @@
 # limitations under the License.
 # #L%
 ###
-"""aiSSEMBLE OIP Sumy Module.
+"""aiSSEMBLE Inference Sumy Module.
 
 This module provides sumy library integration for text summarization
-support in the aiSSEMBLE Open Inference Protocol library.
+support in the aiSSEMBLE Inference library.
 
 Supported summarization algorithms:
 - TextRank: Graph-based ranking algorithm (default)

@@ -17,10 +17,10 @@
 # limitations under the License.
 # #L%
 ###
-"""aiSSEMBLE OIP YOLO Module.
+"""aiSSEMBLE Inference YOLO Module.
 
 This module provides YOLO model family support for the aiSSEMBLE
-Open Inference Protocol library.
+Inference library.
 
 Supported YOLO versions (via Ultralytics):
 - YOLOv5: yolov5n, yolov5s, yolov5m, yolov5l, yolov5x

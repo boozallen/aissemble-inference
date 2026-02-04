@@ -1,4 +1,4 @@
-# aiSSEMBLE OIP Deploy
+# aiSSEMBLE Inference Deploy
 
 Deployment tooling for aiSSEMBLE Inference - generates deployment configurations for OIP-compatible models.
 

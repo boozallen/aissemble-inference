@@ -1,5 +1,5 @@
 Feature: Sumy Module Integration
-  As a developer using aiSSEMBLE OIP
+  As a developer using aiSSEMBLE Inference
   I want the sumy module to provide text summarization capabilities
   So that I can summarize text documents using various algorithms
 
